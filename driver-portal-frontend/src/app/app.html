@@ -1,0 +1,80 @@
+<div class="app-shell">
+  <header class="top-nav">
+    <div class="logo">
+      <img src="/electra-hub-icon.svg" alt="Electra Hub logo">
+      <span>Electra Hub</span>
+    </div>
+    <div class="search">
+      <input type="text" placeholder="Search drivers, devices, or policies" />
+    </div>
+    <nav class="nav-links">
+      <a routerLink="/login" *ngIf="!(isAuthenticated$ | async)">Sign in</a>
+      <a routerLink="/register" *ngIf="!(isAuthenticated$ | async)">Join now</a>
+      <div class="user-menu" *ngIf="(isAuthenticated$ | async)" (click)="$event.stopPropagation()">
+        <button class="user-menu-trigger" type="button" (click)="toggleUserMenu($event)">
+          <span class="user-avatar">{{ userInitials((email$ | async) || '') }}</span>
+          <span class="user-name">{{ userDisplayName((email$ | async) || '') }}</span>
+          <span class="user-caret" aria-hidden="true">▾</span>
+        </button>
+        <div class="user-menu-panel" *ngIf="userMenuOpen()">
+          <a routerLink="/profile" (click)="closeUserMenu()">User profile</a>
+          <button type="button" (click)="logout()">Log out</button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main
+    class="content-shell"
+    [class.sidebar-collapsed]="sidebarCollapsed() && !isMobile()"
+    [class.sidebar-mobile-open]="mobileSidebarOpen() && isMobile()"
+    [class.is-mobile]="isMobile()"
+  >
+    <button class="mobile-left-nav-toggle" type="button" *ngIf="(isAuthenticated$ | async) && isMobile()" (click)="openMobileSidebar()">
+      <span aria-hidden="true">☰</span>
+      <span>Menu</span>
+    </button>
+
+    <button
+      class="left-nav-backdrop"
+      type="button"
+      *ngIf="(isAuthenticated$ | async) && isMobile() && mobileSidebarOpen()"
+      (click)="closeMobileSidebar()"
+      aria-label="Close navigation"
+    ></button>
+
+    <aside class="left-nav" *ngIf="(isAuthenticated$ | async)">
+      <button class="left-nav-user" type="button" (click)="toggleSidebarFromUserName()">
+        <span class="left-nav-user-avatar">
+          {{ sidebarCollapsed() && !isMobile() ? userInitials((email$ | async) || '') : '👤' }}
+        </span>
+        <span class="left-nav-user-name" *ngIf="!(sidebarCollapsed() && !isMobile())">
+          {{ userDisplayName((email$ | async) || '') }}
+        </span>
+      </button>
+      <nav>
+        <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="onLeftNavClick()">
+          <span class="left-nav-icon" aria-hidden="true">🏠</span>
+          <span class="left-nav-label">Dashboard</span>
+        </a>
+        <a routerLink="/payment" routerLinkActive="active" (click)="onLeftNavClick()">
+          <span class="left-nav-icon" aria-hidden="true">💳</span>
+          <span class="left-nav-label">Payment</span>
+        </a>
+        <a routerLink="/charging-history" routerLinkActive="active" (click)="onLeftNavClick()">
+          <span class="left-nav-icon" aria-hidden="true">⚡</span>
+          <span class="left-nav-label">Charging history</span>
+        </a>
+      </nav>
+    </aside>
+
+    <section class="content">
+      <router-outlet></router-outlet>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div>© 2026 Electra Hub</div>
+    <div class="muted">Build trusted access for EV charging operations.</div>
+  </footer>
+</div>

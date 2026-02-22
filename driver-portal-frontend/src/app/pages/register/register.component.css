@@ -1,0 +1,120 @@
+.auth-shell {
+  display: grid;
+  gap: 32px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  align-items: start;
+}
+
+.auth-hero h1 {
+  font-size: clamp(2rem, 2vw + 1.5rem, 3.2rem);
+  margin-bottom: 12px;
+}
+
+.auth-hero p {
+  color: var(--muted);
+  max-width: 480px;
+}
+
+.hero-list {
+  margin-top: 18px;
+  padding-left: 18px;
+  color: var(--muted);
+}
+
+.auth-card {
+  background: #fff;
+  padding: 28px;
+  border-radius: 18px;
+  box-shadow: var(--shadow-soft);
+  display: grid;
+  gap: 16px;
+}
+
+.grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+label {
+  display: grid;
+  gap: 6px;
+  font-weight: 500;
+}
+
+input {
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #e0e5eb;
+  font-size: 1rem;
+}
+
+.phone-input-wrap {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  border: 1px solid #e0e5eb;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.phone-dial-code {
+  background: #eef1f5;
+  color: #6b7280;
+  padding: 12px 14px;
+  border-right: 1px solid #d6dbe3;
+  font-weight: 600;
+}
+
+.phone-input-wrap input {
+  border: none;
+  border-radius: 0;
+}
+
+.phone-input-wrap input:focus {
+  outline: none;
+}
+
+select {
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #e0e5eb;
+  font-size: 1rem;
+  background: #fff;
+}
+
+button {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+button:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft);
+}
+
+.error {
+  color: #b42318;
+  background: #fff1f0;
+  padding: 10px 12px;
+  border-radius: 10px;
+}
+
+.hint {
+  color: var(--muted);
+}
+
+.hint a {
+  color: var(--accent);
+  font-weight: 600;
+}

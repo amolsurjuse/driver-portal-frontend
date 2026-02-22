@@ -1,0 +1,71 @@
+.receipt {
+  display: grid;
+  gap: 16px;
+}
+
+.receipt-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: start;
+}
+
+.receipt-head h1 {
+  margin: 0;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.receipt-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: var(--shadow-soft);
+  padding: 16px;
+  display: grid;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.total {
+  font-size: 1.05rem;
+}
+
+.primary,
+.ghost {
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.primary {
+  border: none;
+  background: var(--accent);
+  color: #fff;
+}
+
+.ghost {
+  border: 1px solid #d2dbe6;
+  background: #fff;
+  color: #1f2a37;
+}

@@ -1,0 +1,198 @@
+.dashboard {
+  display: grid;
+  gap: 24px;
+}
+
+.widget-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+}
+
+.widget-card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: var(--shadow-soft);
+  padding: 12px 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.widget-top {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.widget-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.widget-main {
+  display: grid;
+  gap: 4px;
+}
+
+.widget-label {
+  margin: 0;
+  color: #667085;
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.widget-value {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.widget-divider {
+  height: 1px;
+  background: #eceff5;
+}
+
+.widget-meta {
+  margin: 0;
+  color: #667085;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.tone-energy {
+  background: #fff6df;
+  color: #c47f00;
+}
+
+.tone-date {
+  background: #e9fff2;
+  color: #12955b;
+}
+
+.tone-wallet {
+  background: #e9f2ff;
+  color: #2668d8;
+}
+
+.tone-savings {
+  background: #f4ebff;
+  color: #7a2fd0;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.usage-chart-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: var(--shadow-soft);
+}
+
+.usage-chart-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.usage-chart-head h2 {
+  margin: 0 0 6px;
+}
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+}
+
+.chart-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #475467;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.legend-dot.energy {
+  background: #0ea5e9;
+}
+
+.legend-dot.price {
+  background: #22c55e;
+}
+
+.usage-chart-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.usage-chart {
+  width: 100%;
+  min-width: 760px;
+  height: 340px;
+}
+
+.chart-grid-line {
+  stroke: #e8edf5;
+  stroke-width: 1;
+}
+
+.chart-area.energy {
+  fill: url(#energy-fill);
+}
+
+.chart-area.price {
+  fill: url(#price-fill);
+}
+
+.chart-line {
+  fill: none;
+  stroke-width: 2.5;
+}
+
+.chart-line.energy {
+  stroke: #0ea5e9;
+}
+
+.chart-line.price {
+  stroke: #22c55e;
+}
+
+.chart-point.energy {
+  fill: #0ea5e9;
+}
+
+.chart-point.price {
+  fill: #22c55e;
+}
+
+.axis-label {
+  fill: #98a2b3;
+  font-size: 11px;
+}
+
+.usage-chart-foot {
+  border-top: 1px solid #eceff5;
+  margin-top: 8px;
+  padding-top: 10px;
+  color: #667085;
+  font-weight: 600;
+}

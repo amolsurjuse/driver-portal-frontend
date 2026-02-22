@@ -1,0 +1,28 @@
+<section class="auth-shell">
+  <div class="auth-hero">
+    <h1>Welcome back</h1>
+    <p>Sign in to manage driver identity, sessions, and secure access across devices.</p>
+    <div class="hero-card">
+      <div class="chip">Trusted access</div>
+      <h3>Security that scales</h3>
+      <p>Built for production: device-bound refresh tokens and instant session control.</p>
+    </div>
+  </div>
+
+  <form class="auth-card" [formGroup]="form" (ngSubmit)="submit()">
+    <h2>Sign in</h2>
+    <label>
+      Email
+      <input type="email" formControlName="email" placeholder="you@company.com" />
+    </label>
+    <label>
+      Password
+      <input type="password" formControlName="password" placeholder="Your password" />
+    </label>
+
+    <div class="error" *ngIf="(error$ | async) as error">{{ error }}</div>
+
+    <button type="submit" [disabled]="form.invalid || (loading$ | async)">Sign in</button>
+    <p class="hint">New here? <a routerLink="/register">Join now</a>.</p>
+  </form>
+</section>

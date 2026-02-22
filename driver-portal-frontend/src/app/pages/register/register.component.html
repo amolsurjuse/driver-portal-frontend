@@ -1,0 +1,81 @@
+<section class="auth-shell">
+  <div class="auth-hero">
+    <h1>Make the most of your driver account</h1>
+    <p>Create a secure identity to access device sessions, policy updates, and operations tools.</p>
+    <ul class="hero-list">
+      <li>Secure device-bound refresh tokens</li>
+      <li>Centralized session controls</li>
+      <li>Built for high-trust workflows</li>
+    </ul>
+  </div>
+
+  <form class="auth-card" [formGroup]="form" (ngSubmit)="submit()">
+    <h2>Join now</h2>
+
+    <div class="grid">
+      <label>
+        First name
+      <input type="text" formControlName="firstName" placeholder="Avery" />
+      </label>
+      <label>
+        Last name
+      <input type="text" formControlName="lastName" placeholder="Nguyen" />
+      </label>
+    </div>
+
+    <label>
+      Email
+      <input type="email" formControlName="email" placeholder="you@company.com" />
+    </label>
+
+    <label>
+      Country
+      <select formControlName="countryIsoCode">
+        <option value="" disabled>Select a country</option>
+        <option *ngFor="let country of (countries$ | async)" [value]="country.code">
+          {{ country.name }}
+        </option>
+      </select>
+    </label>
+
+    <label>
+      Phone number
+      <div class="phone-input-wrap">
+        <span class="phone-dial-code">{{ (phoneDialCode$ | async) || '+' }}</span>
+        <input type="tel" formControlName="phoneNumber" placeholder="4155550101" />
+      </div>
+    </label>
+
+    <label>
+      Password
+      <input type="password" formControlName="password" placeholder="Minimum 8 characters" />
+    </label>
+
+    <div class="grid">
+      <label>
+        Street
+      <input type="text" formControlName="street" placeholder="125 Market Street" />
+      </label>
+      <label>
+        City
+      <input type="text" formControlName="city" placeholder="San Francisco" />
+      </label>
+    </div>
+
+    <div class="grid">
+      <label>
+        State
+        <input type="text" formControlName="state" placeholder="CA" />
+      </label>
+      <label>
+        Postal code
+        <input type="text" formControlName="postalCode" placeholder="94105" />
+      </label>
+    </div>
+
+    <div class="error" *ngIf="(error$ | async) as error">{{ error }}</div>
+
+    <button type="submit" [disabled]="form.invalid || (loading$ | async)">Join now</button>
+    <p class="hint">Already on Electra Hub? <a routerLink="/login">Sign in</a>.</p>
+  </form>
+</section>

@@ -1,0 +1,47 @@
+<section class="history">
+  <header>
+    <h1>Charging history</h1>
+    <p class="muted">Recent charging sessions linked to your account.</p>
+  </header>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Session</th>
+          <th>Station</th>
+          <th>Started</th>
+          <th>Ended</th>
+          <th>Energy (kWh)</th>
+          <th>Cost (USD)</th>
+          <th>Status</th>
+          <th>Receipt</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let session of sessions">
+          <td>{{ session.sessionId }}</td>
+          <td>{{ session.station }}</td>
+          <td>{{ session.startedAt }}</td>
+          <td>{{ session.endedAt }}</td>
+          <td>{{ session.energyKwh }}</td>
+          <td>{{ session.costUsd }}</td>
+          <td>
+            <span class="status" [class.in-progress]="session.status === 'In Progress'">{{ session.status }}</span>
+          </td>
+          <td>
+            <a
+              class="view-btn"
+              [class.disabled]="session.status !== 'Completed'"
+              [routerLink]="['/charging-history', session.sessionId, 'receipt']"
+              [attr.aria-disabled]="session.status !== 'Completed'"
+              [attr.tabindex]="session.status !== 'Completed' ? -1 : null"
+            >
+              View
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>

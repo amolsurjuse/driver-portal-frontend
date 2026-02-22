@@ -1,0 +1,32 @@
+<section class="receipt" *ngIf="session; else missing">
+  <header class="receipt-head">
+    <div>
+      <h1>Charging Receipt</h1>
+      <p class="muted">Session {{ session.sessionId }}</p>
+    </div>
+    <div class="actions">
+      <a routerLink="/charging-history" class="ghost">Back to history</a>
+      <button type="button" class="primary" (click)="downloadPdf()">Download PDF</button>
+    </div>
+  </header>
+
+  <article class="receipt-card">
+    <div class="row"><span>Station</span><strong>{{ session.station }}</strong></div>
+    <div class="row"><span>Connector</span><strong>{{ session.connector }}</strong></div>
+    <div class="row"><span>Started</span><strong>{{ session.startedAt }}</strong></div>
+    <div class="row"><span>Ended</span><strong>{{ session.endedAt }}</strong></div>
+    <div class="row"><span>Energy consumed</span><strong>{{ session.energyKwh }} kWh</strong></div>
+    <div class="row"><span>Tariff</span><strong>${{ session.tariffPerKwh.toFixed(2) }} / kWh</strong></div>
+    <div class="row"><span>Taxes</span><strong>${{ session.taxesUsd.toFixed(2) }}</strong></div>
+    <div class="row total"><span>Total paid</span><strong>${{ session.costUsd.toFixed(2) }}</strong></div>
+    <div class="row"><span>Payment method</span><strong>{{ session.paymentMethod }}</strong></div>
+  </article>
+</section>
+
+<ng-template #missing>
+  <section class="receipt">
+    <h1>Receipt not found</h1>
+    <p class="muted">The requested charging session receipt does not exist.</p>
+    <a routerLink="/charging-history" class="ghost">Back to history</a>
+  </section>
+</ng-template>

@@ -1,0 +1,20 @@
+<svg width="640" height="200" viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ElectraHub logo">
+  <defs>
+    <linearGradient id="eh" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a66c2"/>
+      <stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="200" rx="24" fill="#f8f6ff"/>
+  <g transform="translate(40,30)">
+    <rect x="0" y="0" width="140" height="140" rx="36" fill="#0f172a"/>
+    <path d="M40 80 H100" stroke="url(#eh)" stroke-width="10" stroke-linecap="round"/>
+    <path d="M70 34 L52 84 H88 L70 126" fill="none" stroke="url(#eh)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g font-family="Manrope, sans-serif" font-size="48" font-weight="700" fill="#0f172a" transform="translate(210,95)">
+    <text>ElectraHub</text>
+  </g>
+  <g font-family="Manrope, sans-serif" font-size="18" font-weight="500" fill="#475569" transform="translate(214,130)">
+    <text>Enterprise EV charging network</text>
+  </g>
+</svg>

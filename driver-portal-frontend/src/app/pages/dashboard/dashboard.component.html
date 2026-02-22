@@ -1,0 +1,107 @@
+<section class="dashboard">
+  <section class="widget-grid">
+    <article class="widget-card" *ngFor="let stat of stats">
+      <div class="widget-top">
+        <div class="widget-icon" [ngClass]="'tone-' + stat.tone">{{ stat.icon }}</div>
+        <div class="widget-main">
+          <p class="widget-label">{{ stat.label }}</p>
+          <p class="widget-value">{{ stat.value }}</p>
+        </div>
+      </div>
+      <div class="widget-divider"></div>
+      <p class="widget-meta">↻ {{ stat.meta }}</p>
+    </article>
+  </section>
+
+  <section class="usage-chart-card">
+    <header class="usage-chart-head">
+      <div>
+        <h2>Charging Trend</h2>
+        <p class="muted">Price and energy consumed across completed sessions in the last 12 months.</p>
+      </div>
+      <div class="chart-legend">
+        <span><i class="legend-dot energy"></i>Energy (kWh)</span>
+        <span><i class="legend-dot price"></i>Price (USD)</span>
+      </div>
+    </header>
+
+    <div class="usage-chart-wrap">
+      <svg [attr.viewBox]="'0 0 ' + chart.width + ' ' + chart.height" class="usage-chart" role="img" aria-label="Charging trend chart">
+        <defs>
+          <linearGradient id="energy-fill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#0ea5e9" stop-opacity="0.28"></stop>
+            <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0"></stop>
+          </linearGradient>
+          <linearGradient id="price-fill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#22c55e" stop-opacity="0.26"></stop>
+            <stop offset="100%" stop-color="#22c55e" stop-opacity="0"></stop>
+          </linearGradient>
+        </defs>
+
+        <g>
+          <line
+            *ngFor="let tick of chart.energyTicks"
+            [attr.x1]="chart.left"
+            [attr.y1]="tick.y"
+            [attr.x2]="chart.width - chart.right"
+            [attr.y2]="tick.y"
+            class="chart-grid-line"
+          />
+        </g>
+
+        <path [attr.d]="chart.priceAreaPath" class="chart-area price"></path>
+        <path [attr.d]="chart.energyAreaPath" class="chart-area energy"></path>
+
+        <path [attr.d]="chart.priceLinePath" class="chart-line price"></path>
+        <path [attr.d]="chart.energyLinePath" class="chart-line energy"></path>
+
+        <circle
+          *ngFor="let point of chart.pricePoints"
+          [attr.cx]="point.x"
+          [attr.cy]="point.y"
+          r="3.6"
+          class="chart-point price"
+        ></circle>
+        <circle
+          *ngFor="let point of chart.energyPoints"
+          [attr.cx]="point.x"
+          [attr.cy]="point.y"
+          r="3.6"
+          class="chart-point energy"
+        ></circle>
+
+        <text
+          *ngFor="let tick of chart.energyTicks"
+          [attr.x]="chart.left - 10"
+          [attr.y]="tick.y + 4"
+          text-anchor="end"
+          class="axis-label"
+        >
+          {{ tick.value }}
+        </text>
+
+        <text
+          *ngFor="let tick of chart.priceTicks"
+          [attr.x]="chart.width - chart.right + 10"
+          [attr.y]="tick.y + 4"
+          text-anchor="start"
+          class="axis-label"
+        >
+          {{ tick.value }}
+        </text>
+
+        <text
+          *ngFor="let label of chart.xLabels"
+          [attr.x]="label.x"
+          [attr.y]="chart.baseY + 28"
+          text-anchor="middle"
+          class="axis-label"
+        >
+          {{ label.label }}
+        </text>
+      </svg>
+    </div>
+
+    <footer class="usage-chart-foot">↻ Updated 3 minutes ago</footer>
+  </section>
+</section>

@@ -1,0 +1,32 @@
+<section class="profile-page">
+  <h1>User Profile</h1>
+
+  <article class="profile-card" *ngIf="email$ | async as email">
+    <div class="profile-head">
+      <span class="avatar">{{ initials(email) }}</span>
+      <div>
+        <h2>{{ displayName(email) }}</h2>
+        <p class="muted">{{ email }}</p>
+      </div>
+    </div>
+
+    <div class="profile-grid">
+      <div class="field">
+        <label>Full name</label>
+        <div>{{ displayName(email) }}</div>
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <div>{{ email }}</div>
+      </div>
+      <div class="field">
+        <label>Phone</label>
+        <div>Not set</div>
+      </div>
+      <div class="field">
+        <label>Country</label>
+        <div>Not set</div>
+      </div>
+    </div>
+  </article>
+</section>
