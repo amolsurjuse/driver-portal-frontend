@@ -1,18 +1,72 @@
 .auth-shell {
   display: grid;
-  gap: 32px;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  gap: 28px 40px;
+  grid-template-columns: minmax(320px, 1fr) minmax(360px, 420px);
+  align-items: start;
+}
+
+.signin-header {
+  grid-column: 1 / -1;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #d9e2ec;
+}
+
+.signin-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.signin-brand img {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+.signin-brand strong {
+  display: block;
+  font-size: 1.1rem;
+  line-height: 1.2;
+}
+
+.signin-brand span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.signin-header-copy {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.auth-hero {
+  max-width: 520px;
 }
 
 .auth-hero h1 {
   font-size: clamp(2rem, 2vw + 1.5rem, 3.2rem);
-  margin-bottom: 12px;
+  margin: 0 0 14px;
+  line-height: 1.05;
 }
 
 .auth-hero p {
+  margin: 0;
   color: var(--muted);
-  max-width: 460px;
+  max-width: 500px;
 }
 
 .hero-card {
@@ -21,6 +75,7 @@
   background: var(--card-bg);
   border-radius: 18px;
   box-shadow: var(--shadow-soft);
+  max-width: 420px;
 }
 
 .auth-card {
@@ -30,6 +85,7 @@
   box-shadow: var(--shadow-soft);
   display: grid;
   gap: 16px;
+  align-self: center;
 }
 
 .auth-card h2 {
@@ -84,4 +140,29 @@ button:not(:disabled):hover {
 .hint a {
   color: var(--accent);
   font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .auth-shell {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .signin-header {
+    justify-content: flex-start;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .auth-hero {
+    max-width: 640px;
+  }
+
+  .hero-card {
+    max-width: 100%;
+  }
+
+  .auth-card {
+    width: min(460px, 100%);
+  }
 }

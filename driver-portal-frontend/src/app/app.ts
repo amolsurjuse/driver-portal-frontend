@@ -1,9 +1,11 @@
-import { ChangeDetectionStrategy, Component, HostListener, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, HostListener, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { selectIsAuthenticated, selectUserEmail } from './core/auth/auth.selectors';
 import { AuthActions } from './core/auth/auth.actions';
+import { filter } from 'rxjs/operators';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-root',
@@ -15,6 +17,8 @@ import { AuthActions } from './core/auth/auth.actions';
 })
 export class App {
   private store = inject(Store);
+  private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
 
   isAuthenticated$ = this.store.select(selectIsAuthenticated);
   email$ = this.store.select(selectUserEmail);
@@ -22,12 +26,23 @@ export class App {
   sidebarCollapsed = signal(false);
   mobileSidebarOpen = signal(false);
   isMobile = signal(this.detectMobileViewport());
+  private currentPath = signal(this.router.url);
+  isAuthRoute = computed(() => this.currentPath().startsWith('/login') || this.currentPath().startsWith('/register'));
 
   constructor() {
     const stored = localStorage.getItem('accessToken');
     if (stored) {
       this.store.dispatch(AuthActions.setAccessToken({ accessToken: stored }));
     }
+
+    this.router.events
+      .pipe(
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe((event) => {
+        this.currentPath.set(event.urlAfterRedirects.split('?')[0] ?? event.urlAfterRedirects);
+      });
   }
 
   toggleUserMenu(event?: Event) {

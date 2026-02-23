@@ -3,11 +3,13 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { AuthActions } from './auth.actions';
 import { AuthApiService } from '../api/auth-api.service';
 import { catchError, map, mergeMap, of, tap } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class AuthEffects {
   private actions$ = inject(Actions);
   private api = inject(AuthApiService);
+  private router = inject(Router);
 
   login$ = createEffect(() =>
     this.actions$.pipe(
@@ -51,7 +53,7 @@ export class AuthEffects {
       mergeMap(() =>
         this.api.logoutDevice().pipe(
           map(() => AuthActions.logoutSuccess()),
-          catchError((err) => of(AuthActions.logoutFailure({ error: err?.error?.message ?? 'Logout failed' })))
+          catchError(() => of(AuthActions.logoutSuccess()))
         )
       )
     )
@@ -63,7 +65,7 @@ export class AuthEffects {
       mergeMap(() =>
         this.api.logoutAll().pipe(
           map(() => AuthActions.logoutSuccess()),
-          catchError((err) => of(AuthActions.logoutFailure({ error: err?.error?.message ?? 'Logout failed' })))
+          catchError(() => of(AuthActions.logoutSuccess()))
         )
       )
     )
@@ -86,6 +88,17 @@ export class AuthEffects {
         ofType(AuthActions.logoutSuccess, AuthActions.clearAuth),
         tap(() => {
           localStorage.removeItem('accessToken');
+        })
+      ),
+    { dispatch: false }
+  );
+
+  redirectAfterLogout$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(AuthActions.logoutSuccess, AuthActions.clearAuth),
+        tap(() => {
+          this.router.navigate(['/login']);
         })
       ),
     { dispatch: false }
