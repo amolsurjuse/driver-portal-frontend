@@ -17,7 +17,7 @@ object Build : BuildType({
 
     params {
         param("env.IMAGE_REPO", "amolsurjuse/driver-portal-frontend")
-        param("env.K8S_REPO_URL", "git@github.com:amolsurjuse/k8s-platform.git")
+        param("env.K8S_REPO_URL", "")
         param("env.K8S_BRANCH", "develop")
         param("env.K8S_VERSION_FILE", "charts/config/services/driver-portal-ui/us/version/dev-version.yaml")
         param("env.K8S_COMMIT_NAME", "TeamCity CI")
@@ -28,6 +28,8 @@ object Build : BuildType({
         // Configure these in TeamCity UI (password type for secret values).
         param("env.DOCKER_USERNAME", "")
         param("env.DOCKER_PASSWORD", "")
+        param("env.GITHUB_USER", "")
+        param("env.GITHUB_TOKEN", "")
         param("env.ARGOCD_SERVER", "")
         param("env.ARGOCD_USERNAME", "")
         param("env.ARGOCD_PASSWORD", "")
