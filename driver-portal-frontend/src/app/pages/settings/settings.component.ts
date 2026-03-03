@@ -85,7 +85,15 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.stopAutoReload();
   }
 
+  hasActiveCards(): boolean {
+    return this.cards().length > 0;
+  }
+
   addWalletBalance() {
+    if (!this.hasActiveCards()) {
+      this.errorMessage.set('Add a credit card before adding wallet balance.');
+      return;
+    }
     if (this.walletForm.invalid) return;
     const amount = Number(this.walletForm.value.amount ?? 0);
     if (!Number.isFinite(amount) || amount <= 0) return;
@@ -107,6 +115,10 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   onAutoTopUpConfigChange() {
     if (this.loading() || this.pendingAutoTopUp()) return;
+    if (!this.hasActiveCards()) {
+      this.pendingAutoTopUp.set(null);
+      return;
+    }
     if (this.autoTopUpForm.invalid) return;
     const raw = this.autoTopUpForm.getRawValue();
     const cardId = raw.cardId ?? '';
@@ -144,6 +156,11 @@ export class SettingsComponent implements OnInit, OnDestroy {
   confirmAutoTopUpChange() {
     const draft = this.pendingAutoTopUp();
     if (!draft) {
+      return;
+    }
+    if (!this.hasActiveCards()) {
+      this.pendingAutoTopUp.set(null);
+      this.errorMessage.set('Add a credit card before configuring auto top-up.');
       return;
     }
 

@@ -137,6 +137,11 @@
   align-items: end;
 }
 
+.wallet-guard {
+  margin: -4px 0 0;
+  font-weight: 600;
+}
+
 .wallet-history {
   border-top: 1px solid #dce8ff;
   padding-top: 10px;

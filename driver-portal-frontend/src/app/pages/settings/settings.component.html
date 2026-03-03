@@ -37,6 +37,7 @@
           class="quick-amount"
           *ngFor="let amount of quickAmounts"
           (click)="setWalletAmount(amount)"
+          [disabled]="!hasActiveCards() || loading()"
         >
           +${{ amount }}
         </button>
@@ -45,10 +46,11 @@
       <form [formGroup]="walletForm" (ngSubmit)="addWalletBalance()" class="inline-form">
         <label>
           Amount (USD)
-          <input type="number" min="1" step="1" formControlName="amount" />
+          <input type="number" min="1" step="1" formControlName="amount" [disabled]="!hasActiveCards() || loading()" />
         </label>
-        <button class="primary" type="submit" [disabled]="walletForm.invalid || loading()">Add balance</button>
+        <button class="primary" type="submit" [disabled]="walletForm.invalid || loading() || !hasActiveCards()">Add balance</button>
       </form>
+      <p class="wallet-guard muted" *ngIf="!hasActiveCards()">Add a credit card to enable wallet top-ups and auto top-up.</p>
 
       <div class="auto-topup" [formGroup]="autoTopUpForm">
         <div class="auto-topup-head">
@@ -57,7 +59,7 @@
             <p class="muted">Top up automatically when wallet balance is low.</p>
           </div>
           <label class="toggle">
-            <input type="checkbox" formControlName="enabled" (change)="onAutoTopUpConfigChange()" />
+            <input type="checkbox" formControlName="enabled" (change)="onAutoTopUpConfigChange()" [disabled]="!hasActiveCards() || loading()" />
             <span>{{ autoTopUpForm.value.enabled ? 'ON' : 'OFF' }}</span>
           </label>
         </div>
@@ -65,15 +67,15 @@
         <div class="grid">
           <label>
             Threshold (USD)
-            <input type="number" min="1" formControlName="threshold" (change)="onAutoTopUpConfigChange()" />
+            <input type="number" min="1" formControlName="threshold" (change)="onAutoTopUpConfigChange()" [disabled]="!hasActiveCards() || loading()" />
           </label>
           <label>
             Auto top-up amount (USD)
-            <input type="number" min="1" formControlName="amount" (change)="onAutoTopUpConfigChange()" />
+            <input type="number" min="1" formControlName="amount" (change)="onAutoTopUpConfigChange()" [disabled]="!hasActiveCards() || loading()" />
           </label>
           <label>
             Funding card
-            <select formControlName="cardId" (change)="onAutoTopUpConfigChange()">
+            <select formControlName="cardId" (change)="onAutoTopUpConfigChange()" [disabled]="!hasActiveCards() || loading()">
               <option *ngIf="cards().length === 0" value="" disabled>No cards available</option>
               <option *ngFor="let card of cards()" [value]="card.id">
                 {{ card.brand }} •••• {{ card.last4 }}
