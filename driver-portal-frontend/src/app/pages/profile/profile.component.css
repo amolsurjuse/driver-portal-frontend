@@ -43,6 +43,16 @@
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
+.section {
+  display: grid;
+  gap: 10px;
+}
+
+.section h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
 .field {
   border: 1px solid #e5e9f0;
   border-radius: 12px;
@@ -67,4 +77,10 @@
 .muted {
   margin: 0;
   color: var(--muted);
+}
+
+.error {
+  margin: 0;
+  color: #b42318;
+  font-weight: 600;
 }

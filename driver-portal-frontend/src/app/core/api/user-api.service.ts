@@ -25,6 +25,10 @@ export type UserProfileResponse = {
   firstName: string | null;
   lastName: string | null;
   phoneNumber: string | null;
+  street: string | null;
+  city: string | null;
+  state: string | null;
+  postalCode: string | null;
   countryCode: string | null;
   countryName: string | null;
   countryDialCode: string | null;

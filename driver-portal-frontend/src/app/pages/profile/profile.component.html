@@ -1,32 +1,75 @@
 <section class="profile-page">
   <h1>User Profile</h1>
 
-  <article class="profile-card" *ngIf="email$ | async as email">
-    <div class="profile-head">
-      <span class="avatar">{{ initials(email) }}</span>
-      <div>
-        <h2>{{ displayName(email) }}</h2>
-        <p class="muted">{{ email }}</p>
-      </div>
-    </div>
+  <ng-container *ngIf="profileState$ | async as state">
+    <article class="profile-card" *ngIf="!state.loading; else loading">
+      <p class="error" *ngIf="state.error">{{ state.error }}</p>
 
-    <div class="profile-grid">
-      <div class="field">
-        <label>Full name</label>
-        <div>{{ displayName(email) }}</div>
+      <div class="profile-head">
+        <span class="avatar">{{ initials(state.email) }}</span>
+        <div>
+          <h2>{{ fullName(state.profile, state.email) }}</h2>
+          <p class="muted">{{ state.profile?.email ?? state.email }}</p>
+        </div>
       </div>
-      <div class="field">
-        <label>Email</label>
-        <div>{{ email }}</div>
+
+      <div class="section">
+        <h3>Personal details</h3>
+        <div class="profile-grid">
+          <div class="field">
+            <label>Full name</label>
+            <div>{{ fullName(state.profile, state.email) }}</div>
+          </div>
+          <div class="field">
+            <label>Email</label>
+            <div>{{ state.profile?.email ?? state.email ?? 'Not set' }}</div>
+          </div>
+          <div class="field">
+            <label>Phone</label>
+            <div>{{ state.profile?.phoneNumber || 'Not set' }}</div>
+          </div>
+          <div class="field">
+            <label>Status</label>
+            <div>{{ state.profile?.enabled ? 'Active' : 'Disabled' }}</div>
+          </div>
+        </div>
       </div>
-      <div class="field">
-        <label>Phone</label>
-        <div>Not set</div>
+
+      <div class="section">
+        <h3>Address</h3>
+        <div class="profile-grid">
+          <div class="field">
+            <label>Street</label>
+            <div>{{ state.profile?.street || 'Not set' }}</div>
+          </div>
+          <div class="field">
+            <label>City</label>
+            <div>{{ state.profile?.city || 'Not set' }}</div>
+          </div>
+          <div class="field">
+            <label>State</label>
+            <div>{{ state.profile?.state || 'Not set' }}</div>
+          </div>
+          <div class="field">
+            <label>Postal code</label>
+            <div>{{ state.profile?.postalCode || 'Not set' }}</div>
+          </div>
+          <div class="field">
+            <label>Country</label>
+            <div>{{ state.profile?.countryName || 'Not set' }}</div>
+          </div>
+          <div class="field">
+            <label>Country dial code</label>
+            <div>{{ state.profile?.countryDialCode || 'Not set' }}</div>
+          </div>
+        </div>
       </div>
-      <div class="field">
-        <label>Country</label>
-        <div>Not set</div>
-      </div>
-    </div>
-  </article>
+    </article>
+  </ng-container>
+
+  <ng-template #loading>
+    <article class="profile-card">
+      <p class="muted">Loading profile...</p>
+    </article>
+  </ng-template>
 </section>
