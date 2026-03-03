@@ -15,7 +15,7 @@
 
       <div class="section">
         <h3>Personal details</h3>
-        <div class="profile-grid">
+        <div class="partition-grid">
           <div class="field">
             <label>Full name</label>
             <div>{{ fullName(state.profile, state.email) }}</div>
@@ -32,12 +32,22 @@
             <label>Status</label>
             <div>{{ state.profile?.enabled ? 'Active' : 'Disabled' }}</div>
           </div>
+          <div class="field">
+            <label>User ID</label>
+            <div>{{ state.profile?.userId || 'Not set' }}</div>
+          </div>
+          <div class="field">
+            <label>Member since</label>
+            <div>{{ (state.profile?.createdAt || null) ? (state.profile?.createdAt | date: 'mediumDate') : 'Not set' }}</div>
+          </div>
         </div>
       </div>
 
+      <hr class="section-separator" />
+
       <div class="section">
         <h3>Address</h3>
-        <div class="profile-grid">
+        <div class="partition-grid">
           <div class="field">
             <label>Street</label>
             <div>{{ state.profile?.street || 'Not set' }}</div>

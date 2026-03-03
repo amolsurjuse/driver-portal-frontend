@@ -9,7 +9,7 @@ import { routes } from './app.routes';
 import { authReducer } from './core/auth/auth.reducer';
 import { AuthEffects } from './core/auth/auth.effects';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
-import { API_BASE_URL, PAYMENT_API_BASE_URL } from './core/tokens';
+import { API_BASE_URL, PAYMENT_API_BASE_URL, USER_API_BASE_URL } from './core/tokens';
 import { environment } from '../environments/environment';
 
 function resolveApiBaseUrl(): string {
@@ -18,6 +18,10 @@ function resolveApiBaseUrl(): string {
 
 function resolvePaymentApiBaseUrl(): string {
   return environment.paymentApiBaseUrl;
+}
+
+function resolveUserApiBaseUrl(): string {
+  return environment.userApiBaseUrl;
 }
 
 export const appConfig: ApplicationConfig = {
@@ -30,5 +34,6 @@ export const appConfig: ApplicationConfig = {
     provideStoreDevtools({ maxAge: 25, logOnly: environment.production }),
     { provide: API_BASE_URL, useFactory: resolveApiBaseUrl },
     { provide: PAYMENT_API_BASE_URL, useFactory: resolvePaymentApiBaseUrl },
+    { provide: USER_API_BASE_URL, useFactory: resolveUserApiBaseUrl },
   ],
 };

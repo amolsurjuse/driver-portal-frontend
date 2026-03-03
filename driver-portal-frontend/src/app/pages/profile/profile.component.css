@@ -37,15 +37,21 @@
   font-weight: 700;
 }
 
-.profile-grid {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-}
-
 .section {
   display: grid;
   gap: 10px;
+}
+
+.partition-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.section-separator {
+  border: 0;
+  border-top: 1px solid #e5e9f0;
+  margin: 2px 0;
 }
 
 .section h3 {
@@ -83,4 +89,16 @@
   margin: 0;
   color: #b42318;
   font-weight: 600;
+}
+
+@media (max-width: 1100px) {
+  .partition-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .partition-grid {
+    grid-template-columns: 1fr;
+  }
 }

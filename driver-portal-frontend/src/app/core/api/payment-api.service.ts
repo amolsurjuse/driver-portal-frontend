@@ -7,6 +7,10 @@ export type TopUpSourceApi = 'MANUAL' | 'AUTO';
 export type WalletStateResponse = {
   balance: number;
   budget: number;
+  currency: string;
+  currencySymbol: string;
+  countryCode: string;
+  topUpPresets: number[];
 };
 
 export type AutoTopUpConfig = {

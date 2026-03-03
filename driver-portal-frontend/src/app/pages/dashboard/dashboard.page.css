@@ -35,6 +35,21 @@
   font-weight: 700;
 }
 
+.wallet-svg {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.wallet-svg circle {
+  fill: currentColor;
+  stroke: none;
+}
+
 .widget-main {
   display: grid;
   gap: 4px;
@@ -77,8 +92,8 @@
 }
 
 .tone-wallet {
-  background: #e9f2ff;
-  color: #2668d8;
+  background: #e7f0ff;
+  color: #d9468f;
 }
 
 .tone-savings {

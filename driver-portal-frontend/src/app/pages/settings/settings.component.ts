@@ -48,7 +48,9 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   walletBalance = signal(0);
   walletBudget = signal(0);
-  readonly quickAmounts = [10, 25, 50, 100] as const;
+  currencyCode = signal('USD');
+  currencySymbol = signal('$');
+  quickAmounts = signal<number[]>([10, 25, 50, 100]);
   lastSyncedAt = signal('--');
   walletTopUps = signal<WalletTopUpView[]>([]);
   cards = signal<PaymentCardView[]>([]);
@@ -103,7 +105,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
         .addTopUp({ amount, source: 'MANUAL' })
         .pipe(switchMap(() => this.paymentApi.getState())),
       (state) => {
-        this.walletForm.patchValue({ amount: 25 });
+        this.walletForm.patchValue({ amount: this.defaultTopUpAmount() });
         this.applyState(state);
       }
     );
@@ -266,6 +268,11 @@ export class SettingsComponent implements OnInit, OnDestroy {
     const cards = state.cards ?? [];
     this.walletBalance.set(this.moneyToNumber(state.wallet?.balance));
     this.walletBudget.set(this.moneyToNumber(state.wallet?.budget));
+    const currencyCode = this.resolveCurrencyCode(state.wallet?.currency);
+    const countryCode = (state.wallet?.countryCode ?? '').trim().toUpperCase();
+    this.currencyCode.set(currencyCode);
+    this.currencySymbol.set(this.resolveCurrencySymbol(state.wallet?.currencySymbol));
+    this.quickAmounts.set(this.resolveTopUpPresets(state.wallet?.topUpPresets, currencyCode, countryCode));
     this.cards.set(cards);
     const pendingCard = this.pendingDeleteCard();
     if (pendingCard && !cards.some((card) => card.id === pendingCard.id)) {
@@ -371,6 +378,22 @@ export class SettingsComponent implements OnInit, OnDestroy {
     }).format(date);
   }
 
+  formatCurrency(amount: number): string {
+    const code = this.currencyCode();
+    try {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: code,
+      }).format(amount);
+    } catch {
+      return `${this.currencySymbol()}${amount.toFixed(2)}`;
+    }
+  }
+
+  formatQuickAmount(amount: number): string {
+    return this.formatCurrency(amount);
+  }
+
   private runApi<T>(
     request$: Observable<T>,
     onSuccess: (response: T) => void,
@@ -429,5 +452,68 @@ export class SettingsComponent implements OnInit, OnDestroy {
     }
 
     return 'Payment API request failed.';
+  }
+
+  private resolveCurrencyCode(value: string | null | undefined): string {
+    const normalized = (value ?? '').trim().toUpperCase();
+    return normalized || 'USD';
+  }
+
+  private resolveCurrencySymbol(value: string | null | undefined): string {
+    const normalized = (value ?? '').trim();
+    return normalized || '$';
+  }
+
+  private resolveTopUpPresets(values: number[] | null | undefined, currencyCode: string, countryCode: string): number[] {
+    const fallback = this.defaultTopUpPresets(currencyCode, countryCode);
+    if (!Array.isArray(values) || values.length === 0) {
+      return fallback;
+    }
+
+    const parsed = values
+      .map((value) => Number(value))
+      .filter((value) => Number.isFinite(value) && value > 0)
+      .map((value) => Number(value.toFixed(2)));
+
+    return parsed.length > 0 ? parsed : fallback;
+  }
+
+  private defaultTopUpPresets(currencyCode: string, countryCode: string): number[] {
+    const country = countryCode.trim().toUpperCase();
+    const currency = currencyCode.trim().toUpperCase();
+
+    if (country === 'IN' || currency === 'INR') {
+      return [500, 1000, 2000, 5000];
+    }
+    if (country === 'JP' || currency === 'JPY') {
+      return [1000, 3000, 5000, 10000];
+    }
+    if (country === 'GB' || currency === 'GBP') {
+      return [10, 20, 40, 80];
+    }
+    if (country === 'SE' || currency === 'SEK') {
+      return [100, 250, 500, 1000];
+    }
+    if (country === 'NO' || currency === 'NOK') {
+      return [120, 300, 600, 1200];
+    }
+    if (country === 'DK' || currency === 'DKK') {
+      return [75, 200, 350, 700];
+    }
+    if (country === 'AE' || currency === 'AED') {
+      return [25, 50, 100, 200];
+    }
+    if (currency === 'EUR') {
+      return [10, 25, 50, 100];
+    }
+    return [10, 25, 50, 100];
+  }
+
+  private defaultTopUpAmount(): number {
+    const values = this.quickAmounts();
+    if (values.length === 0) {
+      return 25;
+    }
+    return values[Math.min(1, values.length - 1)];
   }
 }

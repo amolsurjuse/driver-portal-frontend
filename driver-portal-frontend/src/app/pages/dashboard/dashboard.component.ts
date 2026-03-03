@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { PaymentApiService } from '../../core/api/payment-api.service';
 
 type UsagePoint = {
   month: string;
@@ -25,9 +26,12 @@ type Tick = {
   styleUrls: ['./dashboard.page.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DashboardComponent {
-  stats = [
+export class DashboardComponent implements OnInit {
+  private paymentApi = inject(PaymentApiService);
+
+  stats = signal([
     {
+      key: 'energy',
       label: 'Energy used (total)',
       value: '428.6 kWh',
       icon: '⚡',
@@ -35,6 +39,7 @@ export class DashboardComponent {
       meta: 'Updated now',
     },
     {
+      key: 'session',
       label: 'Last charging date',
       value: 'Feb 21, 2026',
       icon: '🗓',
@@ -42,20 +47,22 @@ export class DashboardComponent {
       meta: 'Last session',
     },
     {
+      key: 'wallet',
       label: 'Wallet balance',
       value: '$96.40',
-      icon: '💳',
+      icon: '👛',
       tone: 'wallet',
       meta: 'Available credit',
     },
     {
+      key: 'savings',
       label: 'Total savings',
       value: '$184.25',
       icon: '💰',
       tone: 'savings',
       meta: 'With subscriptions',
     },
-  ] as const;
+  ]);
 
   usageLastYear: UsagePoint[] = [
     { month: 'Jan', energyKwh: 22, priceUsd: 10.8 },
@@ -73,6 +80,50 @@ export class DashboardComponent {
   ];
 
   chart = this.buildUsageChart();
+
+  ngOnInit(): void {
+    this.paymentApi.getState().subscribe({
+      next: (state) => {
+        const code = (state.wallet?.currency ?? 'USD').toUpperCase();
+        const amount = Number(state.wallet?.balance ?? 0);
+        const walletValue = this.formatCurrency(amount, code);
+        this.stats.update((cards) =>
+          cards.map((card) =>
+            card.key === 'wallet'
+              ? {
+                  ...card,
+                  value: walletValue,
+                  meta: 'Available credit',
+                }
+              : card
+          )
+        );
+      },
+      error: () => {
+        this.stats.update((cards) =>
+          cards.map((card) =>
+            card.key === 'wallet'
+              ? {
+                  ...card,
+                  meta: 'Unable to refresh',
+                }
+              : card
+          )
+        );
+      },
+    });
+  }
+
+  private formatCurrency(amount: number, currencyCode: string): string {
+    try {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currencyCode,
+      }).format(amount);
+    } catch {
+      return `$${amount.toFixed(2)}`;
+    }
+  }
 
   private buildUsageChart() {
     const width = 1040;

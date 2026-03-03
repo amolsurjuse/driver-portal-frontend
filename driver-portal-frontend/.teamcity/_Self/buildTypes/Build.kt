@@ -39,9 +39,9 @@ object Build : BuildType({
         script {
             name = "Build and Deploy Driver Portal"
             scriptContent = """
-                set -euo pipefail
+                set -eu
                 chmod +x ci/teamcity/deploy_driver_portal.sh
-                ./ci/teamcity/deploy_driver_portal.sh
+                bash ./ci/teamcity/deploy_driver_portal.sh
             """.trimIndent()
         }
     }

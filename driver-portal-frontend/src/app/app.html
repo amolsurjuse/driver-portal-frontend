@@ -5,9 +5,7 @@
         <img src="/electra-hub-icon.svg" alt="Electra Hub logo">
         <span>Electra Hub</span>
       </div>
-      <div class="search">
-        <input type="text" placeholder="Search drivers, devices, or policies" />
-      </div>
+     
       <nav class="nav-links">
         <a routerLink="/login" *ngIf="!(isAuthenticated$ | async)">Sign in</a>
         <a routerLink="/register" *ngIf="!(isAuthenticated$ | async)">Join now</a>

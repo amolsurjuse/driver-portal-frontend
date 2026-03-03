@@ -14,7 +14,7 @@
       <div class="wallet-hero">
         <div>
           <p class="wallet-caption">Wallet balance</p>
-          <h2>${{ walletBalance().toFixed(2) }}</h2>
+          <h2>{{ formatCurrency(walletBalance()) }}</h2>
           <p class="muted">Available for charging sessions</p>
         </div>
         <div class="wallet-icon" aria-hidden="true">💼</div>
@@ -28,24 +28,24 @@
         <div class="meter-track">
           <div class="meter-fill" [style.width.%]="walletUsagePercent()"></div>
         </div>
-        <p class="muted">Against monthly target of ${{ walletBudget().toFixed(2) }}</p>
+        <p class="muted">Against monthly target of {{ formatCurrency(walletBudget()) }}</p>
       </div>
 
       <div class="quick-amounts">
         <button
           type="button"
           class="quick-amount"
-          *ngFor="let amount of quickAmounts"
+          *ngFor="let amount of quickAmounts()"
           (click)="setWalletAmount(amount)"
           [disabled]="!hasActiveCards() || loading()"
         >
-          +${{ amount }}
+          +{{ formatQuickAmount(amount) }}
         </button>
       </div>
 
       <form [formGroup]="walletForm" (ngSubmit)="addWalletBalance()" class="inline-form">
         <label>
-          Amount (USD)
+          Amount ({{ currencyCode() }})
           <input type="number" min="1" step="1" formControlName="amount" [disabled]="!hasActiveCards() || loading()" />
         </label>
         <button class="primary" type="submit" [disabled]="walletForm.invalid || loading() || !hasActiveCards()">Add balance</button>
@@ -66,11 +66,11 @@
 
         <div class="grid">
           <label>
-            Threshold (USD)
+            Threshold ({{ currencyCode() }})
             <input type="number" min="1" formControlName="threshold" (change)="onAutoTopUpConfigChange()" [disabled]="!hasActiveCards() || loading()" />
           </label>
           <label>
-            Auto top-up amount (USD)
+            Auto top-up amount ({{ currencyCode() }})
             <input type="number" min="1" formControlName="amount" (change)="onAutoTopUpConfigChange()" [disabled]="!hasActiveCards() || loading()" />
           </label>
           <label>
@@ -89,7 +89,7 @@
         <h3>Recent top-ups</h3>
         <div class="history-row" *ngFor="let topUp of walletTopUps()">
           <div>
-            <span>+${{ topUp.amount.toFixed(2) }}</span>
+            <span>+{{ formatCurrency(topUp.amount) }}</span>
             <span class="history-source" [class.auto]="topUp.source === 'Auto'">{{ topUp.source }}</span>
             <div class="muted" *ngIf="topUp.note">{{ topUp.note }}</div>
           </div>
@@ -155,9 +155,9 @@
           Apply auto top-up as
           <strong>ON</strong>
           with threshold
-          <strong>${{ pending.threshold.toFixed(2) }}</strong>
+          <strong>{{ formatCurrency(pending.threshold) }}</strong>
           and amount
-          <strong>${{ pending.amount.toFixed(2) }}</strong>?
+          <strong>{{ formatCurrency(pending.amount) }}</strong>?
         </p>
         <p class="muted">
           Funding card:
