@@ -197,40 +197,6 @@ form {
   flex-wrap: wrap;
 }
 
-.primary {
-  background: linear-gradient(135deg, var(--primary, #1a8a6e), #5bb89a);
-  color: #fff;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 999px;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 12px 24px rgba(26, 138, 110, 0.2);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.primary:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 16px 32px rgba(26, 138, 110, 0.28);
-}
-
-.ghost {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border: 1px solid rgba(26, 138, 110, 0.14);
-  background: rgba(255, 255, 255, 0.82);
-  color: var(--primary-strong, #146b56);
-  padding: 12px 20px;
-  border-radius: 999px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.ghost:hover:not(:disabled) {
-  background: var(--primary-soft, #eef7f4);
-}
 
 .edit-icon {
   width: 15px;

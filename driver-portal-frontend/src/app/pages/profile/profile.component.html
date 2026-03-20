@@ -29,7 +29,7 @@
             </svg>
             <h3>Personal details</h3>
           </div>
-          <button class="ghost" type="button" *ngIf="!editing()" (click)="startEditing()" [disabled]="saving()">
+          <button class="btn-ghost" type="button" *ngIf="!editing()" (click)="startEditing()" [disabled]="saving()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="edit-icon"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
             Edit
           </button>
@@ -132,8 +132,8 @@
       </div>
 
       <div class="actions" *ngIf="editing()">
-        <button class="ghost" type="button" (click)="resetForm()" [disabled]="saving()">Cancel</button>
-        <button class="primary" type="submit" [disabled]="saving() || form.invalid || form.pristine">
+        <button class="btn-ghost" type="button" (click)="resetForm()" [disabled]="saving()">Cancel</button>
+        <button class="btn-primary" type="submit" [disabled]="saving() || form.invalid || form.pristine">
           {{ saving() ? 'Saving...' : 'Save changes' }}
         </button>
       </div>

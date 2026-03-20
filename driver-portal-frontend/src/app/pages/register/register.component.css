@@ -8,7 +8,7 @@
 }
 
 .auth-hero {
-  padding: 34px;
+  padding: 24px;
   border-radius: var(--radius-lg);
   border: 1px solid rgba(255, 255, 255, 0.92);
   background:
@@ -19,7 +19,7 @@
 }
 
 .auth-hero h1 {
-  font-size: clamp(2.2rem, 2.8vw + 1.2rem, 4rem);
+  font-size: clamp(1.5rem, 2vw + 0.8rem, 2.5rem);
   margin-bottom: 12px;
   line-height: 1.02;
   letter-spacing: -0.03em;
@@ -40,7 +40,7 @@
   background: var(--surface);
   border: 1px solid rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(18px);
-  padding: 28px;
+  padding: 20px;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-soft);
   display: grid;
@@ -56,16 +56,17 @@
 label {
   display: grid;
   gap: 6px;
-  font-weight: 600;
+  font-weight: 500;
   color: #435567;
+  font-size: 12px;
 }
 
 input {
-  padding: 12px 14px;
+  padding: 9px 12px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.82);
-  font-size: 1rem;
+  font-size: 0.88rem;
 }
 
 .phone-input-wrap {
@@ -80,7 +81,7 @@ input {
 .phone-dial-code {
   background: rgba(26, 138, 110, 0.08);
   color: var(--primary-strong);
-  padding: 12px 14px;
+  padding: 9px 12px;
   border-right: 1px solid rgba(26, 138, 110, 0.14);
   font-weight: 600;
 }
@@ -95,10 +96,10 @@ input {
 }
 
 select {
-  padding: 12px 14px;
+  padding: 9px 12px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
-  font-size: 1rem;
+  font-size: 0.88rem;
   background: rgba(255, 255, 255, 0.82);
 }
 
@@ -114,10 +115,11 @@ button {
   background: linear-gradient(135deg, var(--primary), #5bb89a);
   color: #fff;
   border: none;
-  padding: 12px 14px;
+  padding: 8px 18px;
   border-radius: 999px;
   font-weight: 700;
   cursor: pointer;
+  font-size: 13px;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   box-shadow: 0 18px 28px rgba(26, 138, 110, 0.24);
 }

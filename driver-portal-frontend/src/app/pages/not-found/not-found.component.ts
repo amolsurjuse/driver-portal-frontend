@@ -37,7 +37,7 @@ import { RouterLink } from '@angular/router';
       }
 
       .not-found-code {
-        font-size: 6rem;
+        font-size: 4.5rem;
         font-weight: 900;
         line-height: 1;
         letter-spacing: -0.04em;
@@ -49,7 +49,7 @@ import { RouterLink } from '@angular/router';
 
       .not-found-page h1 {
         margin: 0;
-        font-size: 1.5rem;
+        font-size: 1.2rem;
       }
 
       .not-found-page p {
@@ -68,44 +68,6 @@ import { RouterLink } from '@angular/router';
         justify-content: center;
       }
 
-      .btn-primary {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: linear-gradient(135deg, var(--primary, #1a8a6e), #5bb89a);
-        color: #fff;
-        border: none;
-        padding: 12px 20px;
-        border-radius: 999px;
-        font-weight: 700;
-        text-decoration: none;
-        font-size: 0.9rem;
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
-        box-shadow: 0 12px 24px rgba(26, 138, 110, 0.2);
-      }
-
-      .btn-primary:hover {
-        transform: translateY(-1px);
-      }
-
-      .btn-ghost {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        border: 1px solid rgba(26, 138, 110, 0.14);
-        background: rgba(255, 255, 255, 0.82);
-        color: var(--primary-strong, #146b56);
-        padding: 12px 20px;
-        border-radius: 999px;
-        font-weight: 600;
-        text-decoration: none;
-        font-size: 0.9rem;
-        transition: background 0.15s ease;
-      }
-
-      .btn-ghost:hover {
-        background: var(--primary-soft, #eef7f4);
-      }
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -34,13 +34,17 @@
 
 .logo {
   font-weight: 700;
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: var(--accent);
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 .logo-wordmark {
-  width: 210px;
+  width: 150px;
   height: auto;
+  background: transparent;
 }
 
 .search input {
