@@ -6,6 +6,10 @@ public record UserSearchResponse(
         List<UserSummaryResponse> items,
         long total,
         int limit,
-        int offset
+        int offset,
+        int currentPage,
+        int totalPages,
+        boolean hasNext,
+        boolean hasPrevious
 ) {
 }

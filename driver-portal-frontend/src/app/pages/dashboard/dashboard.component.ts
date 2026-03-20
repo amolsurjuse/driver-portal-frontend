@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { PaymentApiService } from '../../core/api/payment-api.service';
+import { CHARGING_SESSIONS } from '../charging-history/charging-history.data';
 
 type UsagePoint = {
   month: string;
@@ -28,6 +30,7 @@ type Tick = {
 })
 export class DashboardComponent implements OnInit {
   private paymentApi = inject(PaymentApiService);
+  private router = inject(Router);
 
   stats = signal([
     {
@@ -63,6 +66,14 @@ export class DashboardComponent implements OnInit {
       meta: 'With subscriptions',
     },
   ]);
+
+  quickActions = [
+    { label: 'Top up wallet', icon: 'wallet', route: '/payment', description: 'Add funds to your wallet' },
+    { label: 'View receipts', icon: 'receipt', route: '/charging-history', description: 'See your charging history' },
+    { label: 'Edit profile', icon: 'profile', route: '/profile', description: 'Update your personal info' },
+  ];
+
+  recentSessions = CHARGING_SESSIONS.slice(0, 3);
 
   usageLastYear: UsagePoint[] = [
     { month: 'Jan', energyKwh: 22, priceUsd: 10.8 },
@@ -207,5 +218,9 @@ export class DashboardComponent implements OnInit {
     const first = points[0];
     const last = points[points.length - 1];
     return `${line} L ${last.x} ${baseY} L ${first.x} ${baseY} Z`;
+  }
+
+  navigate(route: string): void {
+    this.router.navigate([route]);
   }
 }

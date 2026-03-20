@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
@@ -25,6 +25,7 @@ export class RegisterComponent {
 
   loading$ = this.store.select(selectAuthLoading);
   error$ = this.store.select(selectAuthError);
+  passwordVisible = signal(false);
   private countryDialCodeByCode = new Map<string, string>();
   countries$ = this.api.listCountries().pipe(
     tap((countries) => {
@@ -82,5 +83,9 @@ export class RegisterComponent {
 
   private resolveDialCode(countryIsoCode: string): string {
     return this.countryDialCodeByCode.get(countryIsoCode) ?? '+';
+  }
+
+  togglePasswordVisibility() {
+    this.passwordVisible.update(v => !v);
   }
 }

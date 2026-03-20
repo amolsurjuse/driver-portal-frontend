@@ -6,11 +6,12 @@ import { selectIsAuthenticated, selectUserEmail } from './core/auth/auth.selecto
 import { AuthActions } from './core/auth/auth.actions';
 import { filter } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ToastComponent } from './core/toast/toast.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, ToastComponent],
   templateUrl: './app.html',
   styleUrls: ['./app.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -42,6 +43,7 @@ export class App {
       )
       .subscribe((event) => {
         this.currentPath.set(event.urlAfterRedirects.split('?')[0] ?? event.urlAfterRedirects);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       });
   }
 

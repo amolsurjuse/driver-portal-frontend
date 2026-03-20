@@ -9,6 +9,7 @@ import {
   TopUpSourceApi,
   WalletTopUp,
 } from '../../core/api/payment-api.service';
+import { ToastService } from '../../core/toast/toast.service';
 
 type PaymentCardView = {
   id: string;
@@ -33,6 +34,8 @@ type AutoTopUpDraft = {
   cardId: string;
 };
 
+type AutoTopUpChangeSource = 'toggle' | 'config';
+
 @Component({
   selector: 'app-settings',
   standalone: true,
@@ -44,6 +47,7 @@ type AutoTopUpDraft = {
 export class SettingsComponent implements OnInit, OnDestroy {
   private fb = new FormBuilder();
   private paymentApi = inject(PaymentApiService);
+  private toast = inject(ToastService);
   private autoReloadTimer: ReturnType<typeof setInterval> | null = null;
 
   walletBalance = signal(0);
@@ -91,6 +95,11 @@ export class SettingsComponent implements OnInit, OnDestroy {
     return this.cards().length > 0;
   }
 
+  hasSelectedAutoTopUpCard(): boolean {
+    const cardId = this.autoTopUpForm.getRawValue().cardId ?? '';
+    return cardId.trim().length > 0;
+  }
+
   addWalletBalance() {
     if (!this.hasActiveCards()) {
       this.errorMessage.set('Add a credit card before adding wallet balance.');
@@ -107,6 +116,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
       (state) => {
         this.walletForm.patchValue({ amount: this.defaultTopUpAmount() });
         this.applyState(state);
+        this.toast.show('Balance added successfully', 'success');
       }
     );
   }
@@ -115,9 +125,10 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.walletForm.patchValue({ amount });
   }
 
-  onAutoTopUpConfigChange() {
+  onAutoTopUpConfigChange(source: AutoTopUpChangeSource = 'config') {
     if (this.loading() || this.pendingAutoTopUp()) return;
     if (!this.hasActiveCards()) {
+      this.autoTopUpForm.patchValue({ enabled: false, cardId: '' }, { emitEvent: false });
       this.pendingAutoTopUp.set(null);
       return;
     }
@@ -144,7 +155,20 @@ export class SettingsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.pendingAutoTopUp.set(draft);
+    if (source === 'toggle' && this.shouldConfirmAutoTopUpEnable(current, draft)) {
+      this.pendingAutoTopUp.set(draft);
+      return;
+    }
+
+    this.pendingAutoTopUp.set(null);
+    this.submitAutoTopUpChange(draft);
+  }
+
+  onAutoTopUpCardChange() {
+    if (!this.hasSelectedAutoTopUpCard()) {
+      this.autoTopUpForm.patchValue({ enabled: false }, { emitEvent: false });
+    }
+    this.onAutoTopUpConfigChange('config');
   }
 
   cancelAutoTopUpChange() {
@@ -166,14 +190,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.runApi(
-      this.paymentApi.updateAutoTopUp(draft).pipe(switchMap(() => this.paymentApi.getState())),
-      (state) => {
-        this.applyState(state);
-        this.pendingAutoTopUp.set(null);
-      },
-      false
-    );
+    this.submitAutoTopUpChange(draft);
   }
 
   addCard() {
@@ -195,6 +212,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
           expiry: '',
         });
         this.applyState(state);
+        this.toast.show('Card added successfully', 'success');
       }
     );
   }
@@ -224,6 +242,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
       (state) => {
         this.applyState(state);
         this.pendingDeleteCard.set(null);
+        this.toast.show('Card deleted', 'success');
       }
     );
   }
@@ -284,7 +303,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
     const requestedCardId = state.autoTopUp?.cardId ?? '';
     const resolvedCardId = this.resolveCardId(requestedCardId, cards);
     const currentAutoTopUp: AutoTopUpDraft = {
-      enabled: cards.length > 0 ? !!state.autoTopUp?.enabled : false,
+      enabled: cards.length > 0 && !!resolvedCardId ? !!state.autoTopUp?.enabled : false,
       threshold: this.moneyToNumber(state.autoTopUp?.threshold),
       amount: this.moneyToNumber(state.autoTopUp?.amount),
       cardId: resolvedCardId,
@@ -342,6 +361,22 @@ export class SettingsComponent implements OnInit, OnDestroy {
       return;
     }
     this.autoTopUpForm.patchValue(current, { emitEvent: false });
+  }
+
+  private shouldConfirmAutoTopUpEnable(current: AutoTopUpDraft | null, draft: AutoTopUpDraft): boolean {
+    return !current?.enabled && draft.enabled;
+  }
+
+  private submitAutoTopUpChange(draft: AutoTopUpDraft) {
+    this.runApi(
+      this.paymentApi.updateAutoTopUp(draft).pipe(switchMap(() => this.paymentApi.getState())),
+      (state) => {
+        this.applyState(state);
+        this.pendingAutoTopUp.set(null);
+        this.toast.show('Auto top-up updated', 'success');
+      },
+      false
+    );
   }
 
   private isSameAutoTopUpConfig(left: AutoTopUpDraft, right: AutoTopUpDraft): boolean {
@@ -410,7 +445,9 @@ export class SettingsComponent implements OnInit, OnDestroy {
         next: (response) => onSuccess(response),
         error: (error: unknown) => {
           if (showError) {
-            this.errorMessage.set(this.extractErrorMessage(error));
+            const message = this.extractErrorMessage(error);
+            this.errorMessage.set(message);
+            this.toast.show('Failed to add balance', 'error');
           }
         },
       });

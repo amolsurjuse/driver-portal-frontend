@@ -36,6 +36,18 @@ export type UserProfileResponse = {
   createdAt: string;
 };
 
+export type UpdateUserProfileRequest = {
+  firstName: string;
+  lastName: string;
+  address: {
+    street: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    countryIsoCode: string;
+  };
+};
+
 @Injectable({ providedIn: 'root' })
 export class UserApiService {
   private http = inject(HttpClient);
@@ -43,6 +55,10 @@ export class UserApiService {
 
   getProfile(userId: string) {
     return this.http.get<UserProfileResponse>(`${this.baseUrl}/api/v1/users/${userId}/profile`);
+  }
+
+  updateProfile(userId: string, payload: UpdateUserProfileRequest) {
+    return this.http.put<UserProfileResponse>(`${this.baseUrl}/api/v1/users/${userId}/profile`, payload);
   }
 
   searchUsers(query: string, limit = 25) {
