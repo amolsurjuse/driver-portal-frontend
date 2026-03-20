@@ -53,7 +53,7 @@
           Amount ({{ currencyCode() }})
           <input type="number" min="1" step="1" formControlName="amount" [disabled]="!hasActiveCards() || loading()" />
         </label>
-        <button class="primary" type="submit" [disabled]="walletForm.invalid || loading() || !hasActiveCards()">Add balance</button>
+        <button class="btn-primary" type="submit" [disabled]="walletForm.invalid || loading() || !hasActiveCards()">Add balance</button>
       </form>
       <p class="wallet-guard muted" *ngIf="!hasActiveCards()">Add a credit card to enable wallet top-ups and auto top-up.</p>
 
@@ -134,7 +134,7 @@
             <input type="text" formControlName="expiry" maxlength="5" placeholder="10/28" />
           </label>
         </div>
-        <button class="primary" type="submit" [disabled]="cardForm.invalid || loading()">Add card</button>
+        <button class="btn-primary" type="submit" [disabled]="cardForm.invalid || loading()">Add card</button>
       </form>
 
       <div class="cards-list">
@@ -148,7 +148,7 @@
               <p class="muted">{{ card.brand }} •••• {{ card.last4 }} · Expires {{ card.expiry }}</p>
             </div>
           </div>
-          <button class="danger" type="button" (click)="openDeleteCardDialog(card)" [disabled]="loading()">Delete</button>
+          <button class="btn-danger" type="button" (click)="openDeleteCardDialog(card)" [disabled]="loading()">Delete</button>
         </div>
         <p class="muted" *ngIf="cards().length === 0">No cards added yet.</p>
       </div>
@@ -181,8 +181,8 @@
         <p>Are you sure you want to turn off auto top-up?</p>
       </ng-template>
       <div class="dialog-actions">
-        <button class="ghost" type="button" (click)="cancelAutoTopUpChange()" [disabled]="loading()">Cancel</button>
-        <button class="primary" type="button" (click)="confirmAutoTopUpChange()" [disabled]="loading()">Confirm</button>
+        <button class="btn-ghost" type="button" (click)="cancelAutoTopUpChange()" [disabled]="loading()">Cancel</button>
+        <button class="btn-primary" type="button" (click)="confirmAutoTopUpChange()" [disabled]="loading()">Confirm</button>
       </div>
     </article>
   </div>
@@ -201,8 +201,8 @@
       </p>
       <p class="muted">This card will no longer be available for payments or auto top-up.</p>
       <div class="dialog-actions">
-        <button class="ghost" type="button" (click)="closeDeleteCardDialog()" [disabled]="loading()">Cancel</button>
-        <button class="danger" type="button" (click)="confirmDeleteCard()" [disabled]="loading()">Delete card</button>
+        <button class="btn-ghost" type="button" (click)="closeDeleteCardDialog()" [disabled]="loading()">Cancel</button>
+        <button class="btn-danger" type="button" (click)="confirmDeleteCard()" [disabled]="loading()">Delete card</button>
       </div>
     </article>
   </div>
