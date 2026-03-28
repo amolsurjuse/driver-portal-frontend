@@ -5,6 +5,8 @@ import SwiftUI
 
 struct StationMapView: View {
     let stationService: StationService
+    let chargerGraphQLService: ChargerGraphQLService
+    let chargingSessionService: ChargingSessionService
 
     @StateObject private var viewModel = StationMapViewModel()
     @State private var selectedStation: StationLocation?
@@ -42,12 +44,12 @@ struct StationMapView: View {
                 }
             }
 
-            // Floating station count pill
+            // Floating charger count pill
             if !viewModel.stations.isEmpty {
                 HStack(spacing: 6) {
                     Image(systemName: "ev.plug.dc.ccs2")
                         .font(.caption.weight(.bold))
-                    Text("\(viewModel.stations.count) stations nearby")
+                    Text("\(viewModel.stations.count) chargers nearby")
                         .font(.subheadline.weight(.semibold))
                 }
                 .padding(.horizontal, 16)
@@ -62,7 +64,7 @@ struct StationMapView: View {
                 VStack {
                     ProgressView()
                         .controlSize(.large)
-                    Text("Finding stations…")
+                    Text("Finding chargers…")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
@@ -80,7 +82,7 @@ struct StationMapView: View {
                             .font(.subheadline)
                     }
                     Button("Retry") {
-                        Task { await viewModel.loadStations(service: stationService) }
+                        Task { await viewModel.loadChargers(service: chargerGraphQLService, fallbackService: stationService) }
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.small)
@@ -90,17 +92,21 @@ struct StationMapView: View {
                 .padding()
             }
         }
-        .navigationTitle("Stations")
+        .navigationTitle("Chargers")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showDetail) {
             if let station = selectedStation {
-                StationDetailSheet(station: station)
+                StationDetailSheet(
+                    station: station,
+                    chargerGraphQLService: chargerGraphQLService,
+                    chargingSessionService: chargingSessionService
+                )
                     .presentationDetents([.medium, .large])
                     .presentationDragIndicator(.visible)
             }
         }
         .task {
-            await viewModel.loadStations(service: stationService)
+            await viewModel.loadChargers(service: chargerGraphQLService, fallbackService: stationService)
         }
     }
 }
@@ -156,7 +162,20 @@ private struct Triangle: Shape {
 
 private struct StationDetailSheet: View {
     let station: StationLocation
+    let chargerGraphQLService: ChargerGraphQLService
+    let chargingSessionService: ChargingSessionService
+
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var sessionStore: SessionStore
+    @State private var selectedConnector: ConnectorSummary?
+    @State private var chargerDetail: OcpiCharger?
+    @State private var isLoadingChargerDetail = false
+    @State private var chargerDetailError: String?
+    @State private var actionFeedback: String?
+    @State private var isProcessingAction = false
+    @State private var connectorDetail: OcpiConnector?
+    @State private var isLoadingDetail = false
+    @State private var detailError: String?
 
     var body: some View {
         NavigationStack {
@@ -202,11 +221,65 @@ private struct StationDetailSheet: View {
 
                         ForEach(station.connectors) { connector in
                             ConnectorRow(connector: connector)
+                                .onTapGesture {
+                                    Haptics.selection()
+                                    selectedConnector = connector
+                                    fetchConnectorDetail(connectorId: connector.id)
+                                }
                         }
                     }
 
                     // Actions
                     VStack(spacing: 12) {
+                        Button {
+                            handlePrimaryAction()
+                        } label: {
+                            Label(primaryActionTitle, systemImage: primaryActionIcon)
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.large)
+                        .tint(primaryActionTint)
+                        .disabled(!isPrimaryActionEnabled || isProcessingAction || isLoadingChargerDetail)
+
+                        if let primaryActionReason {
+                            Text(primaryActionReason)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+
+                        if let actionFeedback {
+                            HStack(spacing: 8) {
+                                Image(systemName: "info.circle.fill")
+                                    .foregroundStyle(.blue)
+                                Text(actionFeedback)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+
+                        if isLoadingChargerDetail {
+                            HStack(spacing: 8) {
+                                ProgressView()
+                                    .controlSize(.small)
+                                Text("Refreshing charger status...")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        } else if let chargerDetailError {
+                            HStack(spacing: 8) {
+                                Image(systemName: "exclamationmark.triangle.fill")
+                                    .foregroundStyle(.orange)
+                                Text(chargerDetailError)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+
                         Button {
                             openInMaps()
                         } label: {
@@ -226,7 +299,174 @@ private struct StationDetailSheet: View {
                     Button("Done") { dismiss() }
                 }
             }
+            .sheet(item: $selectedConnector) { connector in
+                ConnectorDetailSheet(
+                    connector: connector,
+                    ocpiConnector: connectorDetail,
+                    isLoading: isLoadingDetail,
+                    error: detailError
+                )
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
+            }
+            .task {
+                await loadChargerDetail(forceRefresh: false)
+            }
         }
+    }
+
+    private func fetchConnectorDetail(connectorId: String) {
+        isLoadingDetail = true
+        connectorDetail = nil
+        detailError = nil
+
+        Task {
+            do {
+                let charger = try await loadOrFetchChargerDetail()
+                let match = charger.evses
+                    .flatMap(\.connectors)
+                    .first(where: { $0.id == connectorId })
+                connectorDetail = match
+                if match == nil {
+                    detailError = "Connector details not found."
+                }
+            } catch {
+                detailError = error.localizedDescription
+            }
+            isLoadingDetail = false
+        }
+    }
+
+    private func loadOrFetchChargerDetail() async throws -> OcpiCharger {
+        if let chargerDetail {
+            return chargerDetail
+        }
+        let charger = try await chargerGraphQLService.getChargerDetail(chargerId: station.id)
+        chargerDetail = charger
+        return charger
+    }
+
+    private func loadChargerDetail(forceRefresh: Bool) async {
+        if !forceRefresh, chargerDetail != nil {
+            return
+        }
+
+        isLoadingChargerDetail = true
+        chargerDetailError = nil
+        do {
+            chargerDetail = try await chargerGraphQLService.getChargerDetail(chargerId: station.id)
+        } catch {
+            chargerDetailError = error.localizedDescription
+        }
+        isLoadingChargerDetail = false
+    }
+
+    private func handlePrimaryAction() {
+        switch actionState {
+        case .startEnabled:
+            actionFeedback = "Start Charging is enabled. Use the Charging tab to begin a new session."
+        case .stopEnabled(let sessionId):
+            Task { await stopCharging(sessionId: sessionId) }
+        case .disabled:
+            break
+        }
+    }
+
+    private func stopCharging(sessionId: String) async {
+        isProcessingAction = true
+        defer { isProcessingAction = false }
+
+        do {
+            try await chargingSessionService.stopSession(sessionId: sessionId)
+            actionFeedback = "Stop request submitted."
+            await loadChargerDetail(forceRefresh: true)
+        } catch {
+            actionFeedback = "Unable to stop charging right now: \(error.localizedDescription)"
+        }
+    }
+
+    private var effectiveStatus: String {
+        (chargerDetail?.status ?? station.status.rawValue).uppercased()
+    }
+
+    private var primaryActionTitle: String {
+        switch actionState {
+        case .startEnabled:
+            return "Start Charging"
+        case .stopEnabled:
+            return "Stop Charging"
+        case .disabled:
+            return "Charging Unavailable"
+        }
+    }
+
+    private var primaryActionIcon: String {
+        switch actionState {
+        case .startEnabled:
+            return "play.circle.fill"
+        case .stopEnabled:
+            return "stop.circle.fill"
+        case .disabled:
+            return "slash.circle.fill"
+        }
+    }
+
+    private var primaryActionTint: Color {
+        switch actionState {
+        case .startEnabled:
+            return .green
+        case .stopEnabled:
+            return .red
+        case .disabled:
+            return .gray
+        }
+    }
+
+    private var primaryActionReason: String? {
+        switch actionState {
+        case .disabled(let reason):
+            return reason
+        case .startEnabled, .stopEnabled:
+            return nil
+        }
+    }
+
+    private var isPrimaryActionEnabled: Bool {
+        switch actionState {
+        case .startEnabled, .stopEnabled:
+            return true
+        case .disabled:
+            return false
+        }
+    }
+
+    private var actionState: ChargerActionState {
+        switch effectiveStatus {
+        case "AVAILABLE":
+            return .startEnabled
+        case "CHARGING":
+            guard let currentSession = chargerDetail?.currentSession else {
+                return .disabled(reason: "Another driver is actively using this charger.")
+            }
+
+            guard let loggedInUserId = sessionStore.userId, !loggedInUserId.isEmpty else {
+                return .disabled(reason: "Sign in to manage this charging session.")
+            }
+
+            guard let sessionOwner = currentSession.userId, sessionOwner == loggedInUserId else {
+                return .disabled(reason: "Another driver is actively using this charger.")
+            }
+
+            return .stopEnabled(sessionId: currentSession.id)
+        default:
+            return .disabled(reason: "Charging actions are disabled because this charger is not available.")
+        }
+    }
+
+    private enum ChargerActionState {
+        case startEnabled
+        case stopEnabled(sessionId: String)
+        case disabled(reason: String)
     }
 
     private func openInMaps() {
@@ -314,6 +554,167 @@ private struct ConnectorRow: View {
     }
 }
 
+// MARK: - Connector Detail Sheet
+
+private struct ConnectorDetailSheet: View {
+    let connector: ConnectorSummary
+    let ocpiConnector: OcpiConnector?
+    let isLoading: Bool
+    let error: String?
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    // Connector header
+                    HStack(spacing: 14) {
+                        ZStack {
+                            Circle()
+                                .fill(statusColor.opacity(0.14))
+                                .frame(width: 56, height: 56)
+                            Image(systemName: connectorIcon)
+                                .font(.system(size: 24, weight: .bold))
+                                .foregroundStyle(statusColor)
+                        }
+
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(connector.typeLabel)
+                                .font(.title3.weight(.bold))
+                            Text("Connector \(connector.id)")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Spacer()
+
+                        PortalBadge(title: connector.status.rawValue.capitalized, tint: statusColor)
+                    }
+
+                    if isLoading {
+                        HStack {
+                            Spacer()
+                            ProgressView("Loading details…")
+                            Spacer()
+                        }
+                        .padding(.vertical, 20)
+                    } else if let error {
+                        HStack {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundStyle(.orange)
+                            Text(error)
+                                .font(.subheadline)
+                        }
+                        .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .fill(Color.orange.opacity(0.08))
+                        )
+                    } else {
+                        // Specs grid
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("Specifications")
+                                .font(.headline)
+
+                            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                                DetailCell(label: "Power", value: connector.powerLabel, icon: "bolt.fill", tint: .orange)
+                                DetailCell(label: "Status", value: connector.status.rawValue.capitalized, icon: "circle.fill", tint: statusColor)
+                                if let ocpi = ocpiConnector {
+                                    DetailCell(label: "Standard", value: ocpi.standard, icon: "ev.plug.dc.ccs2", tint: .blue)
+                                    if let format = ocpi.format {
+                                        DetailCell(label: "Format", value: format, icon: "cable.connector", tint: .purple)
+                                    }
+                                    if let powerType = ocpi.powerType {
+                                        DetailCell(label: "Power Type", value: powerType, icon: "bolt.horizontal.fill", tint: .green)
+                                    }
+                                    DetailCell(label: "Available", value: ocpi.available == true ? "Yes" : "No", icon: "checkmark.circle.fill", tint: ocpi.available == true ? .green : .gray)
+                                }
+                            }
+                        }
+
+                        // Pricing / Tariffs
+                        if let tariffIds = ocpiConnector?.tariffIds, !tariffIds.isEmpty {
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text("Pricing & Tariffs")
+                                    .font(.headline)
+
+                                ForEach(tariffIds, id: \.self) { tariffId in
+                                    HStack(spacing: 10) {
+                                        Image(systemName: "tag.fill")
+                                            .foregroundStyle(.blue)
+                                            .font(.caption)
+                                        Text(tariffId)
+                                            .font(.subheadline.monospaced())
+                                            .lineLimit(1)
+                                            .truncationMode(.middle)
+                                        Spacer()
+                                    }
+                                    .padding(10)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                            .fill(Color.blue.opacity(0.06))
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+                .padding(20)
+            }
+            .background(Color(red: 0.96, green: 0.97, blue: 0.99))
+            .navigationTitle("Connector Details")
+            .navigationBarTitleDisplayMode(.inline)
+        }
+    }
+
+    private var statusColor: Color {
+        switch connector.status {
+        case .available: return .green
+        case .charging: return .blue
+        case .faulted: return .red
+        case .offline: return .gray
+        case .reserved: return .purple
+        }
+    }
+
+    private var connectorIcon: String {
+        switch connector.type {
+        case .ccs2: return "ev.plug.dc.ccs2"
+        case .chademo: return "ev.plug.dc.chademo"
+        case .type2: return "ev.plug.ac.type.2"
+        case .type1: return "ev.plug.ac.type.1"
+        }
+    }
+}
+
+private struct DetailCell: View {
+    let label: String
+    let value: String
+    let icon: String
+    let tint: Color
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 4) {
+                Image(systemName: icon)
+                    .font(.caption2)
+                    .foregroundStyle(tint)
+                Text(label)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Text(value)
+                .font(.subheadline.weight(.semibold))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(.white)
+                .shadow(color: .black.opacity(0.04), radius: 6, y: 3)
+        )
+    }
+}
+
 // MARK: - View Model
 
 @MainActor
@@ -322,6 +723,30 @@ final class StationMapViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var error: String?
 
+    /// Primary loader: fetches OCPI chargers from the GraphQL API.
+    /// Falls back to the REST station service (then sample data) if the GraphQL call fails.
+    func loadChargers(service: ChargerGraphQLService, fallbackService: StationService) async {
+        guard !isLoading else { return }
+        isLoading = true
+        error = nil
+
+        do {
+            stations = try await service.getChargerStations(countryCode: "US", limit: 50, offset: 0)
+        } catch {
+            // Attempt REST fallback
+            do {
+                stations = try await fallbackService.getAllStations()
+            } catch {
+                // Last resort: sample data for development
+                stations = StationLocation.samples
+                self.error = nil
+            }
+        }
+
+        isLoading = false
+    }
+
+    /// Legacy loader kept for backward compatibility.
     func loadStations(service: StationService) async {
         guard !isLoading else { return }
         isLoading = true
@@ -330,9 +755,8 @@ final class StationMapViewModel: ObservableObject {
         do {
             stations = try await service.getAllStations()
         } catch {
-            // Fallback to sample data for development
             stations = StationLocation.samples
-            self.error = nil // Suppress error when using samples
+            self.error = nil
         }
 
         isLoading = false
