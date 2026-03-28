@@ -1,0 +1,264 @@
+{
+  "module": "ocpi-simulator",
+  "target": {
+    "protocol": "http",
+    "host": "ocpi-simulator",
+    "port": 8011
+  },
+  "endpointCount": 28,
+  "generatedAt": "2026-03-21T17:57:02.361097+00:00",
+  "endpoints": [
+    {
+      "name": "GET /api/chargers",
+      "method": "GET",
+      "pathTemplate": "/api/chargers",
+      "path": "/api/chargers",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    },
+    {
+      "name": "POST /api/chargers",
+      "method": "POST",
+      "pathTemplate": "/api/chargers",
+      "path": "/api/chargers",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    },
+    {
+      "name": "DELETE /api/chargers/{chargerId}",
+      "method": "DELETE",
+      "pathTemplate": "/api/chargers/{chargerId}",
+      "path": "/api/chargers/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    },
+    {
+      "name": "GET /api/chargers/{chargerId}",
+      "method": "GET",
+      "pathTemplate": "/api/chargers/{chargerId}",
+      "path": "/api/chargers/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    },
+    {
+      "name": "POST /api/chargers/{chargerId}/sessions",
+      "method": "POST",
+      "pathTemplate": "/api/chargers/{chargerId}/sessions",
+      "path": "/api/chargers/11111111-1111-1111-1111-111111111111/sessions",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    },
+    {
+      "name": "POST /api/sessions/{sessionId}/meter",
+      "method": "POST",
+      "pathTemplate": "/api/sessions/{sessionId}/meter",
+      "path": "/api/sessions/11111111-1111-1111-1111-111111111111/meter",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    },
+    {
+      "name": "POST /api/sessions/{sessionId}/stop",
+      "method": "POST",
+      "pathTemplate": "/api/sessions/{sessionId}/stop",
+      "path": "/api/sessions/11111111-1111-1111-1111-111111111111/stop",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    },
+    {
+      "name": "GET /healthz",
+      "method": "GET",
+      "pathTemplate": "/healthz",
+      "path": "/healthz",
+      "body": "",
+      "expectedCodeRegex": "^2\\d\\d$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    },
+    {
+      "name": "GET /ocpi/2.2.1",
+      "method": "GET",
+      "pathTemplate": "/ocpi/2.2.1",
+      "path": "/ocpi/2.2.1",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    },
+    {
+      "name": "GET /ocpi/2.2.1/cdrs",
+      "method": "GET",
+      "pathTemplate": "/ocpi/2.2.1/cdrs",
+      "path": "/ocpi/2.2.1/cdrs",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    },
+    {
+      "name": "POST /ocpi/2.2.1/cdrs",
+      "method": "POST",
+      "pathTemplate": "/ocpi/2.2.1/cdrs",
+      "path": "/ocpi/2.2.1/cdrs",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    },
+    {
+      "name": "POST /ocpi/2.2.1/commands/{command}",
+      "method": "POST",
+      "pathTemplate": "/ocpi/2.2.1/commands/{command}",
+      "path": "/ocpi/2.2.1/commands/1",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    },
+    {
+      "name": "GET /ocpi/2.2.1/credentials",
+      "method": "GET",
+      "pathTemplate": "/ocpi/2.2.1/credentials",
+      "path": "/ocpi/2.2.1/credentials",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    },
+    {
+      "name": "POST /ocpi/2.2.1/credentials",
+      "method": "POST",
+      "pathTemplate": "/ocpi/2.2.1/credentials",
+      "path": "/ocpi/2.2.1/credentials",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    },
+    {
+      "name": "PUT /ocpi/2.2.1/credentials",
+      "method": "PUT",
+      "pathTemplate": "/ocpi/2.2.1/credentials",
+      "path": "/ocpi/2.2.1/credentials",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    },
+    {
+      "name": "GET /ocpi/2.2.1/locations",
+      "method": "GET",
+      "pathTemplate": "/ocpi/2.2.1/locations",
+      "path": "/ocpi/2.2.1/locations",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    },
+    {
+      "name": "GET /ocpi/2.2.1/locations/{locationId}",
+      "method": "GET",
+      "pathTemplate": "/ocpi/2.2.1/locations/{locationId}",
+      "path": "/ocpi/2.2.1/locations/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    },
+    {
+      "name": "GET /ocpi/2.2.1/locations/{locationId}/{evseUid}",
+      "method": "GET",
+      "pathTemplate": "/ocpi/2.2.1/locations/{locationId}/{evseUid}",
+      "path": "/ocpi/2.2.1/locations/11111111-1111-1111-1111-111111111111/1",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    },
+    {
+      "name": "GET /ocpi/2.2.1/locations/{locationId}/{evseUid}/{connectorId}",
+      "method": "GET",
+      "pathTemplate": "/ocpi/2.2.1/locations/{locationId}/{evseUid}/{connectorId}",
+      "path": "/ocpi/2.2.1/locations/11111111-1111-1111-1111-111111111111/1/1",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    },
+    {
+      "name": "GET /ocpi/2.2.1/sessions",
+      "method": "GET",
+      "pathTemplate": "/ocpi/2.2.1/sessions",
+      "path": "/ocpi/2.2.1/sessions",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    },
+    {
+      "name": "POST /ocpi/2.2.1/sessions",
+      "method": "POST",
+      "pathTemplate": "/ocpi/2.2.1/sessions",
+      "path": "/ocpi/2.2.1/sessions",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    },
+    {
+      "name": "GET /ocpi/2.2.1/sessions/{sessionId}",
+      "method": "GET",
+      "pathTemplate": "/ocpi/2.2.1/sessions/{sessionId}",
+      "path": "/ocpi/2.2.1/sessions/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    },
+    {
+      "name": "PATCH /ocpi/2.2.1/sessions/{sessionId}",
+      "method": "PATCH",
+      "pathTemplate": "/ocpi/2.2.1/sessions/{sessionId}",
+      "path": "/ocpi/2.2.1/sessions/11111111-1111-1111-1111-111111111111",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    },
+    {
+      "name": "GET /ocpi/2.2.1/tariffs",
+      "method": "GET",
+      "pathTemplate": "/ocpi/2.2.1/tariffs",
+      "path": "/ocpi/2.2.1/tariffs",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    },
+    {
+      "name": "GET /ocpi/versions",
+      "method": "GET",
+      "pathTemplate": "/ocpi/versions",
+      "path": "/ocpi/versions",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    },
+    {
+      "name": "GET /ocpp/1.6/{chargePointId}",
+      "method": "GET",
+      "pathTemplate": "/ocpp/1.6/{chargePointId}",
+      "path": "/ocpp/1.6/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    },
+    {
+      "name": "GET /readyz",
+      "method": "GET",
+      "pathTemplate": "/readyz",
+      "path": "/readyz",
+      "body": "",
+      "expectedCodeRegex": "^2\\d\\d$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    },
+    {
+      "name": "GET /ws",
+      "method": "GET",
+      "pathTemplate": "/ws",
+      "path": "/ws",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-simulator/internal/app/router.go"
+    }
+  ]
+}

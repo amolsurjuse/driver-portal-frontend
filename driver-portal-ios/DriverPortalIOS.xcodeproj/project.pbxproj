@@ -7,6 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7F7396F12F6E3BBD004A0F39 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F7396F02F6E3BBD004A0F39 /* KeychainService.swift */; };
+		7F7396F32F6E3BBD004A0F39 /* StationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F7396F22F6E3BBD004A0F39 /* StationService.swift */; };
+		7F7396F52F6E3BBE004A0F39 /* StationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F7396F42F6E3BBE004A0F39 /* StationModels.swift */; };
+		7F7396F72F6E3BC0004A0F39 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F7396F62F6E3BC0004A0F39 /* HapticFeedback.swift */; };
+		7F7396F92F6E3BC0004A0F39 /* SkeletonModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F7396F82F6E3BC0004A0F39 /* SkeletonModifier.swift */; };
+		7F7397072F6E412A004A0F39 /* SSEClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F7397062F6E412A004A0F39 /* SSEClient.swift */; };
+		7F7397092F6E4132004A0F39 /* MeterValueEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F7397082F6E4132004A0F39 /* MeterValueEvent.swift */; };
+		7F7397102F6EF268004A0F39 /* LiveChargingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F73970F2F6EF268004A0F39 /* LiveChargingView.swift */; };
+		7F7397122F6EF269004A0F39 /* ChargingAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F7397112F6EF269004A0F39 /* ChargingAnimations.swift */; };
+		7F7397142F6EF26A004A0F39 /* StationMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F7397132F6EF26A004A0F39 /* StationMapView.swift */; };
+		7F7397162F6EF26B004A0F39 /* NotificationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F7397152F6EF26B004A0F39 /* NotificationsView.swift */; };
 		A10000000000000000000001 /* DriverPortalIOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000001 /* DriverPortalIOSApp.swift */; };
 		A10000000000000000000002 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000002 /* RootView.swift */; };
 		A10000000000000000000003 /* AppModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000003 /* AppModels.swift */; };
@@ -23,6 +34,17 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7F7396F02F6E3BBD004A0F39 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
+		7F7396F22F6E3BBD004A0F39 /* StationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationService.swift; sourceTree = "<group>"; };
+		7F7396F42F6E3BBE004A0F39 /* StationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationModels.swift; sourceTree = "<group>"; };
+		7F7396F62F6E3BC0004A0F39 /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedback.swift; sourceTree = "<group>"; };
+		7F7396F82F6E3BC0004A0F39 /* SkeletonModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkeletonModifier.swift; sourceTree = "<group>"; };
+		7F7397062F6E412A004A0F39 /* SSEClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSEClient.swift; sourceTree = "<group>"; };
+		7F7397082F6E4132004A0F39 /* MeterValueEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeterValueEvent.swift; sourceTree = "<group>"; };
+		7F73970F2F6EF268004A0F39 /* LiveChargingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveChargingView.swift; sourceTree = "<group>"; };
+		7F7397112F6EF269004A0F39 /* ChargingAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargingAnimations.swift; sourceTree = "<group>"; };
+		7F7397132F6EF26A004A0F39 /* StationMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationMapView.swift; sourceTree = "<group>"; };
+		7F7397152F6EF26B004A0F39 /* NotificationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsView.swift; sourceTree = "<group>"; };
 		B10000000000000000000001 /* DriverPortalIOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriverPortalIOSApp.swift; sourceTree = "<group>"; };
 		B10000000000000000000002 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		B10000000000000000000003 /* AppModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModels.swift; sourceTree = "<group>"; };
@@ -51,6 +73,31 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7F73970C2F6EF1D4004A0F39 /* Charging 2 */ = {
+			isa = PBXGroup;
+			children = (
+				7F73970F2F6EF268004A0F39 /* LiveChargingView.swift */,
+				7F7397112F6EF269004A0F39 /* ChargingAnimations.swift */,
+			);
+			path = "Charging 2";
+			sourceTree = "<group>";
+		};
+		7F73970D2F6EF1D4004A0F39 /* Map 2 */ = {
+			isa = PBXGroup;
+			children = (
+				7F7397132F6EF26A004A0F39 /* StationMapView.swift */,
+			);
+			path = "Map 2";
+			sourceTree = "<group>";
+		};
+		7F73970E2F6EF1D4004A0F39 /* Notifications 2 */ = {
+			isa = PBXGroup;
+			children = (
+				7F7397152F6EF26B004A0F39 /* NotificationsView.swift */,
+			);
+			path = "Notifications 2";
+			sourceTree = "<group>";
+		};
 		D10000000000000000000001 = {
 			isa = PBXGroup;
 			children = (
@@ -94,6 +141,8 @@
 			isa = PBXGroup;
 			children = (
 				B10000000000000000000003 /* AppModels.swift */,
+				7F7396F42F6E3BBE004A0F39 /* StationModels.swift */,
+				7F7397082F6E4132004A0F39 /* MeterValueEvent.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -102,6 +151,9 @@
 			isa = PBXGroup;
 			children = (
 				B10000000000000000000004 /* AppServices.swift */,
+				7F7396F02F6E3BBD004A0F39 /* KeychainService.swift */,
+				7F7396F22F6E3BBD004A0F39 /* StationService.swift */,
+				7F7397062F6E412A004A0F39 /* SSEClient.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -118,6 +170,8 @@
 			isa = PBXGroup;
 			children = (
 				B10000000000000000000006 /* AppSupport.swift */,
+				7F7396F62F6E3BC0004A0F39 /* HapticFeedback.swift */,
+				7F7396F82F6E3BC0004A0F39 /* SkeletonModifier.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -131,6 +185,9 @@
 				D1000000000000000000000D /* Payments */,
 				D1000000000000000000000E /* Profile */,
 				D1000000000000000000000F /* History */,
+				7F73970C2F6EF1D4004A0F39 /* Charging 2 */,
+				7F73970D2F6EF1D4004A0F39 /* Map 2 */,
+				7F73970E2F6EF1D4004A0F39 /* Notifications 2 */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -253,17 +310,28 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7F7397142F6EF26A004A0F39 /* StationMapView.swift in Sources */,
 				A10000000000000000000001 /* DriverPortalIOSApp.swift in Sources */,
+				7F7396F92F6E3BC0004A0F39 /* SkeletonModifier.swift in Sources */,
 				A10000000000000000000002 /* RootView.swift in Sources */,
 				A10000000000000000000003 /* AppModels.swift in Sources */,
 				A10000000000000000000004 /* AppServices.swift in Sources */,
 				A10000000000000000000005 /* SessionStore.swift in Sources */,
+				7F7396F52F6E3BBE004A0F39 /* StationModels.swift in Sources */,
+				7F7397102F6EF268004A0F39 /* LiveChargingView.swift in Sources */,
 				A10000000000000000000006 /* AppSupport.swift in Sources */,
+				7F7397122F6EF269004A0F39 /* ChargingAnimations.swift in Sources */,
 				A10000000000000000000007 /* MainTabView.swift in Sources */,
+				7F7396F12F6E3BBD004A0F39 /* KeychainService.swift in Sources */,
+				7F7396F32F6E3BBD004A0F39 /* StationService.swift in Sources */,
 				A10000000000000000000008 /* AuthFlowView.swift in Sources */,
+				7F7397162F6EF26B004A0F39 /* NotificationsView.swift in Sources */,
 				A10000000000000000000009 /* DashboardView.swift in Sources */,
+				7F7397092F6E4132004A0F39 /* MeterValueEvent.swift in Sources */,
 				A1000000000000000000000A /* PaymentsView.swift in Sources */,
+				7F7396F72F6E3BC0004A0F39 /* HapticFeedback.swift in Sources */,
 				A1000000000000000000000B /* ProfileView.swift in Sources */,
+				7F7397072F6E412A004A0F39 /* SSEClient.swift in Sources */,
 				A1000000000000000000000C /* ChargingHistoryView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

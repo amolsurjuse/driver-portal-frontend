@@ -1,0 +1,336 @@
+{
+  "module": "station-management-service",
+  "target": {
+    "protocol": "http",
+    "host": "station-management-service",
+    "port": 8081
+  },
+  "endpointCount": 36,
+  "generatedAt": "2026-03-21T17:57:02.372711+00:00",
+  "endpoints": [
+    {
+      "name": "GET /api/v1/charging-profiles",
+      "method": "GET",
+      "pathTemplate": "/api/v1/charging-profiles",
+      "path": "/api/v1/charging-profiles",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/ChargingProfileController.java"
+    },
+    {
+      "name": "POST /api/v1/charging-profiles",
+      "method": "POST",
+      "pathTemplate": "/api/v1/charging-profiles",
+      "path": "/api/v1/charging-profiles",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/ChargingProfileController.java"
+    },
+    {
+      "name": "GET /api/v1/charging-profiles/station/{stationId}",
+      "method": "GET",
+      "pathTemplate": "/api/v1/charging-profiles/station/{stationId}",
+      "path": "/api/v1/charging-profiles/station/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/ChargingProfileController.java"
+    },
+    {
+      "name": "DELETE /api/v1/charging-profiles/{id}",
+      "method": "DELETE",
+      "pathTemplate": "/api/v1/charging-profiles/{id}",
+      "path": "/api/v1/charging-profiles/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/ChargingProfileController.java"
+    },
+    {
+      "name": "GET /api/v1/charging-profiles/{id}",
+      "method": "GET",
+      "pathTemplate": "/api/v1/charging-profiles/{id}",
+      "path": "/api/v1/charging-profiles/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/ChargingProfileController.java"
+    },
+    {
+      "name": "GET /api/v1/connectors",
+      "method": "GET",
+      "pathTemplate": "/api/v1/connectors",
+      "path": "/api/v1/connectors",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/ConnectorController.java"
+    },
+    {
+      "name": "POST /api/v1/connectors",
+      "method": "POST",
+      "pathTemplate": "/api/v1/connectors",
+      "path": "/api/v1/connectors",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/ConnectorController.java"
+    },
+    {
+      "name": "GET /api/v1/connectors/evse/{evseId}",
+      "method": "GET",
+      "pathTemplate": "/api/v1/connectors/evse/{evseId}",
+      "path": "/api/v1/connectors/evse/1",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/ConnectorController.java"
+    },
+    {
+      "name": "GET /api/v1/connectors/status/{status}",
+      "method": "GET",
+      "pathTemplate": "/api/v1/connectors/status/{status}",
+      "path": "/api/v1/connectors/status/1",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/ConnectorController.java"
+    },
+    {
+      "name": "GET /api/v1/connectors/{id}",
+      "method": "GET",
+      "pathTemplate": "/api/v1/connectors/{id}",
+      "path": "/api/v1/connectors/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/ConnectorController.java"
+    },
+    {
+      "name": "PUT /api/v1/connectors/{id}/status",
+      "method": "PUT",
+      "pathTemplate": "/api/v1/connectors/{id}/status",
+      "path": "/api/v1/connectors/11111111-1111-1111-1111-111111111111/status",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/ConnectorController.java"
+    },
+    {
+      "name": "GET /api/v1/evses",
+      "method": "GET",
+      "pathTemplate": "/api/v1/evses",
+      "path": "/api/v1/evses",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/EvseController.java"
+    },
+    {
+      "name": "POST /api/v1/evses",
+      "method": "POST",
+      "pathTemplate": "/api/v1/evses",
+      "path": "/api/v1/evses",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/EvseController.java"
+    },
+    {
+      "name": "GET /api/v1/evses/station/{stationId}",
+      "method": "GET",
+      "pathTemplate": "/api/v1/evses/station/{stationId}",
+      "path": "/api/v1/evses/station/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/EvseController.java"
+    },
+    {
+      "name": "GET /api/v1/evses/{id}",
+      "method": "GET",
+      "pathTemplate": "/api/v1/evses/{id}",
+      "path": "/api/v1/evses/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/EvseController.java"
+    },
+    {
+      "name": "PUT /api/v1/evses/{id}/status",
+      "method": "PUT",
+      "pathTemplate": "/api/v1/evses/{id}/status",
+      "path": "/api/v1/evses/11111111-1111-1111-1111-111111111111/status",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/EvseController.java"
+    },
+    {
+      "name": "GET /api/v1/locations",
+      "method": "GET",
+      "pathTemplate": "/api/v1/locations",
+      "path": "/api/v1/locations",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/LocationController.java"
+    },
+    {
+      "name": "POST /api/v1/locations",
+      "method": "POST",
+      "pathTemplate": "/api/v1/locations",
+      "path": "/api/v1/locations",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/LocationController.java"
+    },
+    {
+      "name": "GET /api/v1/locations/organization/{orgId}",
+      "method": "GET",
+      "pathTemplate": "/api/v1/locations/organization/{orgId}",
+      "path": "/api/v1/locations/organization/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/LocationController.java"
+    },
+    {
+      "name": "GET /api/v1/locations/{id}",
+      "method": "GET",
+      "pathTemplate": "/api/v1/locations/{id}",
+      "path": "/api/v1/locations/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/LocationController.java"
+    },
+    {
+      "name": "PUT /api/v1/locations/{id}",
+      "method": "PUT",
+      "pathTemplate": "/api/v1/locations/{id}",
+      "path": "/api/v1/locations/11111111-1111-1111-1111-111111111111",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/LocationController.java"
+    },
+    {
+      "name": "GET /api/v1/organizations",
+      "method": "GET",
+      "pathTemplate": "/api/v1/organizations",
+      "path": "/api/v1/organizations",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/OrganizationController.java"
+    },
+    {
+      "name": "POST /api/v1/organizations",
+      "method": "POST",
+      "pathTemplate": "/api/v1/organizations",
+      "path": "/api/v1/organizations",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/OrganizationController.java"
+    },
+    {
+      "name": "DELETE /api/v1/organizations/{id}",
+      "method": "DELETE",
+      "pathTemplate": "/api/v1/organizations/{id}",
+      "path": "/api/v1/organizations/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/OrganizationController.java"
+    },
+    {
+      "name": "GET /api/v1/organizations/{id}",
+      "method": "GET",
+      "pathTemplate": "/api/v1/organizations/{id}",
+      "path": "/api/v1/organizations/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/OrganizationController.java"
+    },
+    {
+      "name": "PUT /api/v1/organizations/{id}",
+      "method": "PUT",
+      "pathTemplate": "/api/v1/organizations/{id}",
+      "path": "/api/v1/organizations/11111111-1111-1111-1111-111111111111",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/OrganizationController.java"
+    },
+    {
+      "name": "GET /api/v1/stations",
+      "method": "GET",
+      "pathTemplate": "/api/v1/stations",
+      "path": "/api/v1/stations",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/StationController.java"
+    },
+    {
+      "name": "GET /api/v1/stations/charge-point/{chargePointId}",
+      "method": "GET",
+      "pathTemplate": "/api/v1/stations/charge-point/{chargePointId}",
+      "path": "/api/v1/stations/charge-point/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/StationController.java"
+    },
+    {
+      "name": "GET /api/v1/stations/location/{locationId}",
+      "method": "GET",
+      "pathTemplate": "/api/v1/stations/location/{locationId}",
+      "path": "/api/v1/stations/location/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/StationController.java"
+    },
+    {
+      "name": "GET /api/v1/stations/online/active",
+      "method": "GET",
+      "pathTemplate": "/api/v1/stations/online/active",
+      "path": "/api/v1/stations/online/active",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/StationController.java"
+    },
+    {
+      "name": "POST /api/v1/stations/register",
+      "method": "POST",
+      "pathTemplate": "/api/v1/stations/register",
+      "path": "/api/v1/stations/register",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/StationController.java"
+    },
+    {
+      "name": "GET /api/v1/stations/{id}",
+      "method": "GET",
+      "pathTemplate": "/api/v1/stations/{id}",
+      "path": "/api/v1/stations/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/StationController.java"
+    },
+    {
+      "name": "PUT /api/v1/stations/{id}/firmware",
+      "method": "PUT",
+      "pathTemplate": "/api/v1/stations/{id}/firmware",
+      "path": "/api/v1/stations/11111111-1111-1111-1111-111111111111/firmware",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/StationController.java"
+    },
+    {
+      "name": "PUT /api/v1/stations/{id}/heartbeat",
+      "method": "PUT",
+      "pathTemplate": "/api/v1/stations/{id}/heartbeat",
+      "path": "/api/v1/stations/11111111-1111-1111-1111-111111111111/heartbeat",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/StationController.java"
+    },
+    {
+      "name": "PUT /api/v1/stations/{id}/registration",
+      "method": "PUT",
+      "pathTemplate": "/api/v1/stations/{id}/registration",
+      "path": "/api/v1/stations/11111111-1111-1111-1111-111111111111/registration",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/StationController.java"
+    },
+    {
+      "name": "PUT /api/v1/stations/{id}/status",
+      "method": "PUT",
+      "pathTemplate": "/api/v1/stations/{id}/status",
+      "path": "/api/v1/stations/11111111-1111-1111-1111-111111111111/status",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "station-management-service/src/main/java/com/electrahub/station/web/StationController.java"
+    }
+  ]
+}

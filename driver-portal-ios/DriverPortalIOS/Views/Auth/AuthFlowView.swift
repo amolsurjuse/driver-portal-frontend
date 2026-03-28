@@ -7,17 +7,68 @@ private enum AuthScreen: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 }
 
+// MARK: - Electra Hub Logo (Programmatic)
+
+struct ElectraHubLogo: View {
+    var size: CGFloat = 64
+
+    var body: some View {
+        ZStack {
+            // Outer glow ring
+            Circle()
+                .fill(
+                    RadialGradient(
+                        colors: [
+                            Color(red: 0.0, green: 0.75, blue: 1.0).opacity(0.25),
+                            Color.clear
+                        ],
+                        center: .center,
+                        startRadius: size * 0.3,
+                        endRadius: size * 0.55
+                    )
+                )
+                .frame(width: size * 1.2, height: size * 1.2)
+
+            // Main circle with gradient
+            Circle()
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 0.06, green: 0.35, blue: 0.72),
+                            Color(red: 0.10, green: 0.55, blue: 0.95),
+                            Color(red: 0.0, green: 0.75, blue: 1.0)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .frame(width: size, height: size)
+                .shadow(color: Color(red: 0.06, green: 0.35, blue: 0.72).opacity(0.35), radius: 16, y: 8)
+
+            // Lightning bolt icon
+            Image(systemName: "bolt.fill")
+                .font(.system(size: size * 0.42, weight: .bold))
+                .foregroundStyle(.white)
+                .shadow(color: .white.opacity(0.5), radius: 4)
+        }
+    }
+}
+
+// MARK: - Auth Flow View
+
 struct AuthFlowView: View {
     let services: AppServices
 
     @State private var screen: AuthScreen = .login
+    @State private var logoAppeared = false
 
     var body: some View {
         NavigationStack {
             ZStack {
+                // Gradient background with subtle animated mesh
                 LinearGradient(
                     colors: [
-                        Color(red: 0.95, green: 0.97, blue: 1.0),
+                        Color(red: 0.94, green: 0.96, blue: 1.0),
                         Color(red: 0.88, green: 0.94, blue: 0.99),
                         Color.white
                     ],
@@ -27,16 +78,41 @@ struct AuthFlowView: View {
                 .ignoresSafeArea()
 
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 24) {
-                        VStack(alignment: .leading, spacing: 10) {
-                            PortalBadge(title: "Electra Hub", tint: .blue)
-                            Text("Driver portal for iPhone")
-                                .font(.system(size: 34, weight: .bold, design: .rounded))
-                            Text("Sign in to manage charging, wallet balance, saved cards, and profile details from one place.")
-                                .font(.body)
-                                .foregroundStyle(.secondary)
-                        }
+                    VStack(alignment: .leading, spacing: 28) {
+                        // Logo + Branding header
+                        VStack(alignment: .leading, spacing: 16) {
+                            HStack(spacing: 14) {
+                                ElectraHubLogo(size: 56)
+                                    .scaleEffect(logoAppeared ? 1.0 : 0.5)
+                                    .opacity(logoAppeared ? 1.0 : 0)
 
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Electra Hub")
+                                        .font(.system(size: 26, weight: .bold, design: .rounded))
+                                        .foregroundStyle(
+                                            LinearGradient(
+                                                colors: [
+                                                    Color(red: 0.06, green: 0.35, blue: 0.72),
+                                                    Color(red: 0.10, green: 0.55, blue: 0.95)
+                                                ],
+                                                startPoint: .leading,
+                                                endPoint: .trailing
+                                            )
+                                        )
+                                    Text("Driver Portal")
+                                        .font(.caption.weight(.semibold))
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+
+                            Text("Manage charging sessions, wallet, payments, and your profile — all in one place.")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        .padding(.top, 8)
+
+                        // Segmented picker
                         Picker("Authentication", selection: $screen) {
                             ForEach(AuthScreen.allCases) { item in
                                 Text(item.rawValue).tag(item)
@@ -44,6 +120,7 @@ struct AuthFlowView: View {
                         }
                         .pickerStyle(.segmented)
 
+                        // Auth form card
                         PortalCard {
                             switch screen {
                             case .login:
@@ -52,11 +129,23 @@ struct AuthFlowView: View {
                                 RegisterView(authService: services.authService)
                             }
                         }
+
+                        // Footer
+                        Text("By signing in, you agree to Electra Hub's Terms of Service and Privacy Policy.")
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity)
                     }
                     .padding(20)
                 }
             }
             .navigationBarHidden(true)
+            .onAppear {
+                withAnimation(.spring(duration: 0.6, bounce: 0.3)) {
+                    logoAppeared = true
+                }
+            }
         }
     }
 }
@@ -270,14 +359,19 @@ private struct RegisterView: View {
         isLoadingCountries = true
         defer { isLoadingCountries = false }
 
-        do {
-            let fetchedCountries = try await authService.listCountries().sorted { $0.name < $1.name }
-            countries = fetchedCountries
-            if selectedCountryCode.isEmpty {
-                selectedCountryCode = fetchedCountries.first?.code ?? ""
+        // Use the in-memory cache populated at app launch
+        if !authService.cachedCountries.isEmpty {
+            countries = authService.cachedCountries
+        } else {
+            // Fallback: fetch if cache wasn't populated (e.g. network was down at launch)
+            do {
+                await authService.prefetchCountries()
+                countries = authService.cachedCountries
             }
-        } catch {
-            countryLoadError = error.localizedDescription
+        }
+
+        if selectedCountryCode.isEmpty {
+            selectedCountryCode = countries.first?.code ?? ""
         }
     }
 }

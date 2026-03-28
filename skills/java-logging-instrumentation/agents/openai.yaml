@@ -1,0 +1,4 @@
+interface:
+  display_name: "Java Logging Instrumentation"
+  short_description: "Add contextual info/debug logs to Java services safely."
+  default_prompt: "Instrument Java classes and methods with meaningful debug and info logs without changing business behavior."

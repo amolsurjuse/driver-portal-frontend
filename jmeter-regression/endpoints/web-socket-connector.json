@@ -1,0 +1,75 @@
+{
+  "module": "web-socket-connector",
+  "target": {
+    "protocol": "http",
+    "host": "web-socket-connector",
+    "port": 8091
+  },
+  "endpointCount": 7,
+  "generatedAt": "2026-03-21T17:57:02.378859+00:00",
+  "endpoints": [
+    {
+      "name": "POST /connect",
+      "method": "POST",
+      "pathTemplate": "/connect",
+      "path": "/connect",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "web-socket-connector/internal/app/app.go"
+    },
+    {
+      "name": "GET /connections",
+      "method": "GET",
+      "pathTemplate": "/connections",
+      "path": "/connections",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "web-socket-connector/internal/app/app.go"
+    },
+    {
+      "name": "GET /connections/{chargerId}",
+      "method": "GET",
+      "pathTemplate": "/connections/{chargerId}",
+      "path": "/connections/charger-001",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "web-socket-connector/internal/app/app.go"
+    },
+    {
+      "name": "POST /disconnect",
+      "method": "POST",
+      "pathTemplate": "/disconnect",
+      "path": "/disconnect",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "web-socket-connector/internal/app/app.go"
+    },
+    {
+      "name": "POST /events",
+      "method": "POST",
+      "pathTemplate": "/events",
+      "path": "/events",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "web-socket-connector/internal/app/app.go"
+    },
+    {
+      "name": "GET /healthz",
+      "method": "GET",
+      "pathTemplate": "/healthz",
+      "path": "/healthz",
+      "body": "",
+      "expectedCodeRegex": "^2\\d\\d$",
+      "source": "web-socket-connector/internal/app/app.go"
+    },
+    {
+      "name": "POST /send",
+      "method": "POST",
+      "pathTemplate": "/send",
+      "path": "/send",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "web-socket-connector/internal/app/app.go"
+    }
+  ]
+}

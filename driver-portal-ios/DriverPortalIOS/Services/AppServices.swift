@@ -5,11 +5,15 @@ struct AppConfiguration {
     let authBaseURL: URL
     let paymentBaseURL: URL
     let userBaseURL: URL
+    let stationBaseURL: URL
+    let sessionBaseURL: URL
 
     static let electraHub = AppConfiguration(
         authBaseURL: URL(string: "https://dev.electrahub.com:8443/auth")!,
         paymentBaseURL: URL(string: "https://dev.electrahub.com:8443/payment")!,
-        userBaseURL: URL(string: "https://dev.electrahub.com:8443/user")!
+        userBaseURL: URL(string: "https://dev.electrahub.com:8443/user")!,
+        stationBaseURL: URL(string: "https://dev.electrahub.com:8443/station")!,
+        sessionBaseURL: URL(string: "https://dev.electrahub.com:8443/session")!
     )
 }
 
@@ -34,9 +38,49 @@ private struct APIErrorEnvelope: Decodable {
     let details: [String]?
 }
 
+/// Accepts the dev server's self-signed certificate so URLSession doesn't reject it.
+private final class DevSSLDelegate: NSObject, URLSessionDelegate, URLSessionTaskDelegate {
+    // Session-level challenge (covers legacy / callback-based paths)
+    func urlSession(
+        _ session: URLSession,
+        didReceive challenge: URLAuthenticationChallenge,
+        completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
+    ) {
+        handleChallenge(challenge, completionHandler: completionHandler)
+    }
+
+    // Task-level challenge (used by async data(for:) API)
+    func urlSession(
+        _ session: URLSession,
+        task: URLSessionTask,
+        didReceive challenge: URLAuthenticationChallenge,
+        completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
+    ) {
+        handleChallenge(challenge, completionHandler: completionHandler)
+    }
+
+    private func handleChallenge(
+        _ challenge: URLAuthenticationChallenge,
+        completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
+    ) {
+        guard challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
+              let serverTrust = challenge.protectionSpace.serverTrust else {
+            completionHandler(.performDefaultHandling, nil)
+            return
+        }
+        completionHandler(.useCredential, URLCredential(trust: serverTrust))
+    }
+}
+
 final class APIClient {
     private let session: URLSession
-    private let tokenProvider: () -> String?
+    private let sslDelegate: DevSSLDelegate
+    let tokenProvider: () -> String?
+
+    /// Provides a closure the SSE client can use to get the current bearer token.
+    func getTokenProvider() -> () -> String? {
+        tokenProvider
+    }
 
     init(tokenProvider: @escaping () -> String?) {
         let configuration = URLSessionConfiguration.default
@@ -45,17 +89,19 @@ final class APIClient {
         configuration.httpCookieStorage = HTTPCookieStorage.shared
         configuration.httpShouldSetCookies = true
         configuration.requestCachePolicy = .reloadIgnoringLocalAndRemoteCacheData
-        self.session = URLSession(configuration: configuration)
+        let delegate = DevSSLDelegate()
+        self.sslDelegate = delegate
+        self.session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
         self.tokenProvider = tokenProvider
     }
 
     func request<Response: Decodable>(_ request: URLRequest, as type: Response.Type = Response.self) async throws -> Response {
-        let (data, response) = try await session.data(for: authorized(request))
+        let (data, response) = try await session.data(for: authorized(request), delegate: sslDelegate)
         return try decode(data: data, response: response, as: type)
     }
 
     func request(_ request: URLRequest) async throws {
-        let (_, response) = try await session.data(for: authorized(request))
+        let (_, response) = try await session.data(for: authorized(request), delegate: sslDelegate)
         guard let httpResponse = response as? HTTPURLResponse else {
             throw APIError(statusCode: 0, message: "Unexpected server response.")
         }
@@ -158,9 +204,22 @@ final class AuthService {
     private let client: APIClient
     private let configuration: AppConfiguration
 
+    /// In-memory cache of countries, loaded once at app launch.
+    private(set) var cachedCountries: [CountryOption] = []
+
     init(client: APIClient, configuration: AppConfiguration) {
         self.client = client
         self.configuration = configuration
+    }
+
+    /// Fetches and caches the country list. Call once during app startup.
+    func prefetchCountries() async {
+        guard cachedCountries.isEmpty else { return }
+        do {
+            cachedCountries = try await listCountries().sorted { $0.name < $1.name }
+        } catch {
+            // Silently fail; RegisterView will retry if cache is still empty.
+        }
     }
 
     func login(_ payload: LoginRequest) async throws -> AccessTokenResponse {
@@ -425,6 +484,8 @@ final class AppServices {
     let authService: AuthService
     let paymentService: PaymentService
     let userService: UserService
+    let stationService: StationService
+    let chargingSessionService: ChargingSessionService
     let receiptPDFService: ReceiptPDFService
 
     init(configuration: AppConfiguration = .electraHub, tokenVault: SessionTokenVault) {
@@ -434,6 +495,8 @@ final class AppServices {
         self.authService = AuthService(client: apiClient, configuration: configuration)
         self.paymentService = PaymentService(client: apiClient, configuration: configuration)
         self.userService = UserService(client: apiClient, configuration: configuration)
+        self.stationService = StationService(client: apiClient, configuration: configuration)
+        self.chargingSessionService = ChargingSessionService(client: apiClient, configuration: configuration)
         self.receiptPDFService = ReceiptPDFService()
     }
 }

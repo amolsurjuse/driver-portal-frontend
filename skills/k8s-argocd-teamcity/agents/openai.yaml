@@ -1,0 +1,4 @@
+interface:
+  display_name: "K8s + Argo + TeamCity"
+  short_description: "Validate K8s, Argo CD, and TeamCity access"
+  default_prompt: "Use $k8s-argocd-teamcity to verify Kubernetes, Argo CD, and TeamCity connectivity before deployment and pipeline work."

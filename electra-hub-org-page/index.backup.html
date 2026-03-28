@@ -1,0 +1,2712 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Electra Hub | EV Charging Products for Public, Fleet, and Destination Sites</title>
+    <meta
+      name="description"
+      content="Electra Hub presents a modern EV charging product suite for destination charging, fast charging, fleets, and operator software in a responsive, interactive experience."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f4f7ff;
+        --bg-soft: #fbfcff;
+        --surface: rgba(255, 255, 255, 0.78);
+        --surface-strong: rgba(255, 255, 255, 0.94);
+        --surface-accent: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(245, 249, 255, 0.94));
+        --text: #141a2b;
+        --muted: #5d6885;
+        --line: rgba(56, 88, 179, 0.12);
+        --primary: #2d6bff;
+        --primary-strong: #1146c7;
+        --primary-soft: #eef4ff;
+        --mint: #b9ffd8;
+        --sky: #d9e7ff;
+        --amber: #ffd79a;
+        --shadow: 0 24px 70px rgba(40, 66, 137, 0.12);
+        --radius-xl: 34px;
+        --radius-lg: 26px;
+        --radius-md: 20px;
+        --radius-sm: 16px;
+        --max-width: 1220px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Poppins", "Segoe UI", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(45, 107, 255, 0.1), transparent 26%),
+          radial-gradient(circle at top right, rgba(185, 255, 216, 0.34), transparent 22%),
+          linear-gradient(180deg, #f8faff 0%, #f4f7ff 46%, #eff3ff 100%);
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(45, 107, 255, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(45, 107, 255, 0.03) 1px, transparent 1px);
+        background-size: 56px 56px;
+        mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.4), transparent 88%);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      img,
+      svg {
+        display: block;
+        max-width: 100%;
+      }
+
+      .page {
+        width: min(var(--max-width), calc(100% - 28px));
+        margin: 0 auto;
+        padding: 20px 0 72px;
+      }
+
+      .nav-shell {
+        position: sticky;
+        top: 14px;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 20px;
+        padding: 14px 18px;
+        border: 1px solid rgba(255, 255, 255, 0.9);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.72);
+        backdrop-filter: blur(18px);
+        box-shadow: 0 12px 32px rgba(56, 88, 179, 0.08);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+      }
+
+      .brand-mark {
+        display: grid;
+        place-items: center;
+        width: 44px;
+        height: 44px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #2d6bff, #8db2ff);
+        color: white;
+        font-weight: 800;
+        box-shadow: 0 12px 24px rgba(45, 107, 255, 0.22);
+      }
+
+      .brand-copy strong {
+        display: block;
+        font-size: 0.98rem;
+        letter-spacing: -0.02em;
+      }
+
+      .brand-copy span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.78rem;
+        white-space: nowrap;
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .nav a {
+        padding: 10px 14px;
+        border-radius: 999px;
+        color: var(--muted);
+        font-size: 0.9rem;
+        transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+      }
+
+      .nav a:hover,
+      .nav a:focus-visible {
+        background: var(--primary-soft);
+        color: var(--primary-strong);
+        transform: translateY(-1px);
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 48px;
+        padding: 0 18px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+      }
+
+      .button:hover,
+      .button:focus-visible {
+        transform: translateY(-2px);
+      }
+
+      .button.primary {
+        background: linear-gradient(135deg, var(--primary), #7ea5ff);
+        color: #fff;
+        box-shadow: 0 18px 28px rgba(45, 107, 255, 0.24);
+      }
+
+      .button.secondary {
+        background: rgba(255, 255, 255, 0.8);
+        border-color: rgba(45, 107, 255, 0.14);
+        color: var(--primary-strong);
+      }
+
+      .hero {
+        position: relative;
+        overflow: hidden;
+        padding: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.9);
+        border-radius: 40px;
+        background:
+          radial-gradient(circle at top right, rgba(185, 255, 216, 0.56), transparent 28%),
+          radial-gradient(circle at left center, rgba(45, 107, 255, 0.1), transparent 26%),
+          var(--surface-accent);
+        box-shadow: var(--shadow);
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(520px, 620px);
+        gap: 26px;
+        align-items: start;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: #ffffff;
+        border: 1px solid rgba(45, 107, 255, 0.12);
+        color: var(--primary-strong);
+        font-size: 0.76rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .eyebrow::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--primary);
+      }
+
+      h1,
+      h2,
+      h3,
+      h4 {
+        margin: 0;
+        letter-spacing: -0.04em;
+        line-height: 1.02;
+      }
+
+      h1 {
+        margin-top: 18px;
+        font-size: clamp(2.8rem, 7vw, 5.6rem);
+        max-width: 10ch;
+      }
+
+      .hero-copy p {
+        margin: 20px 0 0;
+        max-width: 60ch;
+        color: var(--muted);
+        line-height: 1.85;
+        font-size: 1rem;
+      }
+
+      .hero-points {
+        display: grid;
+        gap: 10px;
+        margin-top: 22px;
+      }
+
+      .hero-point {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: #445271;
+        font-size: 0.92rem;
+      }
+
+      .hero-point::before {
+        content: "";
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), #7ea5ff);
+        box-shadow: 0 0 0 6px rgba(45, 107, 255, 0.08);
+      }
+
+      .cta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 28px;
+      }
+
+      .inline-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 24px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.84);
+        border: 1px solid rgba(45, 107, 255, 0.1);
+        color: #385171;
+        font-size: 0.82rem;
+      }
+
+      .hero-visual {
+        position: relative;
+        align-self: start;
+        padding: 6px;
+        border-radius: 34px;
+        background: rgba(255, 255, 255, 0.86);
+        border: 1px solid rgba(255, 255, 255, 0.96);
+        box-shadow: 0 20px 36px rgba(56, 88, 179, 0.12);
+      }
+
+      .hero-video-shell {
+        display: grid;
+        gap: 12px;
+      }
+
+      .hero-video-frame {
+        position: relative;
+        overflow: hidden;
+        border-radius: 28px;
+        background: #0f1730;
+      }
+
+      .hero-video {
+        width: 100%;
+        height: auto;
+        display: block;
+        object-fit: contain;
+        background: #0f1730;
+        vertical-align: top;
+      }
+
+      .hero-video-controls {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding: 2px 4px 0;
+      }
+
+      .audio-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 46px;
+        padding: 0 18px;
+        border-radius: 999px;
+        border: 1px solid rgba(45, 107, 255, 0.12);
+        background: rgba(255, 255, 255, 0.88);
+        color: var(--primary-strong);
+        cursor: pointer;
+        transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+      }
+
+      .audio-toggle:hover,
+      .audio-toggle:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 24px rgba(56, 88, 179, 0.12);
+      }
+
+      .audio-hint {
+        color: var(--muted);
+        font-size: 0.84rem;
+        line-height: 1.6;
+      }
+
+      .charging-stage {
+        display: grid;
+        gap: 14px;
+      }
+
+      .charging-surface {
+        position: relative;
+        overflow: hidden;
+        min-height: 370px;
+        padding: 28px;
+        border-radius: 28px;
+        background:
+          radial-gradient(circle at top right, rgba(102, 215, 255, 0.18), transparent 26%),
+          radial-gradient(circle at left 30%, rgba(82, 116, 255, 0.22), transparent 28%),
+          linear-gradient(180deg, #0e1834 0%, #131d3f 48%, #101a39 100%);
+        border: 1px solid rgba(126, 165, 255, 0.14);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+      }
+
+      .charging-surface::after {
+        content: "";
+        position: absolute;
+        inset: auto -70px -110px auto;
+        width: 240px;
+        height: 240px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(77, 118, 255, 0.3), transparent 68%);
+      }
+
+      .charging-surface::before {
+        content: "";
+        position: absolute;
+        inset: auto 24px 58px 24px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(130, 165, 255, 0.34), transparent);
+      }
+
+      .charging-status {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .charging-status strong {
+        display: block;
+        font-size: 1.35rem;
+        color: #f7fbff;
+      }
+
+      .charging-status span {
+        display: block;
+        margin-top: 4px;
+        color: #a8b7db;
+        font-size: 0.82rem;
+      }
+
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(135, 170, 255, 0.18);
+        color: #ddecff;
+        font-size: 0.8rem;
+        font-weight: 700;
+        backdrop-filter: blur(10px);
+      }
+
+      .status-badge::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #29c47a;
+      }
+
+      .charging-visual {
+        position: relative;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        align-items: end;
+        margin-top: 28px;
+      }
+
+      .charging-platform {
+        position: absolute;
+        inset: auto 18px 16px 18px;
+        height: 118px;
+        border-radius: 999px;
+        background:
+          radial-gradient(circle at center, rgba(69, 119, 255, 0.28), transparent 42%),
+          linear-gradient(180deg, rgba(35, 52, 105, 0.28), rgba(10, 16, 36, 0));
+        filter: blur(0.2px);
+      }
+
+      .charging-platform::before,
+      .charging-platform::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 50%;
+        border: 1px solid rgba(119, 173, 255, 0.22);
+      }
+
+      .charging-platform::before {
+        bottom: 20px;
+        width: 278px;
+        height: 72px;
+        box-shadow: 0 0 28px rgba(62, 118, 255, 0.24);
+      }
+
+      .charging-platform::after {
+        bottom: 8px;
+        width: 330px;
+        height: 88px;
+        border-color: rgba(87, 137, 255, 0.14);
+      }
+
+      .charger-unit {
+        position: relative;
+        justify-self: center;
+        width: 126px;
+        height: 252px;
+        border-radius: 30px;
+        background: linear-gradient(180deg, #1d2c63, #15214a 62%, #0e1735 100%);
+        box-shadow:
+          inset 0 0 0 1px rgba(139, 177, 255, 0.12),
+          0 26px 40px rgba(6, 11, 28, 0.4);
+      }
+
+      .charger-unit::before {
+        content: "";
+        position: absolute;
+        inset: 16px 16px auto;
+        height: 76px;
+        border-radius: 18px;
+        background: linear-gradient(180deg, #eaf4ff, #b8d5ff);
+      }
+
+      .charger-unit::after {
+        content: "";
+        position: absolute;
+        left: 34px;
+        right: 34px;
+        bottom: 24px;
+        height: 6px;
+        border-radius: 999px;
+        background: rgba(139, 177, 255, 0.22);
+      }
+
+      .charger-screen {
+        position: absolute;
+        top: 30px;
+        left: 28px;
+        right: 28px;
+        padding: 14px 10px;
+        border-radius: 14px;
+        background: linear-gradient(180deg, #f6fbff, #cae0ff);
+        text-align: center;
+        box-shadow:
+          inset 0 0 0 1px rgba(45, 107, 255, 0.08),
+          0 0 16px rgba(129, 176, 255, 0.22);
+      }
+
+      .charger-screen strong {
+        display: block;
+        color: var(--primary-strong);
+        font-size: 1.6rem;
+      }
+
+      .charger-screen span {
+        display: block;
+        margin-top: 4px;
+        color: #62759a;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .charger-light {
+        position: absolute;
+        left: 50%;
+        top: 126px;
+        width: 58px;
+        height: 8px;
+        border-radius: 999px;
+        transform: translateX(-50%);
+        background: linear-gradient(90deg, #7dffe2, #ffffff, #7dffe2);
+        box-shadow: 0 0 16px rgba(125, 255, 226, 0.9);
+      }
+
+      .charging-cable {
+        position: absolute;
+        left: 108px;
+        top: 128px;
+        width: 132px;
+        height: 112px;
+        border-right: 8px solid #7ca6ff;
+        border-bottom: 8px solid #7ca6ff;
+        border-bottom-right-radius: 64px;
+        opacity: 0.9;
+      }
+
+      .plug-head {
+        position: absolute;
+        right: -6px;
+        bottom: -4px;
+        width: 22px;
+        height: 34px;
+        border-radius: 10px;
+        background: linear-gradient(180deg, #8eb5ff, #5f88e8);
+      }
+
+      .plug-head::before,
+      .plug-head::after {
+        content: "";
+        position: absolute;
+        top: -10px;
+        width: 6px;
+        height: 14px;
+        border-radius: 4px;
+        background: #7ca6ff;
+      }
+
+      .plug-head::before {
+        left: 5px;
+      }
+
+      .plug-head::after {
+        right: 5px;
+      }
+
+      .energy-orb {
+        position: absolute;
+        left: 104px;
+        top: 122px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: radial-gradient(circle, #ffffff, #7dffe2 56%, #78a8ff 100%);
+        box-shadow: 0 0 20px rgba(125, 255, 226, 0.42);
+        animation: travel 2.4s ease-in-out infinite;
+      }
+
+      .car-cluster {
+        position: relative;
+        align-self: end;
+        min-height: 248px;
+      }
+
+      .car-ground {
+        position: absolute;
+        left: 28px;
+        right: 8px;
+        bottom: 16px;
+        height: 20px;
+        border-radius: 999px;
+        background: radial-gradient(circle, rgba(71, 121, 255, 0.3), transparent 72%);
+      }
+
+      .charge-stream {
+        position: absolute;
+        left: 10px;
+        top: 92px;
+        width: 168px;
+        height: 14px;
+        overflow: hidden;
+        border-radius: 999px;
+        filter: drop-shadow(0 0 8px rgba(125, 255, 226, 0.45));
+      }
+
+      .charge-stream::before,
+      .charge-stream::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background: linear-gradient(90deg, transparent, rgba(185, 255, 216, 0.9), rgba(255, 255, 255, 0.98), transparent);
+      }
+
+      .charge-stream::before {
+        animation: pulseFlow 2s linear infinite;
+      }
+
+      .charge-stream::after {
+        animation: pulseFlow 2s linear infinite 1s;
+      }
+
+      .ev-car {
+        position: absolute;
+        right: 0;
+        bottom: 30px;
+        width: 272px;
+        height: 182px;
+        animation: carIdle 4.2s ease-in-out infinite;
+      }
+
+      .car-shadow {
+        position: absolute;
+        left: 24px;
+        right: 22px;
+        bottom: 0;
+        height: 22px;
+        border-radius: 999px;
+        background: radial-gradient(circle, rgba(13, 20, 44, 0.42), transparent 72%);
+      }
+
+      .car-body {
+        position: absolute;
+        inset: auto 0 24px 0;
+        height: 108px;
+        border-radius: 44px 54px 24px 28px;
+        background:
+          linear-gradient(120deg, rgba(255, 255, 255, 0.66), transparent 28%),
+          linear-gradient(180deg, #58a4ff 0%, #2d69ff 46%, #1c3fbd 100%);
+        border: 1px solid rgba(145, 188, 255, 0.24);
+        box-shadow:
+          inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+          0 18px 30px rgba(6, 11, 28, 0.32);
+      }
+
+      .car-body::before {
+        content: "";
+        position: absolute;
+        left: 54px;
+        top: -24px;
+        width: 118px;
+        height: 46px;
+        border-radius: 42px 44px 10px 10px;
+        background: linear-gradient(180deg, #b9dcff, #6aa5ef);
+        border: 1px solid rgba(195, 229, 255, 0.2);
+      }
+
+      .car-window {
+        position: absolute;
+        top: 18px;
+        height: 32px;
+        border-radius: 16px;
+        background: linear-gradient(180deg, #ddf2ff, #8ec5ff);
+        border: 1px solid rgba(220, 244, 255, 0.16);
+      }
+
+      .car-window.front {
+        left: 142px;
+        width: 52px;
+      }
+
+      .car-window.rear {
+        left: 76px;
+        width: 58px;
+      }
+
+      .car-door-line {
+        position: absolute;
+        top: 28px;
+        left: 132px;
+        width: 1px;
+        height: 50px;
+        background: rgba(224, 241, 255, 0.26);
+      }
+
+      .charge-port {
+        position: absolute;
+        left: 10px;
+        top: 54px;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: radial-gradient(circle, #ffffff 18%, #9defff 44%, #4f7fff 100%);
+        box-shadow: 0 0 0 6px rgba(66, 116, 255, 0.16);
+      }
+
+      .charge-port::after {
+        content: "";
+        position: absolute;
+        inset: -6px;
+        border-radius: 50%;
+        border: 1px solid rgba(185, 255, 216, 0.7);
+        animation: halo 2s ease-out infinite;
+      }
+
+      .car-light-strip {
+        position: absolute;
+        right: 18px;
+        top: 54px;
+        width: 24px;
+        height: 9px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #ffffff, #98eeff);
+        box-shadow: 0 0 12px rgba(152, 238, 255, 0.55);
+      }
+
+      .car-bumper {
+        position: absolute;
+        right: 22px;
+        bottom: 16px;
+        width: 42px;
+        height: 6px;
+        border-radius: 999px;
+        background: rgba(223, 240, 255, 0.24);
+      }
+
+      .wheel {
+        position: absolute;
+        bottom: 8px;
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: linear-gradient(180deg, #20273d, #0f1425);
+        box-shadow: inset 0 0 0 7px #5b6b8d;
+      }
+
+      .wheel::before {
+        content: "";
+        position: absolute;
+        inset: 13px;
+        border-radius: 50%;
+        background: radial-gradient(circle, #f7fbff, #bfd6f6 62%, #7c91b7 100%);
+      }
+
+      .wheel::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        background: #f8fbff;
+      }
+
+      .wheel.front {
+        right: 24px;
+      }
+
+      .wheel.rear {
+        left: 40px;
+      }
+
+      .wheel-spin {
+        position: absolute;
+        inset: 9px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.18);
+      }
+
+      .charge-meter {
+        position: absolute;
+        right: 52px;
+        top: 26px;
+        min-width: 118px;
+        padding: 10px 12px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(135, 170, 255, 0.16);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 12px 24px rgba(6, 11, 28, 0.22);
+      }
+
+      .charge-meter span {
+        display: block;
+        color: #d6e6ff;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .charge-meter strong {
+        display: block;
+        margin-top: 8px;
+        color: #f7fbff;
+        font-size: 1.25rem;
+      }
+
+      .charge-meter-bar {
+        position: relative;
+        height: 9px;
+        margin-top: 10px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .charge-meter-bar::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        width: 82%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #64f7d5, #7bb7ff);
+        animation: meterFill 3.6s ease-in-out infinite;
+      }
+
+      .charging-footer {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 20px;
+      }
+
+      .charging-chip {
+        padding: 14px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(135, 170, 255, 0.14);
+        backdrop-filter: blur(10px);
+      }
+
+      .charging-chip strong {
+        display: block;
+        font-size: 1rem;
+        color: #f7fbff;
+      }
+
+      .charging-chip span {
+        display: block;
+        margin-top: 6px;
+        color: #a8b7db;
+        font-size: 0.8rem;
+        line-height: 1.55;
+      }
+
+      .dashboard {
+        display: grid;
+        gap: 14px;
+      }
+
+      .dashboard-top,
+      .dashboard-bottom {
+        display: grid;
+        gap: 14px;
+      }
+
+      .dashboard-top {
+        grid-template-columns: 1.2fr 0.8fr;
+      }
+
+      .dashboard-bottom {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .glass-card,
+      .section-shell,
+      .tab-panel,
+      .gallery-card,
+      .faq-card,
+      .contact-card,
+      .modal-card {
+        background: rgba(255, 255, 255, 0.84);
+        border: 1px solid rgba(45, 107, 255, 0.1);
+        box-shadow: 0 16px 36px rgba(56, 88, 179, 0.08);
+      }
+
+      .glass-card {
+        padding: 18px;
+        border-radius: 24px;
+      }
+
+      .mini-label {
+        color: var(--primary-strong);
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .glass-card p,
+      .section-head p,
+      .product-copy p,
+      .gallery-copy p,
+      .faq-answer p,
+      .contact-card p,
+      .footer p,
+      .site-card p,
+      .metric p {
+        color: var(--muted);
+        line-height: 1.8;
+      }
+
+      .dashboard-chart {
+        margin-top: 14px;
+      }
+
+      .dashboard-stat {
+        margin-top: 18px;
+        display: grid;
+        gap: 12px;
+      }
+
+      .stat-line {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .stat-line strong {
+        font-size: 1.6rem;
+      }
+
+      .status-tile {
+        padding: 14px;
+        border-radius: 18px;
+        background: linear-gradient(180deg, #f7faff, #eef4ff);
+        border: 1px solid rgba(45, 107, 255, 0.1);
+      }
+
+      .status-tile strong {
+        display: block;
+        font-size: 1.24rem;
+      }
+
+      .status-tile span {
+        display: block;
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 0.82rem;
+        line-height: 1.55;
+      }
+
+      .section {
+        margin-top: 26px;
+      }
+
+      .section-shell {
+        padding: 28px;
+        border-radius: var(--radius-xl);
+      }
+
+      .section-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 18px;
+        margin-bottom: 22px;
+      }
+
+      .section-tag {
+        color: var(--primary-strong);
+        font-size: 0.76rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      h2 {
+        margin-top: 10px;
+        font-size: clamp(2rem, 4vw, 3.35rem);
+      }
+
+      .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .metric {
+        padding: 20px;
+        border-radius: 24px;
+        background: linear-gradient(180deg, #ffffff, #f7faff);
+        border: 1px solid rgba(45, 107, 255, 0.08);
+      }
+
+      .metric strong {
+        display: block;
+        font-size: clamp(1.9rem, 2.8vw, 2.5rem);
+      }
+
+      .product-layout {
+        display: grid;
+        grid-template-columns: 310px minmax(0, 1fr);
+        gap: 18px;
+      }
+
+      .tab-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .tab-button {
+        width: 100%;
+        padding: 18px;
+        border-radius: 22px;
+        border: 1px solid rgba(45, 107, 255, 0.08);
+        background: linear-gradient(180deg, #ffffff, #f8fbff);
+        color: var(--text);
+        text-align: left;
+        cursor: pointer;
+        transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+      }
+
+      .tab-button strong {
+        display: block;
+        font-size: 1rem;
+      }
+
+      .tab-button span {
+        display: block;
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 0.84rem;
+        line-height: 1.65;
+      }
+
+      .tab-button.active {
+        border-color: rgba(45, 107, 255, 0.26);
+        box-shadow: 0 16px 30px rgba(56, 88, 179, 0.1);
+        transform: translateX(4px);
+      }
+
+      .tab-panel {
+        padding: 24px;
+        border-radius: 28px;
+      }
+
+      .tab-panel[hidden] {
+        display: none;
+      }
+
+      .tab-grid {
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 18px;
+        align-items: stretch;
+      }
+
+      .product-specs {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 20px;
+      }
+
+      .spec {
+        padding: 14px;
+        border-radius: 18px;
+        background: linear-gradient(180deg, #ffffff, #f7faff);
+        border: 1px solid rgba(45, 107, 255, 0.08);
+      }
+
+      .spec span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.74rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .spec strong {
+        display: block;
+        margin-top: 8px;
+        font-size: 1.06rem;
+      }
+
+      .visual-panel {
+        padding: 18px;
+        border-radius: 24px;
+        background: linear-gradient(180deg, #f7faff, #edf3ff);
+        border: 1px solid rgba(45, 107, 255, 0.1);
+      }
+
+      .visual-shell {
+        margin-top: 14px;
+        overflow: hidden;
+        border-radius: 20px;
+        background: linear-gradient(180deg, #edf4ff, #dce9ff);
+      }
+
+      .portfolio-grid,
+      .site-grid,
+      .timeline {
+        display: grid;
+        gap: 16px;
+      }
+
+      .portfolio-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .site-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .timeline {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .portfolio-card,
+      .site-card,
+      .timeline-card {
+        padding: 22px;
+        border-radius: 24px;
+        background: linear-gradient(180deg, #ffffff, #f8fbff);
+        border: 1px solid rgba(45, 107, 255, 0.08);
+        transition: transform 180ms ease, box-shadow 180ms ease;
+      }
+
+      .portfolio-card:hover,
+      .site-card:hover,
+      .timeline-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 18px 34px rgba(56, 88, 179, 0.08);
+      }
+
+      .mini-pill,
+      .meta-pill,
+      .gallery-filter {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(45, 107, 255, 0.08);
+        background: rgba(255, 255, 255, 0.86);
+        color: var(--primary-strong);
+        font-size: 0.78rem;
+        font-weight: 600;
+      }
+
+      .meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+      }
+
+      .gallery-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .gallery-filter {
+        cursor: pointer;
+        transition: background 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+      }
+
+      .gallery-filter.active {
+        background: var(--primary);
+        color: #fff;
+        box-shadow: 0 12px 26px rgba(45, 107, 255, 0.2);
+        transform: translateY(-1px);
+      }
+
+      .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 24px;
+      }
+
+      .gallery-card {
+        position: relative;
+        overflow: hidden;
+        min-height: 280px;
+        padding: 16px;
+        border-radius: 28px;
+        cursor: pointer;
+        transition: transform 180ms ease, box-shadow 180ms ease;
+      }
+
+      .gallery-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 38px rgba(56, 88, 179, 0.12);
+      }
+
+      .gallery-card[data-size="wide"] {
+        grid-column: span 7;
+      }
+
+      .gallery-card[data-size="standard"] {
+        grid-column: span 5;
+      }
+
+      .gallery-card[data-size="small"] {
+        grid-column: span 4;
+      }
+
+      .gallery-card.hidden {
+        display: none;
+      }
+
+      .gallery-art {
+        position: absolute;
+        inset: 0;
+      }
+
+      .gallery-copy {
+        position: relative;
+        z-index: 1;
+        margin-top: auto;
+        padding: 16px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.82);
+        border: 1px solid rgba(45, 107, 255, 0.08);
+        backdrop-filter: blur(10px);
+      }
+
+      .gallery-copy span {
+        color: var(--primary-strong);
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .gallery-copy h3 {
+        margin-top: 8px;
+        font-size: 1.14rem;
+      }
+
+      .faq-layout {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 18px;
+      }
+
+      .faq-stack {
+        display: grid;
+        gap: 12px;
+      }
+
+      .faq-card {
+        border-radius: 24px;
+        overflow: hidden;
+      }
+
+      .faq-trigger {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 18px 20px;
+        border: 0;
+        background: transparent;
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .faq-trigger strong {
+        font-size: 1rem;
+      }
+
+      .faq-icon {
+        display: inline-grid;
+        place-items: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--primary-soft);
+        color: var(--primary-strong);
+        font-size: 1.1rem;
+      }
+
+      .faq-answer {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 240ms ease;
+      }
+
+      .faq-answer-inner {
+        padding: 0 20px 20px;
+      }
+
+      .faq-card.open .faq-answer {
+        max-height: 240px;
+      }
+
+      .faq-card.open .faq-icon {
+        background: var(--primary);
+        color: #fff;
+      }
+
+      .faq-aside {
+        padding: 24px;
+        border-radius: 28px;
+        background: linear-gradient(180deg, #ffffff, #f6faff);
+        border: 1px solid rgba(45, 107, 255, 0.08);
+      }
+
+      .faq-aside ul {
+        margin: 16px 0 0;
+        padding-left: 18px;
+        color: var(--muted);
+        line-height: 1.8;
+      }
+
+      .contact-grid {
+        display: grid;
+        grid-template-columns: 0.92fr 1.08fr;
+        gap: 18px;
+      }
+
+      .contact-card {
+        padding: 24px;
+        border-radius: 28px;
+      }
+
+      .contact-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      form {
+        display: grid;
+        gap: 14px;
+      }
+
+      .field-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      label {
+        display: grid;
+        gap: 8px;
+        font-size: 0.88rem;
+        color: #40506f;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 14px 15px;
+        border-radius: 16px;
+        border: 1px solid rgba(45, 107, 255, 0.12);
+        background: #fff;
+        color: var(--text);
+        outline: none;
+        transition: border-color 180ms ease, box-shadow 180ms ease;
+      }
+
+      textarea {
+        min-height: 140px;
+        resize: vertical;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: rgba(45, 107, 255, 0.32);
+        box-shadow: 0 0 0 4px rgba(45, 107, 255, 0.08);
+      }
+
+      .form-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .form-note,
+      .form-status {
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+
+      .form-status.success {
+        color: var(--primary-strong);
+      }
+
+      .footer {
+        margin-top: 28px;
+        padding: 22px 8px 0;
+      }
+
+      .footer-shell {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding-top: 18px;
+        border-top: 1px solid rgba(45, 107, 255, 0.1);
+      }
+
+      .footer-links {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+
+      .footer-links a {
+        color: var(--primary-strong);
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+
+      [data-reveal] {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity 650ms ease, transform 650ms ease;
+      }
+
+      [data-reveal].revealed {
+        opacity: 1;
+        transform: none;
+      }
+
+      .modal {
+        position: fixed;
+        inset: 0;
+        z-index: 40;
+        display: grid;
+        place-items: center;
+        padding: 20px;
+        background: rgba(118, 134, 182, 0.24);
+        backdrop-filter: blur(12px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 220ms ease;
+      }
+
+      .modal.open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .modal-card {
+        width: min(980px, calc(100vw - 24px));
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 340px;
+        gap: 18px;
+        padding: 18px;
+        border-radius: 30px;
+      }
+
+      .modal-visual,
+      .modal-copy {
+        border-radius: 22px;
+        overflow: hidden;
+      }
+
+      .modal-visual {
+        background: linear-gradient(180deg, #eef4ff, #dce8ff);
+        border: 1px solid rgba(45, 107, 255, 0.1);
+      }
+
+      .modal-copy {
+        padding: 22px;
+        background: linear-gradient(180deg, #ffffff, #f8fbff);
+        border: 1px solid rgba(45, 107, 255, 0.1);
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        width: 42px;
+        height: 42px;
+        border: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.88);
+        color: var(--primary-strong);
+        cursor: pointer;
+      }
+
+      @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-8px); }
+      }
+
+      .float {
+        animation: float 6s ease-in-out infinite;
+      }
+
+      @keyframes chargeRise {
+        0%, 100% {
+          height: 48%;
+        }
+        50% {
+          height: 82%;
+        }
+      }
+
+      @keyframes travel {
+        0% {
+          transform: translate(0, 0) scale(0.7);
+          opacity: 0;
+        }
+        15% {
+          opacity: 1;
+        }
+        55% {
+          transform: translate(76px, 44px) scale(1);
+          opacity: 1;
+        }
+        100% {
+          transform: translate(136px, 72px) scale(0.8);
+          opacity: 0;
+        }
+      }
+
+      @keyframes pulseFlow {
+        0% {
+          transform: translateX(-100%);
+          opacity: 0;
+        }
+        20% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+      }
+
+      @keyframes halo {
+        0% {
+          transform: scale(0.8);
+          opacity: 0.85;
+        }
+        100% {
+          transform: scale(1.8);
+          opacity: 0;
+        }
+      }
+
+      @keyframes wheelTurn {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes carIdle {
+        0%, 100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-3px);
+        }
+      }
+
+      @keyframes meterFill {
+        0%, 100% {
+          width: 68%;
+        }
+        50% {
+          width: 86%;
+        }
+      }
+
+      @media (max-width: 1080px) {
+        .hero-grid,
+        .product-layout,
+        .tab-grid,
+        .faq-layout,
+        .contact-grid,
+        .modal-card {
+          grid-template-columns: 1fr;
+        }
+
+        .charging-visual,
+        .charging-footer {
+          grid-template-columns: 1fr;
+        }
+
+        .car-cluster {
+          min-height: 228px;
+        }
+
+        .charge-stream {
+          width: 120px;
+        }
+
+        .ev-car {
+          width: 236px;
+        }
+
+        .charge-meter {
+          right: 24px;
+          top: 12px;
+        }
+
+        .portfolio-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .site-grid,
+        .timeline {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .gallery-card[data-size="wide"],
+        .gallery-card[data-size="standard"],
+        .gallery-card[data-size="small"] {
+          grid-column: span 6;
+        }
+      }
+
+      @media (max-width: 820px) {
+        .nav-shell {
+          flex-direction: column;
+          align-items: flex-start;
+          border-radius: 28px;
+        }
+
+        .nav {
+          justify-content: flex-start;
+        }
+
+        .hero,
+        .section-shell {
+          padding: 22px;
+        }
+
+        .dashboard-top,
+        .dashboard-bottom,
+        .metric-grid,
+        .field-grid,
+        .portfolio-grid,
+        .site-grid,
+        .timeline {
+          grid-template-columns: 1fr;
+        }
+
+        .footer-shell {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .gallery-card[data-size="wide"],
+        .gallery-card[data-size="standard"],
+        .gallery-card[data-size="small"] {
+          grid-column: span 12;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .page {
+          width: min(var(--max-width), calc(100% - 18px));
+        }
+
+        h1 {
+          font-size: clamp(2.4rem, 12vw, 3.8rem);
+        }
+
+        .cta-row,
+        .form-row {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .audio-toggle {
+          width: 100%;
+        }
+
+        .product-specs {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="nav-shell">
+        <a class="brand" href="#top" aria-label="Electra Hub home">
+          <div class="brand-mark">EH</div>
+          <div class="brand-copy">
+            <strong>Electra Hub</strong>
+            <span>EV charging products and operator software</span>
+          </div>
+        </a>
+        <nav class="nav" aria-label="Primary">
+          <a href="#products">Products</a>
+          <a href="#solutions">Solutions</a>
+          <a href="#gallery">Gallery</a>
+          <a href="#faq">FAQ</a>
+          <a href="#contact">Contact</a>
+        </nav>
+        <a class="button primary" href="#contact">Get project review</a>
+      </header>
+
+      <main id="top">
+        <section class="hero" data-reveal>
+          <div class="hero-grid">
+            <div class="hero-copy">
+              <span class="eyebrow">Next-generation EV charging platform</span>
+              <h1>Build EV charging products for public, fleet, and destination networks.</h1>
+              <p>
+                Electra Hub combines destination charging, public fast charging, fleet controls, and operator software
+                into one connected platform.
+              </p>
+              <div class="hero-points">
+                <span class="hero-point">AC and DC charging products built around real site demand</span>
+                <span class="hero-point">Fleet planning, tariffs, uptime, and remote operations in one stack</span>
+                <span class="hero-point">Designed for hospitality, retail, workplace, depots, and public networks</span>
+              </div>
+              <div class="cta-row">
+                <a class="button primary" href="#products">Explore products</a>
+                <a class="button secondary" href="#contact">Talk to the team</a>
+              </div>
+              <div class="inline-badges">
+                <span class="pill">Destination AC</span>
+                <span class="pill">Public DC fast</span>
+                <span class="pill">Fleet controls</span>
+              </div>
+            </div>
+
+            <div class="hero-visual">
+              <div class="hero-video-shell">
+                <div class="hero-video-frame">
+                  <video
+                    class="hero-video"
+                    id="hero-video"
+                    autoplay
+                    loop
+                    muted
+                    playsinline
+                    preload="metadata"
+                  >
+                    <source src="./EV_Charging_Animation_Generation.mp4" type="video/mp4" />
+                  </video>
+                </div>
+
+                <div class="hero-video-controls">
+                  <button class="audio-toggle" id="audio-toggle" type="button" aria-pressed="false">
+                    Enable sound
+                  </button>
+                  <div class="audio-hint">
+                    Original video. Click once to enable sound.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="solutions" data-reveal>
+          <div class="section-shell">
+            <div class="section-head">
+              <div>
+                <div class="section-tag">Platform overview</div>
+                <h2>One platform across destination, public, fleet, and network operations.</h2>
+                <p>
+                  Choose the right hardware, operating model, and software controls for each site without splitting the
+                  charging experience across disconnected tools.
+                </p>
+              </div>
+            </div>
+            <div class="metric-grid">
+              <article class="metric">
+                <strong>Public</strong>
+                <p>High-visibility fast charging designed for fast turnover, strong wayfinding, and operational control.</p>
+              </article>
+              <article class="metric">
+                <strong>Destination</strong>
+                <p>Hospitality, workplace, retail, and multifamily charging shaped around longer dwell patterns.</p>
+              </article>
+              <article class="metric">
+                <strong>Fleet</strong>
+                <p>Charge planning and depot readiness that support dispatch windows, queueing, and load limits.</p>
+              </article>
+              <article class="metric">
+                <strong>Software</strong>
+                <p>Commissioning, monitoring, pricing, and reporting across charger types and operating models.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="products" data-reveal>
+          <div class="section-shell">
+            <div class="section-head">
+              <div>
+                <div class="section-tag">Product suite</div>
+                <h2>Choose the charging layer that matches the site, the dwell time, and the business model.</h2>
+              </div>
+            </div>
+
+            <div class="product-layout">
+              <div class="tab-list" role="tablist" aria-label="Product categories">
+                <button class="tab-button active" role="tab" aria-selected="true" aria-controls="tab-pulse" id="trigger-pulse" data-tab-target="tab-pulse">
+                  <strong>Pulse AC</strong>
+                  <span>Destination charging for hotels, office campuses, mixed-use, residential, and long-dwell parking.</span>
+                </button>
+                <button class="tab-button" role="tab" aria-selected="false" aria-controls="tab-vector" id="trigger-vector" data-tab-target="tab-vector">
+                  <strong>Vector DC</strong>
+                  <span>High-speed public charging for corridors, convenience retail, urban hubs, and quick-turn charging demand.</span>
+                </button>
+                <button class="tab-button" role="tab" aria-selected="false" aria-controls="tab-depot" id="trigger-depot" data-tab-target="tab-depot">
+                  <strong>Depot Command</strong>
+                  <span>Fleet charging controls for load balancing, dispatch readiness, and predictable overnight planning.</span>
+                </button>
+                <button class="tab-button" role="tab" aria-selected="false" aria-controls="tab-orbit" id="trigger-orbit" data-tab-target="tab-orbit">
+                  <strong>Orbit Cloud</strong>
+                  <span>Operator software for network visibility, remote actions, tariffs, diagnostics, and performance reporting.</span>
+                </button>
+              </div>
+
+              <div>
+                <article class="tab-panel" id="tab-pulse" role="tabpanel" aria-labelledby="trigger-pulse">
+                  <div class="tab-grid">
+                    <div class="product-copy">
+                      <div class="section-tag">Destination charging</div>
+                      <h3 style="margin-top: 10px; font-size: 1.8rem;">Pulse AC turns parked time into a premium charging amenity.</h3>
+                      <p style="margin-top: 14px;">
+                        Use Pulse AC for sites where charging should feel natural, quiet, and dependable. It fits hotel
+                        stays, workplace parking, multifamily properties, and longer retail visits where drivers expect
+                        charging to be available without a complicated start flow.
+                      </p>
+                      <div class="product-specs">
+                        <div class="spec">
+                          <span>Power range</span>
+                          <strong>7.4 to 22 kW</strong>
+                        </div>
+                        <div class="spec">
+                          <span>Best for</span>
+                          <strong>Long dwell destinations</strong>
+                        </div>
+                        <div class="spec">
+                          <span>Access models</span>
+                          <strong>Guest, app, RFID, employee, tenant</strong>
+                        </div>
+                        <div class="spec">
+                          <span>Design focus</span>
+                          <strong>Low-friction daily use</strong>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="visual-panel">
+                      <div class="mini-label">Product concept</div>
+                      <div class="visual-shell">
+                        <svg viewBox="0 0 420 280" aria-hidden="true">
+                          <rect width="420" height="280" fill="#eff5ff" />
+                          <rect x="0" y="200" width="420" height="80" fill="#dce8ff" />
+                          <rect x="172" y="48" width="86" height="138" rx="20" fill="#ffffff" />
+                          <rect x="188" y="68" width="54" height="32" rx="10" fill="#1a4fd8" />
+                          <rect x="192" y="114" width="44" height="10" rx="5" fill="#2d6bff" />
+                          <rect x="192" y="132" width="28" height="10" rx="5" fill="#8cb0ff" />
+                          <path d="M258 102 C318 104, 344 134, 352 202" fill="none" stroke="#65a0ff" stroke-width="10" stroke-linecap="round" />
+                          <rect x="346" y="194" width="18" height="30" rx="9" fill="#65a0ff" />
+                          <circle cx="102" cy="218" r="18" fill="#b9ffd8" />
+                          <circle cx="302" cy="222" r="18" fill="#ffd79a" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+
+                <article class="tab-panel" id="tab-vector" role="tabpanel" aria-labelledby="trigger-vector" hidden>
+                  <div class="tab-grid">
+                    <div class="product-copy">
+                      <div class="section-tag">Public fast charging</div>
+                      <h3 style="margin-top: 10px; font-size: 1.8rem;">Vector DC is shaped for sites that live on speed and visibility.</h3>
+                      <p style="margin-top: 14px;">
+                        Retail forecourts, roadside stops, urban hubs, and dense public charging locations need fast
+                        sessions, clear wayfinding, and strong uptime. Vector DC is the product layer for shorter dwell,
+                        higher turnover, and more visible commercial charging.
+                      </p>
+                      <div class="product-specs">
+                        <div class="spec">
+                          <span>Power range</span>
+                          <strong>60 to 320 kW</strong>
+                        </div>
+                        <div class="spec">
+                          <span>Best for</span>
+                          <strong>Quick-turn public sites</strong>
+                        </div>
+                        <div class="spec">
+                          <span>Session options</span>
+                          <strong>Tap, roaming, app, guest start</strong>
+                        </div>
+                        <div class="spec">
+                          <span>Design focus</span>
+                          <strong>Fast queues and clear entry points</strong>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="visual-panel">
+                      <div class="mini-label">Product concept</div>
+                      <div class="visual-shell">
+                        <svg viewBox="0 0 420 280" aria-hidden="true">
+                          <rect width="420" height="280" fill="#edf4ff" />
+                          <rect x="0" y="210" width="420" height="70" fill="#d6e6ff" />
+                          <rect x="152" y="32" width="110" height="176" rx="24" fill="#1e54dd" />
+                          <rect x="176" y="56" width="62" height="42" rx="14" fill="#ffffff" />
+                          <rect x="182" y="114" width="50" height="10" rx="5" fill="#b9ffd8" />
+                          <rect x="182" y="132" width="36" height="10" rx="5" fill="#cfe0ff" />
+                          <path d="M262 120 C320 124, 352 148, 360 214" fill="none" stroke="#ffc86f" stroke-width="12" stroke-linecap="round" />
+                          <rect x="354" y="206" width="20" height="34" rx="10" fill="#ffc86f" />
+                          <text x="86" y="86" fill="#1a4fd8" font-size="26" font-family="Poppins, sans-serif">320 kW</text>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+
+                <article class="tab-panel" id="tab-depot" role="tabpanel" aria-labelledby="trigger-depot" hidden>
+                  <div class="tab-grid">
+                    <div class="product-copy">
+                      <div class="section-tag">Fleet orchestration</div>
+                      <h3 style="margin-top: 10px; font-size: 1.8rem;">Depot Command keeps vehicles ready without wasting capacity.</h3>
+                      <p style="margin-top: 14px;">
+                        Fleet charging is less about one session and more about the whole operating schedule. Depot Command
+                        is built for charging queues, energy limits, departure windows, and the everyday reality of teams
+                        that need every vehicle ready when the shift starts.
+                      </p>
+                      <div class="product-specs">
+                        <div class="spec">
+                          <span>Use case</span>
+                          <strong>Commercial and municipal fleets</strong>
+                        </div>
+                        <div class="spec">
+                          <span>Controls</span>
+                          <strong>Queueing, load balancing, scheduling</strong>
+                        </div>
+                        <div class="spec">
+                          <span>Deployment</span>
+                          <strong>Mixed AC and DC depots</strong>
+                        </div>
+                        <div class="spec">
+                          <span>Design focus</span>
+                          <strong>Departure readiness</strong>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="visual-panel">
+                      <div class="mini-label">Product concept</div>
+                      <div class="visual-shell">
+                        <svg viewBox="0 0 420 280" aria-hidden="true">
+                          <rect width="420" height="280" fill="#eef4ff" />
+                          <rect x="28" y="32" width="364" height="216" rx="28" fill="#ffffff" />
+                          <rect x="48" y="54" width="154" height="80" rx="20" fill="#e9f1ff" />
+                          <rect x="220" y="54" width="152" height="80" rx="20" fill="#edf4ff" />
+                          <rect x="48" y="152" width="324" height="74" rx="22" fill="#f4f8ff" />
+                          <path d="M74 202 C112 168, 146 170, 178 198 S246 224, 340 176" fill="none" stroke="#2d6bff" stroke-width="9" stroke-linecap="round" />
+                          <rect x="80" y="80" width="18" height="32" rx="9" fill="#2d6bff" />
+                          <rect x="108" y="70" width="18" height="42" rx="9" fill="#7ea5ff" />
+                          <rect x="136" y="60" width="18" height="52" rx="9" fill="#b9ffd8" />
+                          <text x="296" y="88" fill="#1a4fd8" font-size="17" text-anchor="middle" font-family="Poppins, sans-serif">Ready-to-run</text>
+                          <text x="296" y="112" fill="#2d6bff" font-size="28" text-anchor="middle" font-family="Poppins, sans-serif">18 / 20</text>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+
+                <article class="tab-panel" id="tab-orbit" role="tabpanel" aria-labelledby="trigger-orbit" hidden>
+                  <div class="tab-grid">
+                    <div class="product-copy">
+                      <div class="section-tag">Operator software</div>
+                      <h3 style="margin-top: 10px; font-size: 1.8rem;">Orbit Cloud connects hardware to business performance.</h3>
+                      <p style="margin-top: 14px;">
+                        A charger portfolio becomes a real network only when it has monitoring, tariffs, alerts, remote
+                        actions, diagnostics, and portfolio reporting. Orbit Cloud brings the operational layer that helps
+                        teams commission faster and operate with fewer manual interventions.
+                      </p>
+                      <div class="product-specs">
+                        <div class="spec">
+                          <span>Functions</span>
+                          <strong>Monitor, alert, price, report</strong>
+                        </div>
+                        <div class="spec">
+                          <span>Integrations</span>
+                          <strong>OCPP, OCPI, payments, exports</strong>
+                        </div>
+                        <div class="spec">
+                          <span>Best for</span>
+                          <strong>Operators and network teams</strong>
+                        </div>
+                        <div class="spec">
+                          <span>Design focus</span>
+                          <strong>Uptime and visibility</strong>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="visual-panel">
+                      <div class="mini-label">Product concept</div>
+                      <div class="visual-shell">
+                        <svg viewBox="0 0 420 280" aria-hidden="true">
+                          <rect width="420" height="280" fill="#eef4ff" />
+                          <rect x="30" y="26" width="360" height="228" rx="30" fill="#ffffff" />
+                          <rect x="52" y="48" width="316" height="26" rx="13" fill="#eef4ff" />
+                          <circle cx="74" cy="61" r="5" fill="#ffd79a" />
+                          <circle cx="92" cy="61" r="5" fill="#b9ffd8" />
+                          <circle cx="110" cy="61" r="5" fill="#7ea5ff" />
+                          <rect x="52" y="94" width="128" height="90" rx="18" fill="#edf4ff" />
+                          <rect x="196" y="94" width="172" height="40" rx="16" fill="#f5f8ff" />
+                          <rect x="196" y="144" width="172" height="40" rx="16" fill="#f0f5ff" />
+                          <rect x="52" y="198" width="316" height="36" rx="18" fill="#f7faff" />
+                          <path d="M70 220 C108 188, 156 192, 190 214 S258 236, 346 176" fill="none" stroke="#2d6bff" stroke-width="8" stroke-linecap="round" />
+                          <text x="116" y="130" fill="#1a4fd8" font-size="16" text-anchor="middle" font-family="Poppins, sans-serif">Uptime</text>
+                          <text x="116" y="158" fill="#2d6bff" font-size="30" text-anchor="middle" font-family="Poppins, sans-serif">99.5%</text>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" data-reveal>
+          <div class="section-shell">
+            <div class="section-head">
+              <div>
+                <div class="section-tag">Charging models</div>
+                <h2>Organize the offer by site type, not just by hardware.</h2>
+                <p>
+                  This helps buyers understand where each product family belongs and why the software layer matters for
+                  performance after launch.
+                </p>
+              </div>
+            </div>
+            <div class="portfolio-grid">
+              <article class="portfolio-card">
+                <span class="meta-pill">Hospitality</span>
+                <h3 style="margin-top: 14px;">Hotels and mixed-use</h3>
+                <p style="margin-top: 12px;">
+                  Premium overnight charging that feels aligned with guest experience and modern property operations.
+                </p>
+                <div class="meta-row">
+                  <span class="mini-pill">Guest access</span>
+                  <span class="mini-pill">Dwell charging</span>
+                </div>
+              </article>
+              <article class="portfolio-card">
+                <span class="meta-pill">Retail</span>
+                <h3 style="margin-top: 14px;">Quick-turn public sites</h3>
+                <p style="margin-top: 12px;">
+                  Fast charging for convenience retail, urban stops, and visible public locations with higher session flow.
+                </p>
+                <div class="meta-row">
+                  <span class="mini-pill">Fast sessions</span>
+                  <span class="mini-pill">Public DC</span>
+                </div>
+              </article>
+              <article class="portfolio-card">
+                <span class="meta-pill">Fleet</span>
+                <h3 style="margin-top: 14px;">Depots and dispatch</h3>
+                <p style="margin-top: 12px;">
+                  Charge planning around route readiness, queueing rules, and energy windows instead of manual charger juggling.
+                </p>
+                <div class="meta-row">
+                  <span class="mini-pill">Scheduling</span>
+                  <span class="mini-pill">Energy rules</span>
+                </div>
+              </article>
+              <article class="portfolio-card">
+                <span class="meta-pill">Software</span>
+                <h3 style="margin-top: 14px;">Network oversight</h3>
+                <p style="margin-top: 12px;">
+                  Monitoring, remote actions, tariffs, uptime, diagnostics, and reporting across every charger format.
+                </p>
+                <div class="meta-row">
+                  <span class="mini-pill">Analytics</span>
+                  <span class="mini-pill">Alerts</span>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" data-reveal>
+          <div class="section-shell">
+            <div class="section-head">
+              <div>
+                <div class="section-tag">Site value</div>
+                <h2>Three lenses that keep the charging product commercially believable.</h2>
+                <p>
+                  Every rollout needs a clear driver experience, a viable energy model, and operational visibility after launch.
+                </p>
+              </div>
+            </div>
+            <div class="site-grid">
+              <article class="site-card">
+                <h3 style="font-size: 1.22rem;">Driver experience</h3>
+                <p style="margin-top: 12px;">
+                  Make the charger easy to find, easy to start, and easy to trust with clear states, modern UI, and low-friction payment.
+                </p>
+              </article>
+              <article class="site-card">
+                <h3 style="font-size: 1.22rem;">Energy and economics</h3>
+                <p style="margin-top: 12px;">
+                  Connect charger power, dwell behavior, pricing, and site constraints so the product story makes operational sense.
+                </p>
+              </article>
+              <article class="site-card">
+                <h3 style="font-size: 1.22rem;">Operations</h3>
+                <p style="margin-top: 12px;">
+                  Show that the network can be monitored, supported, and improved after launch rather than treated as a one-time install.
+                </p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="gallery" data-reveal>
+          <div class="section-shell">
+            <div class="section-head">
+              <div>
+                <div class="section-tag">Image gallery</div>
+                <h2>Charging environments and software concepts.</h2>
+                <p>
+                  Explore destination, fast charging, fleet, and software views in more detail.
+                </p>
+              </div>
+              <div class="gallery-toolbar">
+                <button class="gallery-filter active" type="button" data-filter="all">All</button>
+                <button class="gallery-filter" type="button" data-filter="destination">Destination</button>
+                <button class="gallery-filter" type="button" data-filter="public">Public fast</button>
+                <button class="gallery-filter" type="button" data-filter="fleet">Fleet</button>
+                <button class="gallery-filter" type="button" data-filter="software">Software</button>
+              </div>
+            </div>
+
+            <div class="gallery-grid">
+              <article
+                class="gallery-card"
+                data-size="wide"
+                data-gallery-category="destination"
+                data-gallery-title="Premium courtyard charging"
+                data-gallery-tag="Destination"
+                data-gallery-copy="A hospitality and mixed-use concept built for longer dwell sessions, guest charging, and a cleaner arrival experience."
+              >
+                <div class="gallery-art">
+                  <svg viewBox="0 0 760 430" aria-hidden="true">
+                    <defs>
+                      <linearGradient id="cardA" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#f9fbff" />
+                        <stop offset="100%" stop-color="#dfeaff" />
+                      </linearGradient>
+                    </defs>
+                    <rect width="760" height="430" fill="url(#cardA)" />
+                    <rect x="0" y="320" width="760" height="110" fill="#d3e3ff" />
+                    <rect x="456" y="112" width="110" height="176" rx="24" fill="#ffffff" />
+                    <rect x="480" y="138" width="62" height="38" rx="12" fill="#2d6bff" />
+                    <path d="M566 182 C628 184, 658 214, 676 318" fill="none" stroke="#7ea5ff" stroke-width="12" stroke-linecap="round" />
+                    <rect x="666" y="310" width="20" height="34" rx="10" fill="#7ea5ff" />
+                    <rect x="78" y="80" width="244" height="144" rx="28" fill="#edf4ff" />
+                    <rect x="110" y="126" width="180" height="12" rx="6" fill="#2d6bff" />
+                    <rect x="110" y="150" width="116" height="12" rx="6" fill="#8eb1ff" />
+                    <circle cx="150" cy="350" r="20" fill="#b9ffd8" />
+                    <circle cx="568" cy="352" r="20" fill="#ffd79a" />
+                  </svg>
+                </div>
+                <div class="gallery-copy">
+                  <span>Destination</span>
+                  <h3>Premium courtyard charging</h3>
+                  <p>Quiet AC charging for hotels, multifamily, and mixed-use environments.</p>
+                </div>
+              </article>
+
+              <article
+                class="gallery-card"
+                data-size="standard"
+                data-gallery-category="public"
+                data-gallery-title="Retail fast-charge island"
+                data-gallery-tag="Public fast"
+                data-gallery-copy="A public fast charging concept for visible retail sites, roadside stops, and quick-turn charging demand."
+              >
+                <div class="gallery-art">
+                  <svg viewBox="0 0 520 430" aria-hidden="true">
+                    <rect width="520" height="430" fill="#edf4ff" />
+                    <rect x="0" y="332" width="520" height="98" fill="#d8e6ff" />
+                    <rect x="198" y="56" width="124" height="208" rx="26" fill="#2d6bff" />
+                    <rect x="224" y="84" width="72" height="46" rx="14" fill="#ffffff" />
+                    <rect x="230" y="148" width="60" height="10" rx="5" fill="#b9ffd8" />
+                    <rect x="230" y="166" width="40" height="10" rx="5" fill="#dce7ff" />
+                    <path d="M322 152 C382 152, 412 184, 430 330" fill="none" stroke="#ffc86f" stroke-width="12" stroke-linecap="round" />
+                    <rect x="422" y="320" width="20" height="32" rx="10" fill="#ffc86f" />
+                    <text x="82" y="100" fill="#1a4fd8" font-size="24" font-family="Poppins, sans-serif">320 kW</text>
+                  </svg>
+                </div>
+                <div class="gallery-copy">
+                  <span>Public fast</span>
+                  <h3>Retail fast-charge island</h3>
+                  <p>High-speed charging shaped for visible public sites and shorter dwell times.</p>
+                </div>
+              </article>
+
+              <article
+                class="gallery-card"
+                data-size="small"
+                data-gallery-category="fleet"
+                data-gallery-title="Fleet depot energy wall"
+                data-gallery-tag="Fleet"
+                data-gallery-copy="A depot operations concept designed around charge queueing, dispatch readiness, and energy balancing."
+              >
+                <div class="gallery-art">
+                  <svg viewBox="0 0 420 430" aria-hidden="true">
+                    <rect width="420" height="430" fill="#f2f7ff" />
+                    <rect x="30" y="38" width="360" height="320" rx="30" fill="#ffffff" />
+                    <rect x="54" y="66" width="142" height="86" rx="18" fill="#edf4ff" />
+                    <rect x="214" y="66" width="150" height="86" rx="18" fill="#f7faff" />
+                    <rect x="54" y="170" width="310" height="130" rx="22" fill="#f5f8ff" />
+                    <path d="M74 246 C122 208, 160 212, 194 238 S256 272, 340 214" fill="none" stroke="#2d6bff" stroke-width="8" stroke-linecap="round" />
+                    <text x="288" y="106" fill="#1a4fd8" font-size="18" text-anchor="middle" font-family="Poppins, sans-serif">18 / 20</text>
+                  </svg>
+                </div>
+                <div class="gallery-copy">
+                  <span>Fleet</span>
+                  <h3>Fleet depot energy wall</h3>
+                  <p>Charging control for dispatch-driven environments where departure readiness matters.</p>
+                </div>
+              </article>
+
+              <article
+                class="gallery-card"
+                data-size="small"
+                data-gallery-category="software"
+                data-gallery-title="Operator control dashboard"
+                data-gallery-tag="Software"
+                data-gallery-copy="A software layer for monitoring, pricing, uptime visibility, and issue triage across charger portfolios."
+              >
+                <div class="gallery-art">
+                  <svg viewBox="0 0 420 430" aria-hidden="true">
+                    <rect width="420" height="430" fill="#eef4ff" />
+                    <rect x="30" y="34" width="360" height="320" rx="30" fill="#ffffff" />
+                    <rect x="52" y="54" width="316" height="24" rx="12" fill="#edf4ff" />
+                    <rect x="52" y="98" width="128" height="94" rx="18" fill="#f2f7ff" />
+                    <rect x="196" y="98" width="172" height="42" rx="16" fill="#f7faff" />
+                    <rect x="196" y="150" width="172" height="42" rx="16" fill="#f0f5ff" />
+                    <rect x="52" y="212" width="316" height="94" rx="18" fill="#f7faff" />
+                    <path d="M68 278 C112 242, 160 244, 196 268 S266 294, 350 226" fill="none" stroke="#2d6bff" stroke-width="8" stroke-linecap="round" />
+                  </svg>
+                </div>
+                <div class="gallery-copy">
+                  <span>Software</span>
+                  <h3>Operator control dashboard</h3>
+                  <p>One place for alerts, diagnostics, tariffs, uptime, and portfolio performance.</p>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" data-reveal>
+          <div class="section-shell">
+            <div class="section-head">
+              <div>
+                <div class="section-tag">Delivery model</div>
+                <h2>Move from site planning to live operations without losing the product story.</h2>
+              </div>
+            </div>
+            <div class="timeline">
+              <article class="timeline-card">
+                <span class="meta-pill">01</span>
+                <h3 style="margin-top: 16px; font-size: 1.18rem;">Assess the site</h3>
+                <p style="margin-top: 12px;">Map dwell time, site traffic, electrical capacity, and charger mix before procurement starts.</p>
+              </article>
+              <article class="timeline-card">
+                <span class="meta-pill">02</span>
+                <h3 style="margin-top: 16px; font-size: 1.18rem;">Choose the right layer</h3>
+                <p style="margin-top: 12px;">Match AC, DC, fleet, and software products to the real business model behind the property.</p>
+              </article>
+              <article class="timeline-card">
+                <span class="meta-pill">03</span>
+                <h3 style="margin-top: 16px; font-size: 1.18rem;">Launch with controls</h3>
+                <p style="margin-top: 12px;">Commission chargers, set site rules, enable pricing, and define support visibility before go-live.</p>
+              </article>
+              <article class="timeline-card">
+                <span class="meta-pill">04</span>
+                <h3 style="margin-top: 16px; font-size: 1.18rem;">Tune performance</h3>
+                <p style="margin-top: 12px;">Use network data, uptime trends, and session behavior to improve future sites faster.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="faq" data-reveal>
+          <div class="section-shell">
+            <div class="section-head">
+              <div>
+                <div class="section-tag">FAQ</div>
+                <h2>Questions buyers ask before they commit to a charging rollout.</h2>
+              </div>
+            </div>
+            <div class="faq-layout">
+              <div class="faq-stack">
+                <article class="faq-card open">
+                  <button class="faq-trigger" type="button" aria-expanded="true">
+                    <strong>Can one platform support both destination charging and public fast charging?</strong>
+                    <span class="faq-icon">+</span>
+                  </button>
+                  <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                      <p>
+                        Yes. Electra Hub supports mixed charger portfolios while keeping monitoring, pricing, access, and
+                        operations in one platform.
+                      </p>
+                    </div>
+                  </div>
+                </article>
+                <article class="faq-card">
+                  <button class="faq-trigger" type="button" aria-expanded="false">
+                    <strong>How is fleet charging different from public charging in the product story?</strong>
+                    <span class="faq-icon">+</span>
+                  </button>
+                  <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                      <p>
+                        Fleet charging is built around departure readiness and controlled energy windows. Public charging
+                        is built around access, pricing, visibility, and throughput.
+                      </p>
+                    </div>
+                  </div>
+                </article>
+                <article class="faq-card">
+                  <button class="faq-trigger" type="button" aria-expanded="false">
+                    <strong>Why keep a software layer visible instead of focusing only on charger hardware?</strong>
+                    <span class="faq-icon">+</span>
+                  </button>
+                  <div class="faq-answer">
+                    <div class="faq-answer-inner">
+                      <p>
+                        Hardware gets a site live. Software keeps it usable, measurable, and supportable. Monitoring,
+                        remote actions, tariffs, diagnostics, and reporting are part of the actual product value.
+                      </p>
+                    </div>
+                  </div>
+                </article>
+              </div>
+
+              <aside class="faq-aside">
+                <div class="section-tag">Built for</div>
+                <h3 style="margin-top: 10px; font-size: 1.5rem;">Deployment teams that need clarity from day one.</h3>
+                <ul>
+                  <li>site planning across hospitality, retail, workplace, multifamily, and depots</li>
+                  <li>mixed AC and DC portfolios with one operations layer</li>
+                  <li>network monitoring, diagnostics, pricing, and reporting after launch</li>
+                  <li>teams managing uptime, driver experience, and long-term utilization</li>
+                </ul>
+              </aside>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="contact" data-reveal>
+          <div class="section-shell">
+            <div class="section-head">
+              <div>
+                <div class="section-tag">Contact form</div>
+                <h2>Talk through your next charging project.</h2>
+                <p>
+                  Share the site type, charging model, and rollout goal, and we will map the right product mix for the site.
+                </p>
+              </div>
+            </div>
+
+            <div class="contact-grid">
+              <aside class="contact-card">
+                <h3 style="font-size: 1.5rem;">What to bring</h3>
+                <p style="margin-top: 14px;">
+                  The most useful starting inputs are property type, expected charger count, public versus private access,
+                  and whether the business case is destination charging, fast charging, fleet charging, or a mixed portfolio.
+                </p>
+                <div class="contact-badges">
+                  <span class="mini-pill">Destination charging</span>
+                  <span class="mini-pill">Public DC fast</span>
+                  <span class="mini-pill">Fleet depots</span>
+                  <span class="mini-pill">Software operations</span>
+                </div>
+              </aside>
+
+              <div class="contact-card">
+                <form id="contact-form">
+                  <div class="field-grid">
+                    <label>
+                      Name
+                      <input type="text" name="name" placeholder="Avery Brooks" required />
+                    </label>
+                    <label>
+                      Work email
+                      <input type="email" name="email" placeholder="avery@company.com" required />
+                    </label>
+                  </div>
+                  <div class="field-grid">
+                    <label>
+                      Company
+                      <input type="text" name="company" placeholder="Northline Properties" required />
+                    </label>
+                    <label>
+                      Project type
+                      <select name="projectType" required>
+                        <option value="">Select a project type</option>
+                        <option>Destination charging</option>
+                        <option>Public DC fast charging</option>
+                        <option>Fleet depot charging</option>
+                        <option>Operator software</option>
+                        <option>Mixed charging portfolio</option>
+                      </select>
+                    </label>
+                  </div>
+                  <label>
+                    Project brief
+                    <textarea
+                      name="brief"
+                      placeholder="We are planning a two-phase rollout and want help shaping the AC/DC mix, software layer, and operating model for the site."
+                      required
+                    ></textarea>
+                  </label>
+                  <div class="form-row">
+                    <button class="button primary" type="submit">Send project brief</button>
+                    <div>
+                      <div class="form-note">We will use this information to follow up on product fit and rollout scope.</div>
+                      <div id="form-status" class="form-status" aria-live="polite"></div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <footer class="footer" data-reveal>
+          <div class="footer-shell">
+            <p>Electra Hub brings destination, public fast, fleet, and operator software together in one charging platform.</p>
+            <div class="footer-links">
+              <a href="/org-page/terms.html">Terms &amp; Conditions</a>
+              <a href="#contact">Contact</a>
+            </div>
+          </div>
+        </footer>
+      </main>
+    </div>
+
+    <div class="modal" id="gallery-modal" aria-hidden="true">
+      <div class="modal-card">
+        <button class="modal-close" type="button" aria-label="Close gallery detail">x</button>
+        <div class="modal-visual" id="modal-visual"></div>
+        <div class="modal-copy">
+          <div class="section-tag" id="modal-tag">Gallery detail</div>
+          <h3 id="modal-title" style="margin-top: 10px; font-size: 1.5rem;">Charging concept</h3>
+          <p id="modal-copy" style="margin-top: 14px;">
+            Explore how the concept fits the broader charging portfolio.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const revealObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("revealed");
+              revealObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.15 }
+      );
+
+      document.querySelectorAll("[data-reveal]").forEach((element) => {
+        revealObserver.observe(element);
+      });
+
+      const counterObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) {
+              return;
+            }
+
+            const element = entry.target;
+            const target = Number(element.dataset.count || "0");
+            const duration = 1200;
+            const start = performance.now();
+
+            const step = (now) => {
+              const progress = Math.min((now - start) / duration, 1);
+              const eased = 1 - Math.pow(1 - progress, 3);
+              element.textContent = Math.round(target * eased);
+              if (progress < 1) {
+                requestAnimationFrame(step);
+              } else if (target === 99) {
+                element.textContent = "99.5";
+              }
+            };
+
+            requestAnimationFrame(step);
+            counterObserver.unobserve(element);
+          });
+        },
+        { threshold: 0.5 }
+      );
+
+      document.querySelectorAll("[data-count]").forEach((element) => {
+        counterObserver.observe(element);
+      });
+
+      const tabButtons = document.querySelectorAll(".tab-button");
+      const tabPanels = document.querySelectorAll(".tab-panel");
+
+      tabButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const targetId = button.dataset.tabTarget;
+
+          tabButtons.forEach((item) => {
+            const selected = item === button;
+            item.classList.toggle("active", selected);
+            item.setAttribute("aria-selected", String(selected));
+          });
+
+          tabPanels.forEach((panel) => {
+            panel.hidden = panel.id !== targetId;
+          });
+        });
+      });
+
+      const filters = document.querySelectorAll(".gallery-filter");
+      const galleryCards = document.querySelectorAll(".gallery-card");
+
+      filters.forEach((filter) => {
+        filter.addEventListener("click", () => {
+          const selected = filter.dataset.filter;
+          filters.forEach((item) => item.classList.toggle("active", item === filter));
+          galleryCards.forEach((card) => {
+            const matches = selected === "all" || card.dataset.galleryCategory === selected;
+            card.classList.toggle("hidden", !matches);
+          });
+        });
+      });
+
+      const modal = document.getElementById("gallery-modal");
+      const modalTitle = document.getElementById("modal-title");
+      const modalTag = document.getElementById("modal-tag");
+      const modalCopy = document.getElementById("modal-copy");
+      const modalVisual = document.getElementById("modal-visual");
+      const modalClose = modal.querySelector(".modal-close");
+
+      const closeModal = () => {
+        modal.classList.remove("open");
+        modal.setAttribute("aria-hidden", "true");
+      };
+
+      galleryCards.forEach((card) => {
+        card.addEventListener("click", () => {
+          modalTitle.textContent = card.dataset.galleryTitle || "Charging concept";
+          modalTag.textContent = card.dataset.galleryTag || "Gallery detail";
+          modalCopy.textContent = card.dataset.galleryCopy || "";
+          modalVisual.innerHTML = card.querySelector(".gallery-art").innerHTML;
+          modal.classList.add("open");
+          modal.setAttribute("aria-hidden", "false");
+        });
+      });
+
+      modalClose.addEventListener("click", closeModal);
+      modal.addEventListener("click", (event) => {
+        if (event.target === modal) {
+          closeModal();
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          closeModal();
+        }
+      });
+
+      document.querySelectorAll(".faq-trigger").forEach((trigger) => {
+        trigger.addEventListener("click", () => {
+          const card = trigger.closest(".faq-card");
+          const open = card.classList.contains("open");
+
+          document.querySelectorAll(".faq-card").forEach((item) => {
+            item.classList.remove("open");
+            item.querySelector(".faq-trigger").setAttribute("aria-expanded", "false");
+          });
+
+          if (!open) {
+            card.classList.add("open");
+            trigger.setAttribute("aria-expanded", "true");
+          }
+        });
+      });
+
+      const form = document.getElementById("contact-form");
+      const formStatus = document.getElementById("form-status");
+      const heroVideo = document.getElementById("hero-video");
+      const audioToggle = document.getElementById("audio-toggle");
+
+      if (heroVideo) {
+        heroVideo.play().catch(() => {});
+      }
+
+      if (audioToggle && heroVideo) {
+        const syncAudioButton = () => {
+          const soundEnabled = !heroVideo.muted;
+          audioToggle.textContent = soundEnabled ? "Mute sound" : "Enable sound";
+          audioToggle.setAttribute("aria-pressed", String(soundEnabled));
+        };
+
+        audioToggle.addEventListener("click", async () => {
+          heroVideo.muted = !heroVideo.muted;
+
+          try {
+            await heroVideo.play();
+          } catch (error) {
+            heroVideo.muted = true;
+          }
+
+          syncAudioButton();
+        });
+
+        syncAudioButton();
+      }
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const data = new FormData(form);
+        const name = (data.get("name") || "there").toString().trim();
+        formStatus.textContent = `Thanks ${name}. Your project brief is ready for follow-up.`;
+        formStatus.classList.add("success");
+        form.reset();
+      });
+    </script>
+  </body>
+</html>

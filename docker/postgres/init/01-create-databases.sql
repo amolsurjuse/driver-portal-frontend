@@ -1,0 +1,10 @@
+CREATE DATABASE user_db;
+CREATE DATABASE payment_db;
+CREATE DATABASE subscription_db;
+CREATE DATABASE charger_management_db;
+CREATE DATABASE station_db;
+CREATE DATABASE session_db;
+CREATE DATABASE billing_db;
+CREATE DATABASE ocpi_db;
+CREATE DATABASE ocpp_db;
+CREATE DATABASE pricing_db;

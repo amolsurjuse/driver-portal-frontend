@@ -1,0 +1,4 @@
+interface:
+  display_name: "LinkedIn Jobs"
+  short_description: "Find and target better-fit LinkedIn roles quickly"
+  default_prompt: "Use $linkedin-jobs to find high-fit LinkedIn roles and draft tailored applications."

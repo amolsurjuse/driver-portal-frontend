@@ -31,8 +31,11 @@ struct RootView: View {
             }
         }
         .task {
-            guard !sessionStore.didAttemptBootstrap else { return }
-            await sessionStore.bootstrap()
+            async let countriesPrefetch: Void = services.authService.prefetchCountries()
+            if !sessionStore.didAttemptBootstrap {
+                await sessionStore.bootstrap()
+            }
+            await countriesPrefetch
         }
     }
 }

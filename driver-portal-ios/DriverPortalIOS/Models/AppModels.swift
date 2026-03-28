@@ -163,7 +163,7 @@ enum ChargingStatus: String, Codable, Hashable {
     case inProgress = "In Progress"
 }
 
-struct ChargingSession: Hashable, Identifiable {
+struct ChargingSession: Codable, Hashable, Identifiable {
     var id: String { sessionId }
 
     let sessionId: String

@@ -17,18 +17,21 @@ final class SessionStore: ObservableObject {
 
     private let authService: AuthService
     private let tokenVault: SessionTokenVault
+    private let secureVault: SecureTokenVault
     private let userDefaults: UserDefaults
-    private let storageKey = "driver_portal_ios.access_token"
+    private let legacyStorageKey = "driver_portal_ios.access_token"
 
     init(
         authService: AuthService,
         tokenVault: SessionTokenVault,
+        secureVault: SecureTokenVault = SecureTokenVault(),
         userDefaults: UserDefaults = .standard
     ) {
         self.authService = authService
         self.tokenVault = tokenVault
+        self.secureVault = secureVault
         self.userDefaults = userDefaults
-        restoreStoredToken()
+        migrateAndRestore()
     }
 
     func bootstrap() async {
@@ -107,12 +110,26 @@ final class SessionStore: ObservableObject {
         email = nil
         roles = []
         tokenVault.accessToken = nil
-        userDefaults.removeObject(forKey: storageKey)
+        secureVault.accessToken = nil
+        secureVault.refreshToken = nil
+        userDefaults.removeObject(forKey: legacyStorageKey)
     }
 
-    private func restoreStoredToken() {
-        guard let token = userDefaults.string(forKey: storageKey), !token.isEmpty else { return }
-        apply(accessToken: token)
+    // MARK: - Private
+
+    /// Migrate tokens from UserDefaults to Keychain on first launch after update,
+    /// then always restore from Keychain.
+    private func migrateAndRestore() {
+        // Check if there's a legacy token in UserDefaults that needs migration
+        if let legacyToken = userDefaults.string(forKey: legacyStorageKey), !legacyToken.isEmpty {
+            secureVault.accessToken = legacyToken
+            userDefaults.removeObject(forKey: legacyStorageKey)
+        }
+
+        // Restore from Keychain
+        if let token = secureVault.accessToken, !token.isEmpty {
+            apply(accessToken: token)
+        }
     }
 
     private func apply(accessToken: String) {
@@ -123,6 +140,6 @@ final class SessionStore: ObservableObject {
         self.roles = claims?.roles ?? []
         self.authError = nil
         self.tokenVault.accessToken = accessToken
-        self.userDefaults.set(accessToken, forKey: storageKey)
+        self.secureVault.accessToken = accessToken
     }
 }

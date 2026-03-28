@@ -1,0 +1,28 @@
+<svg width="520" height="120" viewBox="0 0 520 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Electra Hub logo">
+  <defs>
+    <linearGradient id="eh-frame-light" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4ca6ff" />
+      <stop offset="1" stop-color="#3be0f1" />
+    </linearGradient>
+    <linearGradient id="eh-bolt-light" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#b8f0e5" />
+      <stop offset="1" stop-color="#7dd7c9" />
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(10 12)">
+    <path d="M8 8h84L82 26H34v20h36l-9 16H34v38H8z" fill="url(#eh-frame-light)" />
+    <path
+      d="M16 78V63c0-12 10-22 22-22h16v-6h7v6h7v-6h7v6h4a6 6 0 1 1 0 12h-4v13h-7V53h-7v13h-7V53H38c-6 0-10 4-10 10v15z"
+      fill="#ffffff"
+    />
+    <path d="M70 2 50 46h20L54 106 92 53H72z" fill="url(#eh-bolt-light)" />
+  </g>
+
+  <text x="126" y="72" font-family="Avenir, Montserrat, Manrope, sans-serif" font-size="66" font-weight="700" fill="#ffffff">
+    Electra
+  </text>
+  <text x="348" y="72" font-family="Avenir, Montserrat, Manrope, sans-serif" font-size="66" font-weight="700" fill="#86d4ff">
+    Hub
+  </text>
+</svg>

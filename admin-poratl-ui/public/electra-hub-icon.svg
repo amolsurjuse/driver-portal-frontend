@@ -1,0 +1,19 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Electra Hub icon">
+  <defs>
+    <linearGradient id="eh-frame" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b7eea" />
+      <stop offset="1" stop-color="#1bc8e4" />
+    </linearGradient>
+    <linearGradient id="eh-bolt" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#86d6c8" />
+      <stop offset="1" stop-color="#4cb6a9" />
+    </linearGradient>
+  </defs>
+
+  <path d="M20 18h84l-10 18H46v20h36l-9 16H46v38H20z" fill="url(#eh-frame)" />
+  <path
+    d="M28 88V73c0-12 10-22 22-22h16v-6h7v6h7v-6h7v6h4a6 6 0 1 1 0 12h-4v13h-7V63h-7v13h-7V63H50c-6 0-10 4-10 10v15z"
+    fill="#ffffff"
+  />
+  <path d="M82 12 62 56h20l-16 60 38-53H84z" fill="url(#eh-bolt)" />
+</svg>

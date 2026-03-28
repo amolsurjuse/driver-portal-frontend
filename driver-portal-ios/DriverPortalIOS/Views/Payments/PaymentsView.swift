@@ -344,6 +344,7 @@ struct PaymentsView: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
 
                             Button("Add balance") {
+                                Haptics.impact(.medium)
                                 Task { await model.addBalance() }
                             }
                             .buttonStyle(.borderedProminent)
@@ -459,6 +460,7 @@ struct PaymentsView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
 
                         Button("Add card") {
+                            Haptics.impact(.medium)
                             Task { await model.addCard() }
                         }
                         .buttonStyle(.borderedProminent)
@@ -506,6 +508,11 @@ struct PaymentsView: View {
                 .disabled(model.isLoading)
             }
         }
+        .refreshable {
+            Haptics.impact(.light)
+            await model.load()
+            Haptics.success()
+        }
         .task {
             await model.loadIfNeeded()
         }
@@ -524,6 +531,7 @@ struct PaymentsView: View {
             }
             Button("Delete", role: .destructive) {
                 guard let card = pendingDeleteCard else { return }
+                Haptics.warning()
                 Task {
                     await model.deleteCard(card)
                     pendingDeleteCard = nil

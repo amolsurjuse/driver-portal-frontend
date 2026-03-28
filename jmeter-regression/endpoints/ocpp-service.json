@@ -1,0 +1,129 @@
+{
+  "module": "ocpp-service",
+  "target": {
+    "protocol": "http",
+    "host": "ocpp-service",
+    "port": 8082
+  },
+  "endpointCount": 13,
+  "generatedAt": "2026-03-21T17:57:02.363632+00:00",
+  "endpoints": [
+    {
+      "name": "POST /api/v1/ocpp/commands/{chargePointId}/change-configuration",
+      "method": "POST",
+      "pathTemplate": "/api/v1/ocpp/commands/{chargePointId}/change-configuration",
+      "path": "/api/v1/ocpp/commands/11111111-1111-1111-1111-111111111111/change-configuration",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpp-service/src/main/java/com/electrahub/ocpp/web/RemoteCommandController.java"
+    },
+    {
+      "name": "POST /api/v1/ocpp/commands/{chargePointId}/get-configuration",
+      "method": "POST",
+      "pathTemplate": "/api/v1/ocpp/commands/{chargePointId}/get-configuration",
+      "path": "/api/v1/ocpp/commands/11111111-1111-1111-1111-111111111111/get-configuration",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpp-service/src/main/java/com/electrahub/ocpp/web/RemoteCommandController.java"
+    },
+    {
+      "name": "POST /api/v1/ocpp/commands/{chargePointId}/remote-start",
+      "method": "POST",
+      "pathTemplate": "/api/v1/ocpp/commands/{chargePointId}/remote-start",
+      "path": "/api/v1/ocpp/commands/11111111-1111-1111-1111-111111111111/remote-start",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpp-service/src/main/java/com/electrahub/ocpp/web/RemoteCommandController.java"
+    },
+    {
+      "name": "POST /api/v1/ocpp/commands/{chargePointId}/remote-stop",
+      "method": "POST",
+      "pathTemplate": "/api/v1/ocpp/commands/{chargePointId}/remote-stop",
+      "path": "/api/v1/ocpp/commands/11111111-1111-1111-1111-111111111111/remote-stop",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpp-service/src/main/java/com/electrahub/ocpp/web/RemoteCommandController.java"
+    },
+    {
+      "name": "POST /api/v1/ocpp/commands/{chargePointId}/reset",
+      "method": "POST",
+      "pathTemplate": "/api/v1/ocpp/commands/{chargePointId}/reset",
+      "path": "/api/v1/ocpp/commands/11111111-1111-1111-1111-111111111111/reset",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpp-service/src/main/java/com/electrahub/ocpp/web/RemoteCommandController.java"
+    },
+    {
+      "name": "POST /api/v1/ocpp/commands/{chargePointId}/set-charging-profile",
+      "method": "POST",
+      "pathTemplate": "/api/v1/ocpp/commands/{chargePointId}/set-charging-profile",
+      "path": "/api/v1/ocpp/commands/11111111-1111-1111-1111-111111111111/set-charging-profile",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpp-service/src/main/java/com/electrahub/ocpp/web/RemoteCommandController.java"
+    },
+    {
+      "name": "POST /api/v1/ocpp/commands/{chargePointId}/trigger-message",
+      "method": "POST",
+      "pathTemplate": "/api/v1/ocpp/commands/{chargePointId}/trigger-message",
+      "path": "/api/v1/ocpp/commands/11111111-1111-1111-1111-111111111111/trigger-message",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpp-service/src/main/java/com/electrahub/ocpp/web/RemoteCommandController.java"
+    },
+    {
+      "name": "POST /api/v1/ocpp/commands/{chargePointId}/unlock-connector",
+      "method": "POST",
+      "pathTemplate": "/api/v1/ocpp/commands/{chargePointId}/unlock-connector",
+      "path": "/api/v1/ocpp/commands/11111111-1111-1111-1111-111111111111/unlock-connector",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpp-service/src/main/java/com/electrahub/ocpp/web/RemoteCommandController.java"
+    },
+    {
+      "name": "GET /api/v1/ocpp/connections",
+      "method": "GET",
+      "pathTemplate": "/api/v1/ocpp/connections",
+      "path": "/api/v1/ocpp/connections",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpp-service/src/main/java/com/electrahub/ocpp/web/OcppConnectionController.java"
+    },
+    {
+      "name": "GET /api/v1/ocpp/connections/count",
+      "method": "GET",
+      "pathTemplate": "/api/v1/ocpp/connections/count",
+      "path": "/api/v1/ocpp/connections/count",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpp-service/src/main/java/com/electrahub/ocpp/web/OcppConnectionController.java"
+    },
+    {
+      "name": "GET /api/v1/ocpp/connections/{chargePointId}",
+      "method": "GET",
+      "pathTemplate": "/api/v1/ocpp/connections/{chargePointId}",
+      "path": "/api/v1/ocpp/connections/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpp-service/src/main/java/com/electrahub/ocpp/web/OcppConnectionController.java"
+    },
+    {
+      "name": "GET /api/v1/ocpp/stats/connections/history",
+      "method": "GET",
+      "pathTemplate": "/api/v1/ocpp/stats/connections/history",
+      "path": "/api/v1/ocpp/stats/connections/history",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpp-service/src/main/java/com/electrahub/ocpp/web/OcppStatsController.java"
+    },
+    {
+      "name": "GET /api/v1/ocpp/stats/messages",
+      "method": "GET",
+      "pathTemplate": "/api/v1/ocpp/stats/messages",
+      "path": "/api/v1/ocpp/stats/messages",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpp-service/src/main/java/com/electrahub/ocpp/web/OcppStatsController.java"
+    }
+  ]
+}
