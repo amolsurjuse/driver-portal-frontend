@@ -121,3 +121,21 @@ export type PageResponse<T> = {
   size: number;
   number: number;
 };
+
+export type PricingSearchReindexResponse = {
+  indexName: string;
+  totalPlans: number;
+  indexedPlans: number;
+  failedPlans: number;
+  executedAt: string;
+};
+
+export type PricingSearchSyncResponse = {
+  indexName: string;
+  syncType: string;
+  syncValue: string;
+  candidatePlans: number;
+  indexedPlans: number;
+  failedPlans: number;
+  executedAt: string;
+};

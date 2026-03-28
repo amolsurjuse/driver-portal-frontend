@@ -8,6 +8,8 @@ import {
   updatePricingPlan,
   deactivatePricingPlan,
   getPlanHistory,
+  reindexPricingSearch,
+  syncPricingSearchByPlanId,
 } from '../api/pricing';
 import type {
   PricingPlan,
@@ -91,6 +93,9 @@ export default function PricingPage() {
   const [formData, setFormData] = useState<CreatePricingPlanRequest>(emptyForm());
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [defaultsSubmitting, setDefaultsSubmitting] = useState(false);
+  const [pricingReindexing, setPricingReindexing] = useState(false);
+  const [pricingSyncing, setPricingSyncing] = useState(false);
+  const [pricingSyncPlanId, setPricingSyncPlanId] = useState('');
 
   /* detail/history */
   const [selectedPlan, setSelectedPlan] = useState<PricingPlan | null>(null);
@@ -292,6 +297,43 @@ export default function PricingPage() {
       toast.addToast(err instanceof Error ? err.message : 'Failed to add default pricing plans', 'error');
     } finally {
       setDefaultsSubmitting(false);
+    }
+  }
+
+  async function handleReindexPricingSearch() {
+    setPricingReindexing(true);
+    try {
+      const result = await reindexPricingSearch(token);
+      toast.addToast(
+        `Pricing ES reindex completed: ${result.indexedPlans}/${result.totalPlans} indexed, ${result.failedPlans} failed.`,
+        result.failedPlans > 0 ? 'warning' : 'success',
+      );
+    } catch (err) {
+      toast.addToast(err instanceof Error ? err.message : 'Failed to reindex pricing search index', 'error');
+    } finally {
+      setPricingReindexing(false);
+    }
+  }
+
+  async function handleSyncPricingSearchByPlanId() {
+    const planId = pricingSyncPlanId.trim();
+    if (!planId) {
+      toast.addToast('Enter a pricing plan ID to run selective ES sync.', 'warning');
+      return;
+    }
+
+    setPricingSyncing(true);
+    try {
+      const result = await syncPricingSearchByPlanId(token, planId);
+      const tone = result.failedPlans > 0 ? 'warning' : 'success';
+      toast.addToast(
+        `Pricing ES sync (${result.syncType}) for ${result.syncValue}: ${result.indexedPlans}/${result.candidatePlans} indexed, ${result.failedPlans} failed.`,
+        tone,
+      );
+    } catch (err) {
+      toast.addToast(err instanceof Error ? err.message : 'Failed selective pricing ES sync', 'error');
+    } finally {
+      setPricingSyncing(false);
     }
   }
 
@@ -613,6 +655,46 @@ export default function PricingPage() {
           </div>
         )}
       </header>
+
+      {isListRoute ? (
+        <section className="single-panel">
+          <div className="panel-header subscription-page-head">
+            <div>
+              <p className="section-label">Elasticsearch</p>
+              <h2>Pricing Sync Controls</h2>
+              <p className="subtle-copy">Push pricing plans to ES with full reindex or one-plan selective sync.</p>
+            </div>
+          </div>
+
+          <div className="subscription-filter-bar user-filter-bar" style={{ marginTop: '0.5rem' }}>
+            <label className="field subscription-search-field">
+              <span>Selective sync by plan ID</span>
+              <input
+                placeholder="Pricing plan UUID"
+                type="text"
+                value={pricingSyncPlanId}
+                onChange={(event) => setPricingSyncPlanId(event.target.value)}
+              />
+            </label>
+            <button
+              className="secondary-button"
+              onClick={handleSyncPricingSearchByPlanId}
+              disabled={pricingSyncing || !pricingSyncPlanId.trim()}
+              type="button"
+            >
+              {pricingSyncing ? 'Syncing...' : 'Sync Plan To ES'}
+            </button>
+            <button
+              className="primary-button"
+              onClick={handleReindexPricingSearch}
+              disabled={pricingReindexing}
+              type="button"
+            >
+              {pricingReindexing ? 'Reindexing...' : 'Full Reindex To ES'}
+            </button>
+          </div>
+        </section>
+      ) : null}
 
       {isListRoute ? (
         <section className="single-panel">

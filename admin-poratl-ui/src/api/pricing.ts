@@ -5,6 +5,8 @@ import type {
   PageResponse,
   PriceHistory,
   PricingPlan,
+  PricingSearchReindexResponse,
+  PricingSearchSyncResponse,
   PricingPlanSummary,
   UpdatePricingPlanRequest,
 } from '../types/pricing';
@@ -111,4 +113,23 @@ export async function getPlanHistory(
 
 export async function getPricingHealth(): Promise<{ status: string; timestamp: string }> {
   return requestJson<{ status: string; timestamp: string }>(`${base}/health`);
+}
+
+/* ── Elasticsearch Sync ── */
+
+export async function reindexPricingSearch(token: string): Promise<PricingSearchReindexResponse> {
+  return requestJson<PricingSearchReindexResponse>(`${base}/plans/search/reindex`, {
+    method: 'POST',
+    token,
+  });
+}
+
+export async function syncPricingSearchByPlanId(
+  token: string,
+  planId: string,
+): Promise<PricingSearchSyncResponse> {
+  return requestJson<PricingSearchSyncResponse>(`${base}/plans/search/sync/${encodeURIComponent(planId)}`, {
+    method: 'POST',
+    token,
+  });
 }

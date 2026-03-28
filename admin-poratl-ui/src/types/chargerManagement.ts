@@ -90,6 +90,24 @@ export type ConnectorRecord = {
   updatedAt: string;
 };
 
+export type ConnectorSearchReindexResponse = {
+  indexName: string;
+  totalConnectors: number;
+  indexedConnectors: number;
+  failedConnectors: number;
+  executedAt: string;
+};
+
+export type ConnectorSearchSyncResponse = {
+  indexName: string;
+  syncType: string;
+  syncValue: string;
+  candidateConnectors: number;
+  indexedConnectors: number;
+  failedConnectors: number;
+  executedAt: string;
+};
+
 export type CreateEnterpriseRequest = {
   name: string;
   countryCode: string;

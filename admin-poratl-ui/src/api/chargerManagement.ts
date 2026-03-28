@@ -2,6 +2,8 @@ import { chargerApiBaseUrl } from './config';
 import { requestJson } from './http';
 import type {
   ChargerRecord,
+  ConnectorSearchReindexResponse,
+  ConnectorSearchSyncResponse,
   ConnectorRecord,
   CreateChargerRequest,
   CreateConnectorRequest,
@@ -182,4 +184,44 @@ export function createConnector(token: string, payload: CreateConnectorRequest) 
     token,
     body: JSON.stringify(payload),
   });
+}
+
+export function reindexConnectorSearch(token: string) {
+  return requestJson<ConnectorSearchReindexResponse>(
+    `${chargerApiBaseUrl}/api/v1/admin/connectors/search/reindex`,
+    {
+      method: 'POST',
+      token,
+    }
+  );
+}
+
+export function syncConnectorSearchByConnectorId(token: string, connectorId: string) {
+  return requestJson<ConnectorSearchSyncResponse>(
+    `${chargerApiBaseUrl}/api/v1/admin/connectors/search/sync/${encodeURIComponent(connectorId)}`,
+    {
+      method: 'POST',
+      token,
+    }
+  );
+}
+
+export function syncConnectorSearchByEvseId(token: string, evseId: string) {
+  return requestJson<ConnectorSearchSyncResponse>(
+    `${chargerApiBaseUrl}/api/v1/admin/connectors/search/sync/evse/${encodeURIComponent(evseId)}`,
+    {
+      method: 'POST',
+      token,
+    }
+  );
+}
+
+export function syncConnectorSearchByChargerId(token: string, chargerId: string) {
+  return requestJson<ConnectorSearchSyncResponse>(
+    `${chargerApiBaseUrl}/api/v1/admin/connectors/search/sync/charger/${encodeURIComponent(chargerId)}`,
+    {
+      method: 'POST',
+      token,
+    }
+  );
 }

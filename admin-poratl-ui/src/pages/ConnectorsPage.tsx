@@ -1,5 +1,13 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { createConnector, listConnectors, listEvses } from '../api/chargerManagement';
+import {
+  createConnector,
+  listConnectors,
+  listEvses,
+  reindexConnectorSearch,
+  syncConnectorSearchByChargerId,
+  syncConnectorSearchByConnectorId,
+  syncConnectorSearchByEvseId,
+} from '../api/chargerManagement';
 import { listPricingPlans } from '../api/pricing';
 import { TableSkeleton } from '../components/ui/Skeleton';
 import { TableActionIconButton } from '../components/ui/TableActionIconButton';
@@ -10,6 +18,7 @@ import type { ConnectorRecord, EvseRecord } from '../types/chargerManagement';
 import type { PricingPlan } from '../types/pricing';
 
 type ViewMode = 'list' | 'add';
+type ConnectorSyncScope = 'CONNECTOR' | 'EVSE' | 'CHARGER';
 
 const PAGE_SIZE = 100;
 const connectorStandards = ['CCS1', 'CCS2', 'NACS', 'CHADEMO', 'IEC_62196_T2', 'IEC_62196_T2_COMBO'];
@@ -28,6 +37,10 @@ export default function ConnectorsPage() {
   const [evses, setEvses] = useState<EvseRecord[]>([]);
   const [pricingPlans, setPricingPlans] = useState<PricingPlan[]>([]);
   const [total, setTotal] = useState(0);
+  const [connectorReindexing, setConnectorReindexing] = useState(false);
+  const [connectorSyncing, setConnectorSyncing] = useState(false);
+  const [connectorSyncScope, setConnectorSyncScope] = useState<ConnectorSyncScope>('CONNECTOR');
+  const [connectorSyncValue, setConnectorSyncValue] = useState('');
 
   const [form, setForm] = useState({
     connectorId: '',
@@ -149,6 +162,47 @@ export default function ConnectorsPage() {
     setView('add');
   }
 
+  async function handleReindexConnectorSearch() {
+    setConnectorReindexing(true);
+    try {
+      const result = await reindexConnectorSearch(token);
+      addToast(
+        `Connector ES reindex completed: ${result.indexedConnectors}/${result.totalConnectors} indexed, ${result.failedConnectors} failed.`,
+        result.failedConnectors > 0 ? 'warning' : 'success',
+      );
+    } catch (error) {
+      addToast(error instanceof Error ? error.message : 'Failed connector ES reindex.', 'error');
+    } finally {
+      setConnectorReindexing(false);
+    }
+  }
+
+  async function handleSelectiveConnectorSync() {
+    const value = connectorSyncValue.trim();
+    if (!value) {
+      addToast('Provide connector/EVSE/charger id for selective ES sync.', 'warning');
+      return;
+    }
+
+    setConnectorSyncing(true);
+    try {
+      const result = connectorSyncScope === 'CONNECTOR'
+        ? await syncConnectorSearchByConnectorId(token, value)
+        : connectorSyncScope === 'EVSE'
+          ? await syncConnectorSearchByEvseId(token, value)
+          : await syncConnectorSearchByChargerId(token, value);
+
+      addToast(
+        `Connector ES sync (${result.syncType}) for ${result.syncValue}: ${result.indexedConnectors}/${result.candidateConnectors} indexed, ${result.failedConnectors} failed.`,
+        result.failedConnectors > 0 ? 'warning' : 'success',
+      );
+    } catch (error) {
+      addToast(error instanceof Error ? error.message : 'Failed selective connector ES sync.', 'error');
+    } finally {
+      setConnectorSyncing(false);
+    }
+  }
+
   return (
     <>
       <header className="portal-page-head">
@@ -178,85 +232,135 @@ export default function ConnectorsPage() {
       </section>
 
       {view === 'list' ? (
-        <section className="single-panel">
-          <div className="subscription-filter-bar user-filter-bar">
-            <label className="field subscription-search-field">
-              <span>Search connectors</span>
-              <input
-                placeholder="Find by connector ID, EVSE UID, charger, standard"
-                type="search"
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-              />
-            </label>
-            <button className="primary-button" onClick={() => setView('add')} type="button">
-              Add Connector
-            </button>
-          </div>
-
-          <div className="subscription-table-wrap">
-            {loading ? <TableSkeleton rows={6} cols={9} /> : null}
-            {!loading && connectors.length === 0 ? (
-              <div className="blank-card">
-                <h3>No connectors found</h3>
-                <p>Create connector records and assign OCPI tariff IDs.</p>
+        <>
+          <section className="single-panel">
+            <div className="panel-header subscription-page-head">
+              <div>
+                <p className="section-label">Elasticsearch</p>
+                <h2>Connector Sync Controls</h2>
+                <p className="subtle-copy">Publish connector records to ES with full reindex or scoped selective sync.</p>
               </div>
-            ) : null}
+            </div>
+            <div className="subscription-filter-bar user-filter-bar" style={{ marginTop: '0.5rem' }}>
+              <label className="field user-status-filter">
+                <span>Sync scope</span>
+                <select
+                  value={connectorSyncScope}
+                  onChange={(event) => setConnectorSyncScope(event.target.value as ConnectorSyncScope)}
+                >
+                  <option value="CONNECTOR">Connector ID</option>
+                  <option value="EVSE">EVSE ID</option>
+                  <option value="CHARGER">Charger ID</option>
+                </select>
+              </label>
+              <label className="field subscription-search-field">
+                <span>Sync value</span>
+                <input
+                  placeholder="Enter ID for selected scope"
+                  type="text"
+                  value={connectorSyncValue}
+                  onChange={(event) => setConnectorSyncValue(event.target.value)}
+                />
+              </label>
+              <button
+                className="secondary-button"
+                onClick={handleSelectiveConnectorSync}
+                disabled={connectorSyncing || !connectorSyncValue.trim()}
+                type="button"
+              >
+                {connectorSyncing ? 'Syncing...' : 'Selective Sync To ES'}
+              </button>
+              <button
+                className="primary-button"
+                onClick={handleReindexConnectorSearch}
+                disabled={connectorReindexing}
+                type="button"
+              >
+                {connectorReindexing ? 'Reindexing...' : 'Full Reindex To ES'}
+              </button>
+            </div>
+          </section>
 
-            {!loading && connectors.length > 0 ? (
-              <table className="data-table">
-                <colgroup>
-                  <col style={{ width: '13%' }} />
-                  <col style={{ width: '13%' }} />
-                  <col style={{ width: '12%' }} />
-                  <col style={{ width: '8%' }} />
-                  <col style={{ width: '8%' }} />
-                  <col style={{ width: '8%' }} />
-                  <col style={{ width: '8%' }} />
-                  <col style={{ width: '20%' }} />
-                  <col style={{ width: '10%' }} />
-                </colgroup>
-                <thead>
-                  <tr>
-                    <th>Connector ID</th>
-                    <th>EVSE UID</th>
-                    <th>Charger</th>
-                    <th>Standard</th>
-                    <th>Format</th>
-                    <th>Power Type</th>
-                    <th>Power</th>
-                    <th>OCPI Tariff IDs</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {connectors.map((connector) => (
-                    <tr key={connector.connectorId}>
-                      <td><code className="code-chip">{connector.connectorId}</code></td>
-                      <td>{connector.evseUid}</td>
-                      <td>{connector.chargerId}</td>
-                      <td>{connector.standard}</td>
-                      <td>{connector.format}</td>
-                      <td>{connector.powerType}</td>
-                      <td>{connector.maxPowerKw} kW</td>
-                      <td>
-                        {connector.ocpiTariffIds?.length
-                          ? `${connector.ocpiTariffIds.slice(0, 2).join(', ')}${connector.ocpiTariffIds.length > 2 ? ` +${connector.ocpiTariffIds.length - 2}` : ''}`
-                          : '—'}
-                      </td>
-                      <td>
-                        <div className="table-row-actions table-action-icons">
-                          <TableActionIconButton icon="view" label="View connector" onClick={() => handleView(connector)} />
-                          <TableActionIconButton icon="edit" label="Edit connector" onClick={() => handleEdit(connector)} />
-                        </div>
-                      </td>
+          <section className="single-panel">
+            <div className="subscription-filter-bar user-filter-bar">
+              <label className="field subscription-search-field">
+                <span>Search connectors</span>
+                <input
+                  placeholder="Find by connector ID, EVSE UID, charger, standard"
+                  type="search"
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                />
+              </label>
+              <button className="primary-button" onClick={() => setView('add')} type="button">
+                Add Connector
+              </button>
+            </div>
+
+            <div className="subscription-table-wrap">
+              {loading ? <TableSkeleton rows={6} cols={9} /> : null}
+              {!loading && connectors.length === 0 ? (
+                <div className="blank-card">
+                  <h3>No connectors found</h3>
+                  <p>Create connector records and assign OCPI tariff IDs.</p>
+                </div>
+              ) : null}
+
+              {!loading && connectors.length > 0 ? (
+                <table className="data-table">
+                  <colgroup>
+                    <col style={{ width: '13%' }} />
+                    <col style={{ width: '13%' }} />
+                    <col style={{ width: '12%' }} />
+                    <col style={{ width: '8%' }} />
+                    <col style={{ width: '8%' }} />
+                    <col style={{ width: '8%' }} />
+                    <col style={{ width: '8%' }} />
+                    <col style={{ width: '20%' }} />
+                    <col style={{ width: '10%' }} />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th>Connector ID</th>
+                      <th>EVSE UID</th>
+                      <th>Charger</th>
+                      <th>Standard</th>
+                      <th>Format</th>
+                      <th>Power Type</th>
+                      <th>Power</th>
+                      <th>OCPI Tariff IDs</th>
+                      <th>Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : null}
-          </div>
-        </section>
+                  </thead>
+                  <tbody>
+                    {connectors.map((connector) => (
+                      <tr key={connector.connectorId}>
+                        <td><code className="code-chip">{connector.connectorId}</code></td>
+                        <td>{connector.evseUid}</td>
+                        <td>{connector.chargerId}</td>
+                        <td>{connector.standard}</td>
+                        <td>{connector.format}</td>
+                        <td>{connector.powerType}</td>
+                        <td>{connector.maxPowerKw} kW</td>
+                        <td>
+                          {connector.ocpiTariffIds?.length
+                            ? `${connector.ocpiTariffIds.slice(0, 2).join(', ')}${connector.ocpiTariffIds.length > 2 ? ` +${connector.ocpiTariffIds.length - 2}` : ''}`
+                            : '—'}
+                        </td>
+                        <td>
+                          <div className="table-row-actions table-action-icons">
+                            <TableActionIconButton icon="view" label="View connector" onClick={() => handleView(connector)} />
+                            <TableActionIconButton icon="edit" label="Edit connector" onClick={() => handleEdit(connector)} />
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : null}
+            </div>
+          </section>
+        </>
       ) : null}
 
       {view === 'add' ? (
