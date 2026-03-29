@@ -26,7 +26,7 @@ struct OcpiChargersData: Decodable {
 }
 
 struct OcpiChargerData: Decodable {
-    let ocpiCharger: OcpiCharger
+    let ocpiCharger: OcpiCharger?
 }
 
 // MARK: - OCPI Charger
