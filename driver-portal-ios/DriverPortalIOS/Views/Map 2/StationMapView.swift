@@ -174,6 +174,7 @@ private struct StationDetailSheet: View {
     @State private var actionFeedback: String?
     @State private var isProcessingAction = false
     @State private var connectorDetail: OcpiConnector?
+    @State private var connectorPricingTariffIds: [String] = []
     @State private var isLoadingDetail = false
     @State private var detailError: String?
 
@@ -303,6 +304,7 @@ private struct StationDetailSheet: View {
                 ConnectorDetailSheet(
                     connector: connector,
                     ocpiConnector: connectorDetail,
+                    pricingTariffIds: connectorPricingTariffIds,
                     isLoading: isLoadingDetail,
                     error: detailError
                 )
@@ -318,15 +320,19 @@ private struct StationDetailSheet: View {
     private func fetchConnectorDetail(connectorId: String) {
         isLoadingDetail = true
         connectorDetail = nil
+        connectorPricingTariffIds = []
         detailError = nil
 
         Task {
             do {
-                let charger = try await loadOrFetchChargerDetail()
+                let charger = try await loadOrFetchChargerDetail(connectorId: connectorId)
                 let match = charger.evses
                     .flatMap(\.connectors)
                     .first(where: { $0.id == connectorId })
                 connectorDetail = match
+                connectorPricingTariffIds = (match?.tariffIds?.isEmpty == false)
+                    ? (match?.tariffIds ?? [])
+                    : (charger.pricing?.tariffIds ?? [])
                 if match == nil {
                     detailError = "Connector details not found."
                 }
@@ -337,7 +343,12 @@ private struct StationDetailSheet: View {
         }
     }
 
-    private func loadOrFetchChargerDetail() async throws -> OcpiCharger {
+    private func loadOrFetchChargerDetail(connectorId: String? = nil) async throws -> OcpiCharger {
+        if let connectorId, !connectorId.isEmpty {
+            // Connector details must query by selected connector id.
+            return try await chargerGraphQLService.getChargerDetail(connectorId: connectorId)
+        }
+
         if let chargerDetail {
             return chargerDetail
         }
@@ -559,6 +570,7 @@ private struct ConnectorRow: View {
 private struct ConnectorDetailSheet: View {
     let connector: ConnectorSummary
     let ocpiConnector: OcpiConnector?
+    let pricingTariffIds: [String]
     let isLoading: Bool
     let error: String?
 
@@ -632,12 +644,12 @@ private struct ConnectorDetailSheet: View {
                         }
 
                         // Pricing / Tariffs
-                        if let tariffIds = ocpiConnector?.tariffIds, !tariffIds.isEmpty {
+                        if !pricingTariffIds.isEmpty {
                             VStack(alignment: .leading, spacing: 12) {
                                 Text("Pricing & Tariffs")
                                     .font(.headline)
 
-                                ForEach(tariffIds, id: \.self) { tariffId in
+                                ForEach(pricingTariffIds, id: \.self) { tariffId in
                                     HStack(spacing: 10) {
                                         Image(systemName: "tag.fill")
                                             .foregroundStyle(.blue)
@@ -655,6 +667,15 @@ private struct ConnectorDetailSheet: View {
                                     )
                                 }
                             }
+                        } else {
+                            HStack(spacing: 8) {
+                                Image(systemName: "info.circle")
+                                    .foregroundStyle(.secondary)
+                                Text("Pricing details are unavailable for this connector.")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            .padding(.top, 8)
                         }
                     }
                 }
