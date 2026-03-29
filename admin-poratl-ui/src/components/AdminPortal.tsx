@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { deleteAdminUser, getAdminUser, resetAdminUserPassword, searchAdminUsers, searchUsers, updateAdminUser } from '../api/adminUsers';
 import { logoutAll } from '../api/auth';
 import { useDebouncedValue } from '../hooks/useDebouncedValue';
+import { BrandLogo } from './shared/BrandLogo';
 import { SubscriptionWorkspace } from './SubscriptionWorkspace';
 import type { AdminUpdateUserRequest, AdminUserDetail, AdminUserSummary, JwtPayload, UserSummary } from '../types/admin';
 
@@ -308,7 +309,7 @@ export function AdminPortal({ token, payload, onLogout }: AdminPortalProps) {
     <div className="admin-app-shell">
       <header className="admin-top-nav">
         <div className="logo admin-logo">
-          <img className="logo-wordmark" src="/electra-hub-logo-dark.svg" alt="Electra Hub" />
+          <BrandLogo size="header" />
         </div>
 
         <div className="admin-nav-links">

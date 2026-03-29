@@ -1,3 +1,5 @@
+import { BrandLogo } from './BrandLogo';
+
 type HeaderProps = {
   userIdentifier: string;
   onLogout: () => void;
@@ -7,7 +9,7 @@ export function Header({ userIdentifier, onLogout }: HeaderProps) {
   return (
     <header className="admin-top-nav">
       <div className="logo admin-logo">
-        <img className="logo-wordmark" src="/electra-hub-logo-dark.svg" alt="Electra Hub" />
+        <BrandLogo size="header" />
       </div>
 
       <div className="admin-nav-links">

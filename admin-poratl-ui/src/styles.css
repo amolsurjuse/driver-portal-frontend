@@ -141,6 +141,24 @@ select {
   box-shadow: none;
 }
 
+.brand-logo {
+  display: block;
+  height: auto;
+  border-radius: 0;
+  object-fit: contain;
+  object-position: left center;
+  box-shadow: none;
+}
+
+.brand-logo--header {
+  width: 210px;
+  max-width: min(210px, calc(100vw - 160px));
+}
+
+.brand-logo--hero {
+  width: min(260px, 100%);
+}
+
 .login-shell,
 .admin-app-shell {
   min-height: 100vh;
@@ -181,6 +199,10 @@ select {
   display: block;
   width: min(260px, 100%);
   height: auto;
+}
+
+.login-brand-mark .brand-logo--hero {
+  width: min(260px, 100%);
 }
 
 .login-hero h1 {
@@ -1772,7 +1794,16 @@ button:disabled {
     width: 182px;
   }
 
+  .brand-logo--header {
+    width: 182px;
+    max-width: min(182px, calc(100vw - 140px));
+  }
+
   .login-brand-mark img {
+    width: min(224px, 100%);
+  }
+
+  .login-brand-mark .brand-logo--hero {
     width: min(224px, 100%);
   }
 
@@ -1939,6 +1970,11 @@ body::before {
   box-shadow: none;
 }
 
+.brand-logo--header {
+  width: 210px;
+  max-width: min(210px, calc(100vw - 160px));
+}
+
 .admin-user-menu {
   border: 1px solid rgba(26, 138, 110, 0.12);
   background: rgba(255, 255, 255, 0.74);
@@ -2099,7 +2135,16 @@ body::before {
     width: 182px;
   }
 
+  .brand-logo--header {
+    width: 182px;
+    max-width: min(182px, calc(100vw - 140px));
+  }
+
   .login-brand-mark img {
+    width: min(224px, 100%);
+  }
+
+  .login-brand-mark .brand-logo--hero {
     width: min(224px, 100%);
   }
 }
