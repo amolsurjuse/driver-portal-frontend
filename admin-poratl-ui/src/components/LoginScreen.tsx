@@ -1,4 +1,5 @@
 import { FormEvent, useState } from 'react';
+import { BrandLogo } from './shared/BrandLogo';
 
 type LoginScreenProps = {
   loading: boolean;
@@ -19,7 +20,7 @@ export function LoginScreen({ loading, error, onSubmit }: LoginScreenProps) {
     <div className="login-shell">
       <section className="login-hero">
         <div className="login-brand-mark">
-          <img src="/electra-hub-logo-light.svg" alt="Electra Hub" />
+          <BrandLogo size="hero" variant="dark" />
         </div>
         <p className="eyebrow">System administration</p>
         <h1>Admin Portal</h1>
