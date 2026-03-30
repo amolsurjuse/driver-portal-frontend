@@ -326,9 +326,10 @@ private struct StationDetailSheet: View {
         Task {
             do {
                 let charger = try await loadOrFetchChargerDetail(connectorId: connectorId)
+                let normalizedConnectorId = connectorId.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
                 let match = charger.evses
                     .flatMap(\.connectors)
-                    .first(where: { $0.id == connectorId })
+                    .first(where: { $0.id.uppercased() == normalizedConnectorId })
                 connectorDetail = match
                 connectorPricingTariffIds = (match?.tariffIds?.isEmpty == false)
                     ? (match?.tariffIds ?? [])
@@ -345,8 +346,25 @@ private struct StationDetailSheet: View {
 
     private func loadOrFetchChargerDetail(connectorId: String? = nil) async throws -> OcpiCharger {
         if let connectorId, !connectorId.isEmpty {
-            // Connector details must query by selected connector id.
-            return try await chargerGraphQLService.getChargerDetail(connectorId: connectorId)
+            // Connector details should prefer connector id, but fall back to charger id
+            // when connector search misses due stale/non-canonical IDs in local state.
+            let normalizedConnectorId = connectorId.trimmingCharacters(in: .whitespacesAndNewlines)
+            let uppercaseConnectorId = normalizedConnectorId.uppercased()
+
+            do {
+                return try await chargerGraphQLService.getChargerDetail(connectorId: normalizedConnectorId)
+            } catch {
+                // Some environments index connector ids in uppercase; retry with uppercase
+                // before we fall back to charger id.
+                if uppercaseConnectorId != normalizedConnectorId {
+                    do {
+                        return try await chargerGraphQLService.getChargerDetail(connectorId: uppercaseConnectorId)
+                    } catch {
+                        // Continue to charger-id fallback.
+                    }
+                }
+                return try await chargerGraphQLService.getChargerDetail(chargerId: station.id)
+            }
         }
 
         if let chargerDetail {
@@ -745,7 +763,8 @@ final class StationMapViewModel: ObservableObject {
     @Published var error: String?
 
     /// Primary loader: fetches OCPI chargers from the GraphQL API.
-    /// Falls back to the REST station service (then sample data) if the GraphQL call fails.
+    /// Uses only live OCPI data to avoid surfacing stale/sample connector ids
+    /// that cannot be resolved by the charger detail endpoint.
     func loadChargers(service: ChargerGraphQLService, fallbackService: StationService) async {
         guard !isLoading else { return }
         isLoading = true
@@ -753,15 +772,12 @@ final class StationMapViewModel: ObservableObject {
 
         do {
             stations = try await service.getChargerStations(countryCode: "US", limit: 50, offset: 0)
-        } catch {
-            // Attempt REST fallback
-            do {
-                stations = try await fallbackService.getAllStations()
-            } catch {
-                // Last resort: sample data for development
-                stations = StationLocation.samples
-                self.error = nil
+            if stations.isEmpty {
+                error = "No live chargers available right now."
             }
+        } catch {
+            stations = []
+            self.error = "Unable to load live charger data. Please retry."
         }
 
         isLoading = false
