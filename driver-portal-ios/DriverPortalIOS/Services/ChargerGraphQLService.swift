@@ -78,11 +78,29 @@ final class ChargerGraphQLService {
         return chargers.compactMap { $0.toStationLocation() }
     }
 
-    /// Fetches a single charger by ID with full connector and tariff details.
-    func getChargerDetail(chargerId: String) async throws -> OcpiCharger {
+    /// Fetches a single charger detail projection by charger ID, connector ID, or both.
+    /// At least one identifier must be provided.
+    func getChargerDetail(chargerId: String? = nil, connectorId: String? = nil) async throws -> OcpiCharger {
+        let normalizedChargerId = chargerId?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let normalizedConnectorId = connectorId?.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        let hasChargerId = !(normalizedChargerId?.isEmpty ?? true)
+        let hasConnectorId = !(normalizedConnectorId?.isEmpty ?? true)
+        guard hasChargerId || hasConnectorId else {
+            throw APIError(statusCode: 0, message: "Either chargerId or connectorId is required.")
+        }
+
+        var arguments: [String] = []
+        if let normalizedChargerId, !normalizedChargerId.isEmpty {
+            arguments.append("chargerId: \"\(normalizedChargerId)\"")
+        }
+        if let normalizedConnectorId, !normalizedConnectorId.isEmpty {
+            arguments.append("connectorId: \"\(normalizedConnectorId)\"")
+        }
+
         let query = """
         query {
-          ocpiCharger(chargerId: "\(chargerId)") {
+          ocpiCharger(\(arguments.joined(separator: ", "))) {
             chargerId
             chargerName
             status

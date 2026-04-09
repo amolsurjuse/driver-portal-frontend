@@ -174,6 +174,7 @@ private struct StationDetailSheet: View {
     @State private var actionFeedback: String?
     @State private var isProcessingAction = false
     @State private var connectorDetail: OcpiConnector?
+    @State private var connectorPricingTariffIds: [String] = []
     @State private var isLoadingDetail = false
     @State private var detailError: String?
 
@@ -303,6 +304,7 @@ private struct StationDetailSheet: View {
                 ConnectorDetailSheet(
                     connector: connector,
                     ocpiConnector: connectorDetail,
+                    pricingTariffIds: connectorPricingTariffIds,
                     isLoading: isLoadingDetail,
                     error: detailError
                 )
@@ -318,15 +320,20 @@ private struct StationDetailSheet: View {
     private func fetchConnectorDetail(connectorId: String) {
         isLoadingDetail = true
         connectorDetail = nil
+        connectorPricingTariffIds = []
         detailError = nil
 
         Task {
             do {
-                let charger = try await loadOrFetchChargerDetail()
+                let charger = try await loadOrFetchChargerDetail(connectorId: connectorId)
+                let normalizedConnectorId = connectorId.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
                 let match = charger.evses
                     .flatMap(\.connectors)
-                    .first(where: { $0.id == connectorId })
+                    .first(where: { $0.id.uppercased() == normalizedConnectorId })
                 connectorDetail = match
+                connectorPricingTariffIds = (match?.tariffIds?.isEmpty == false)
+                    ? (match?.tariffIds ?? [])
+                    : (charger.pricing?.tariffIds ?? [])
                 if match == nil {
                     detailError = "Connector details not found."
                 }
@@ -337,7 +344,29 @@ private struct StationDetailSheet: View {
         }
     }
 
-    private func loadOrFetchChargerDetail() async throws -> OcpiCharger {
+    private func loadOrFetchChargerDetail(connectorId: String? = nil) async throws -> OcpiCharger {
+        if let connectorId, !connectorId.isEmpty {
+            // Connector details should prefer connector id, but fall back to charger id
+            // when connector search misses due stale/non-canonical IDs in local state.
+            let normalizedConnectorId = connectorId.trimmingCharacters(in: .whitespacesAndNewlines)
+            let uppercaseConnectorId = normalizedConnectorId.uppercased()
+
+            do {
+                return try await chargerGraphQLService.getChargerDetail(connectorId: normalizedConnectorId)
+            } catch {
+                // Some environments index connector ids in uppercase; retry with uppercase
+                // before we fall back to charger id.
+                if uppercaseConnectorId != normalizedConnectorId {
+                    do {
+                        return try await chargerGraphQLService.getChargerDetail(connectorId: uppercaseConnectorId)
+                    } catch {
+                        // Continue to charger-id fallback.
+                    }
+                }
+                return try await chargerGraphQLService.getChargerDetail(chargerId: station.id)
+            }
+        }
+
         if let chargerDetail {
             return chargerDetail
         }
@@ -559,6 +588,7 @@ private struct ConnectorRow: View {
 private struct ConnectorDetailSheet: View {
     let connector: ConnectorSummary
     let ocpiConnector: OcpiConnector?
+    let pricingTariffIds: [String]
     let isLoading: Bool
     let error: String?
 
@@ -632,12 +662,12 @@ private struct ConnectorDetailSheet: View {
                         }
 
                         // Pricing / Tariffs
-                        if let tariffIds = ocpiConnector?.tariffIds, !tariffIds.isEmpty {
+                        if !pricingTariffIds.isEmpty {
                             VStack(alignment: .leading, spacing: 12) {
                                 Text("Pricing & Tariffs")
                                     .font(.headline)
 
-                                ForEach(tariffIds, id: \.self) { tariffId in
+                                ForEach(pricingTariffIds, id: \.self) { tariffId in
                                     HStack(spacing: 10) {
                                         Image(systemName: "tag.fill")
                                             .foregroundStyle(.blue)
@@ -655,6 +685,15 @@ private struct ConnectorDetailSheet: View {
                                     )
                                 }
                             }
+                        } else {
+                            HStack(spacing: 8) {
+                                Image(systemName: "info.circle")
+                                    .foregroundStyle(.secondary)
+                                Text("Pricing details are unavailable for this connector.")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            .padding(.top, 8)
                         }
                     }
                 }
@@ -724,7 +763,8 @@ final class StationMapViewModel: ObservableObject {
     @Published var error: String?
 
     /// Primary loader: fetches OCPI chargers from the GraphQL API.
-    /// Falls back to the REST station service (then sample data) if the GraphQL call fails.
+    /// Uses only live OCPI data to avoid surfacing stale/sample connector ids
+    /// that cannot be resolved by the charger detail endpoint.
     func loadChargers(service: ChargerGraphQLService, fallbackService: StationService) async {
         guard !isLoading else { return }
         isLoading = true
@@ -732,15 +772,12 @@ final class StationMapViewModel: ObservableObject {
 
         do {
             stations = try await service.getChargerStations(countryCode: "US", limit: 50, offset: 0)
-        } catch {
-            // Attempt REST fallback
-            do {
-                stations = try await fallbackService.getAllStations()
-            } catch {
-                // Last resort: sample data for development
-                stations = StationLocation.samples
-                self.error = nil
+            if stations.isEmpty {
+                error = "No live chargers available right now."
             }
+        } catch {
+            stations = []
+            self.error = "Unable to load live charger data. Please retry."
         }
 
         isLoading = false
