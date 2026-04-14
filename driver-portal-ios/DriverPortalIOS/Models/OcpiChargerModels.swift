@@ -33,9 +33,11 @@ struct OcpiChargerData: Decodable {
 
 struct OcpiCharger: Decodable, Identifiable {
     let chargerId: String
-    let chargerName: String
+    let chargerName: String?
     let status: String
-    let location: OcpiLocation
+    let availablePorts: Int?
+    let busyPorts: Int?
+    let location: OcpiLocation?
     let pricing: OcpiPricing?
     let currentSession: OcpiCurrentSession?
     let evses: [OcpiEvse]
@@ -44,8 +46,8 @@ struct OcpiCharger: Decodable, Identifiable {
 }
 
 struct OcpiLocation: Decodable {
-    let ocpiLocationId: String
-    let name: String
+    let ocpiLocationId: String?
+    let name: String?
     let coordinates: OcpiCoordinates
 }
 
@@ -56,6 +58,20 @@ struct OcpiCoordinates: Decodable {
 
 struct OcpiPricing: Decodable {
     let tariffIds: [String]?
+    let tariffs: [OcpiTariff]?
+}
+
+struct OcpiTariff: Decodable, Identifiable {
+    var id: String { tariffId }
+
+    let tariffId: String
+    let name: String?
+    let description: String?
+    let currency: String?
+    let energyPrice: Double?
+    let timePrice: Double?
+    let parkingPrice: Double?
+    let flatFee: Double?
 }
 
 struct OcpiCurrentSession: Decodable {
@@ -81,6 +97,7 @@ struct OcpiConnector: Decodable, Identifiable {
     let format: String?
     let powerType: String?
     let tariffIds: [String]?
+    let tariffs: [OcpiTariff]?
 }
 
 // MARK: - Mapping to StationLocation
@@ -91,34 +108,43 @@ extension OcpiCharger {
     /// so the existing map UI can display it without changes.
     /// Returns `nil` when the charger has no valid coordinates.
     func toStationLocation() -> StationLocation? {
-        guard let lat = location.coordinates.latitude,
+        guard let location,
+              let lat = location.coordinates.latitude,
               let lng = location.coordinates.longitude else {
             return nil
         }
 
+        let pricingByTariffId = Dictionary(
+            uniqueKeysWithValues: (pricing?.tariffs ?? []).map { ($0.tariffId, $0) }
+        )
+
         let connectorSummaries = evses.flatMap { evse in
             evse.connectors.map { connector in
+                let connectorTariff = connector.tariffs?.first
+                    ?? connector.tariffIds?.compactMap { pricingByTariffId[$0] }.first
+                let perKwhPrice = connectorTariff?.energyPrice ?? 0.0
+
                 ConnectorSummary(
                     id: connector.id,
                     type: Self.mapConnectorStandard(connector.standard),
                     power: Self.estimatePower(standard: connector.standard, powerType: connector.powerType),
                     status: Self.mapConnectorStatus(connector.status, available: connector.available),
-                    tariffPerKwh: 0.0 // Tariff details not in this query; set a placeholder
+                    tariffPerKwh: perKwhPrice
                 )
             }
         }
 
         return StationLocation(
             id: chargerId,
-            name: chargerName,
-            address: location.name,
+            name: chargerName ?? chargerId,
+            address: location.name ?? "Charging Station",
             city: "",
             state: "",
             postalCode: "",
             latitude: lat,
             longitude: lng,
             connectors: connectorSummaries,
-            status: Self.mapStationStatus(status, evses: evses),
+            status: Self.mapStationStatus(status, connectors: connectorSummaries),
             operatingHours: nil,
             imageURL: nil
         )
@@ -147,28 +173,34 @@ extension OcpiCharger {
         switch status.uppercased() {
         case "AVAILABLE":
             return .available
-        case "CHARGING", "OCCUPIED":
+        case "CHARGING", "OCCUPIED", "PREPARING", "SUSPENDEDEV", "SUSPENDEDEVSE", "FINISHING":
             return .charging
         case "FAULTED", "INOPERATIVE":
             return .faulted
         case "OFFLINE", "OUTOFORDER":
             return .offline
-        case "RESERVED", "BLOCKED":
+        case "RESERVED", "BLOCKED", "UNAVAILABLE":
             return .reserved
         default:
             return .offline
         }
     }
 
-    private static func mapStationStatus(_ status: String, evses: [OcpiEvse]) -> StationStatus {
-        // If any EVSE is available, the station is available
-        let hasAvailable = evses.contains { $0.status.uppercased() == "AVAILABLE" }
-        if hasAvailable { return .available }
+    private static func mapStationStatus(_ status: String, connectors: [ConnectorSummary]) -> StationStatus {
+        if connectors.contains(where: { $0.status == .available }) {
+            return .available
+        }
+        if connectors.contains(where: { $0.status == .charging || $0.status == .reserved }) {
+            return .occupied
+        }
+        if connectors.contains(where: { $0.status == .faulted }) {
+            return .faulted
+        }
 
         switch status.uppercased() {
         case "AVAILABLE":
             return .available
-        case "CHARGING", "OCCUPIED":
+        case "CHARGING", "OCCUPIED", "PREPARING", "FINISHING":
             return .occupied
         case "FAULTED", "INOPERATIVE":
             return .faulted

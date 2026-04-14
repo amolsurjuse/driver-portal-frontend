@@ -6,6 +6,7 @@ struct AppConfiguration {
     let paymentBaseURL: URL
     let userBaseURL: URL
     let stationBaseURL: URL
+    let chargerBaseURL: URL
     let sessionBaseURL: URL
 
     static let electraHub = AppConfiguration(
@@ -13,6 +14,7 @@ struct AppConfiguration {
         paymentBaseURL: URL(string: "https://dev.electrahub.com:8443/payment")!,
         userBaseURL: URL(string: "https://dev.electrahub.com:8443/user")!,
         stationBaseURL: URL(string: "https://dev.electrahub.com:8443/station")!,
+        chargerBaseURL: URL(string: "https://dev.electrahub.com:8443/charger")!,
         sessionBaseURL: URL(string: "https://dev.electrahub.com:8443/session")!
     )
 }
@@ -485,6 +487,7 @@ final class AppServices {
     let paymentService: PaymentService
     let userService: UserService
     let stationService: StationService
+    let chargerGraphQLService: ChargerGraphQLService
     let chargingSessionService: ChargingSessionService
     let receiptPDFService: ReceiptPDFService
 
@@ -496,6 +499,7 @@ final class AppServices {
         self.paymentService = PaymentService(client: apiClient, configuration: configuration)
         self.userService = UserService(client: apiClient, configuration: configuration)
         self.stationService = StationService(client: apiClient, configuration: configuration)
+        self.chargerGraphQLService = ChargerGraphQLService(client: apiClient, configuration: configuration)
         self.chargingSessionService = ChargingSessionService(client: apiClient, configuration: configuration)
         self.receiptPDFService = ReceiptPDFService()
     }

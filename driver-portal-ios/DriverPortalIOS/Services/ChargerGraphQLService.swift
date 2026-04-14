@@ -26,12 +26,25 @@ final class ChargerGraphQLService {
             chargerId
             chargerName
             status
+            availablePorts
+            busyPorts
             location {
               ocpiLocationId
               name
               coordinates { latitude longitude }
             }
-            pricing { tariffIds }
+            pricing {
+              tariffIds
+              tariffs {
+                tariffId
+                name
+                currency
+                energyPrice
+                timePrice
+                parkingPrice
+                flatFee
+              }
+            }
             evses {
               uid
               status
@@ -43,6 +56,15 @@ final class ChargerGraphQLService {
                 format
                 powerType
                 tariffIds
+                tariffs {
+                  tariffId
+                  name
+                  currency
+                  energyPrice
+                  timePrice
+                  parkingPrice
+                  flatFee
+                }
               }
             }
           }
@@ -86,6 +108,8 @@ final class ChargerGraphQLService {
             chargerId
             chargerName
             status
+            availablePorts
+            busyPorts
             currentSession {
               id
               userId
@@ -97,7 +121,18 @@ final class ChargerGraphQLService {
               name
               coordinates { latitude longitude }
             }
-            pricing { tariffIds }
+            pricing {
+              tariffIds
+              tariffs {
+                tariffId
+                name
+                currency
+                energyPrice
+                timePrice
+                parkingPrice
+                flatFee
+              }
+            }
             evses {
               uid
               status
@@ -109,6 +144,15 @@ final class ChargerGraphQLService {
                 format
                 powerType
                 tariffIds
+                tariffs {
+                  tariffId
+                  name
+                  currency
+                  energyPrice
+                  timePrice
+                  parkingPrice
+                  flatFee
+                }
               }
             }
           }

@@ -79,6 +79,17 @@ final class ChargingSessionService {
                 URLQueryItem(name: "size", value: String(size))
             ]
         )
+        let historyItems: [HistorySessionResponse] = try await client.request(request)
+        return historyItems.map(\.asChargingSession)
+    }
+
+    func startSession(payload: StartChargingRequest) async throws -> StartChargingResponse {
+        let request = try client.makeRequest(
+            baseURL: configuration.sessionBaseURL,
+            path: "api/v1/sessions/start",
+            method: .post,
+            body: payload
+        )
         return try await client.request(request)
     }
 
@@ -87,9 +98,19 @@ final class ChargingSessionService {
             baseURL: configuration.sessionBaseURL,
             path: "api/v1/sessions/\(sessionId)/stop",
             method: .post,
-            body: EmptyStopBody()
+            body: StopChargingBody(reason: "Remote", userInitiated: true)
         )
         try await client.request(request)
+    }
+
+    func getReceipt(sessionId: String) async throws -> ChargingSession {
+        let request = try client.makeRequest(
+            baseURL: configuration.sessionBaseURL,
+            path: "api/v1/sessions/\(sessionId)/receipt",
+            method: .get
+        )
+        let receipt: ReceiptResponse = try await client.request(request)
+        return receipt.asChargingSession
     }
 
     /// Opens an SSE connection for live meter-value events on the given session.
@@ -117,4 +138,90 @@ final class ChargingSessionService {
     }
 }
 
-private struct EmptyStopBody: Encodable {}
+struct StartChargingRequest: Encodable {
+    let chargerId: String
+    let locationId: String?
+    let connectorId: String
+    let connectorNumber: Int?
+    let connectorType: String?
+    let paymentMethod: String
+    let idToken: String?
+    let idTokenType: String?
+    let authMethod: String?
+    let idempotencyKey: String
+    let currency: String
+}
+
+struct StartChargingResponse: Decodable {
+    let sessionId: String
+    let status: String
+    let message: String
+    let authorizationStatus: String?
+    let remoteStartStatus: String?
+}
+
+private struct StopChargingBody: Encodable {
+    let reason: String?
+    let userInitiated: Bool?
+}
+
+private struct HistorySessionResponse: Decodable {
+    let sessionId: String
+    let station: String
+    let startedAt: String
+    let endedAt: String?
+    let energyKwh: Double
+    let costUsd: Double
+    let status: String
+    let connector: String
+    let tariffPerKwh: Double
+    let taxesUsd: Double
+    let paymentMethod: String
+
+    var asChargingSession: ChargingSession {
+        ChargingSession(
+            sessionId: sessionId,
+            station: station,
+            startedAt: startedAt,
+            endedAt: endedAt ?? "-",
+            energyKwh: energyKwh,
+            costUsd: costUsd,
+            status: ChargingStatus.fromBackend(status),
+            connector: connector,
+            tariffPerKwh: tariffPerKwh,
+            taxesUsd: taxesUsd,
+            paymentMethod: paymentMethod
+        )
+    }
+}
+
+private struct ReceiptResponse: Decodable {
+    let sessionId: String
+    let station: String
+    let connector: String
+    let startedAt: String
+    let endedAt: String?
+    let energyKwh: Double
+    let tariffPerKwh: Double
+    let taxesUsd: Double
+    let totalCost: Double
+    let currency: String
+    let paymentMethod: String
+    let status: String
+
+    var asChargingSession: ChargingSession {
+        ChargingSession(
+            sessionId: sessionId,
+            station: station,
+            startedAt: startedAt,
+            endedAt: endedAt ?? "-",
+            energyKwh: energyKwh,
+            costUsd: totalCost,
+            status: ChargingStatus.fromBackend(status),
+            connector: connector,
+            tariffPerKwh: tariffPerKwh,
+            taxesUsd: taxesUsd,
+            paymentMethod: paymentMethod
+        )
+    }
+}

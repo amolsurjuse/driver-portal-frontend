@@ -210,7 +210,7 @@ private struct StationDetailSheet: View {
                     // Availability summary
                     HStack(spacing: 16) {
                         StatBox(value: "\(station.availableConnectors)", label: "Available", tint: .green)
-                        StatBox(value: "\(station.totalConnectors)", label: "Total", tint: .blue)
+                        StatBox(value: "\(station.busyConnectors)", label: "Busy", tint: .orange)
                         StatBox(value: "\(station.connectors.first?.power ?? 0) kW", label: "Max Power", tint: .orange)
                     }
 
@@ -231,22 +231,31 @@ private struct StationDetailSheet: View {
 
                     // Actions
                     VStack(spacing: 12) {
-                        Button {
-                            handlePrimaryAction()
-                        } label: {
-                            Label(primaryActionTitle, systemImage: primaryActionIcon)
-                                .frame(maxWidth: .infinity)
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .controlSize(.large)
-                        .tint(primaryActionTint)
-                        .disabled(!isPrimaryActionEnabled || isProcessingAction || isLoadingChargerDetail)
-
-                        if let primaryActionReason {
-                            Text(primaryActionReason)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .frame(maxWidth: .infinity, alignment: .leading)
+                        if case .stopEnabled(let sessionId) = actionState {
+                            Button {
+                                Task { await stopCharging(sessionId: sessionId) }
+                            } label: {
+                                Label("Stop Charging", systemImage: "stop.circle.fill")
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .controlSize(.large)
+                            .tint(.red)
+                            .disabled(isProcessingAction || isLoadingChargerDetail)
+                        } else {
+                            HStack(spacing: 8) {
+                                Image(systemName: "info.circle.fill")
+                                    .foregroundStyle(.blue)
+                                Text("Select a connector to see pricing and start charging.")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                            .padding(12)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                    .fill(Color.blue.opacity(0.08))
+                            )
                         }
 
                         if let actionFeedback {
@@ -303,8 +312,15 @@ private struct StationDetailSheet: View {
                 ConnectorDetailSheet(
                     connector: connector,
                     ocpiConnector: connectorDetail,
+                    chargerId: station.id,
+                    locationId: chargerDetail.flatMap { $0.location?.ocpiLocationId },
+                    chargingSessionService: chargingSessionService,
                     isLoading: isLoadingDetail,
-                    error: detailError
+                    error: detailError,
+                    onSessionStarted: { sessionId in
+                        actionFeedback = "Start request accepted (\(sessionId)). Waiting for charger updates."
+                        Task { await loadChargerDetail(forceRefresh: true) }
+                    }
                 )
                 .presentationDetents([.medium])
                 .presentationDragIndicator(.visible)
@@ -361,17 +377,6 @@ private struct StationDetailSheet: View {
         isLoadingChargerDetail = false
     }
 
-    private func handlePrimaryAction() {
-        switch actionState {
-        case .startEnabled:
-            actionFeedback = "Start Charging is enabled. Use the Charging tab to begin a new session."
-        case .stopEnabled(let sessionId):
-            Task { await stopCharging(sessionId: sessionId) }
-        case .disabled:
-            break
-        }
-    }
-
     private func stopCharging(sessionId: String) async {
         isProcessingAction = true
         defer { isProcessingAction = false }
@@ -389,61 +394,8 @@ private struct StationDetailSheet: View {
         (chargerDetail?.status ?? station.status.rawValue).uppercased()
     }
 
-    private var primaryActionTitle: String {
-        switch actionState {
-        case .startEnabled:
-            return "Start Charging"
-        case .stopEnabled:
-            return "Stop Charging"
-        case .disabled:
-            return "Charging Unavailable"
-        }
-    }
-
-    private var primaryActionIcon: String {
-        switch actionState {
-        case .startEnabled:
-            return "play.circle.fill"
-        case .stopEnabled:
-            return "stop.circle.fill"
-        case .disabled:
-            return "slash.circle.fill"
-        }
-    }
-
-    private var primaryActionTint: Color {
-        switch actionState {
-        case .startEnabled:
-            return .green
-        case .stopEnabled:
-            return .red
-        case .disabled:
-            return .gray
-        }
-    }
-
-    private var primaryActionReason: String? {
-        switch actionState {
-        case .disabled(let reason):
-            return reason
-        case .startEnabled, .stopEnabled:
-            return nil
-        }
-    }
-
-    private var isPrimaryActionEnabled: Bool {
-        switch actionState {
-        case .startEnabled, .stopEnabled:
-            return true
-        case .disabled:
-            return false
-        }
-    }
-
     private var actionState: ChargerActionState {
         switch effectiveStatus {
-        case "AVAILABLE":
-            return .startEnabled
         case "CHARGING":
             guard let currentSession = chargerDetail?.currentSession else {
                 return .disabled(reason: "Another driver is actively using this charger.")
@@ -459,12 +411,11 @@ private struct StationDetailSheet: View {
 
             return .stopEnabled(sessionId: currentSession.id)
         default:
-            return .disabled(reason: "Charging actions are disabled because this charger is not available.")
+            return .disabled(reason: "No active session to stop at this charger.")
         }
     }
 
     private enum ChargerActionState {
-        case startEnabled
         case stopEnabled(sessionId: String)
         case disabled(reason: String)
     }
@@ -559,8 +510,16 @@ private struct ConnectorRow: View {
 private struct ConnectorDetailSheet: View {
     let connector: ConnectorSummary
     let ocpiConnector: OcpiConnector?
+    let chargerId: String
+    let locationId: String?
+    let chargingSessionService: ChargingSessionService
     let isLoading: Bool
     let error: String?
+    let onSessionStarted: (String) -> Void
+
+    @EnvironmentObject private var sessionStore: SessionStore
+    @State private var isStarting = false
+    @State private var actionFeedback: String?
 
     var body: some View {
         NavigationStack {
@@ -632,6 +591,24 @@ private struct ConnectorDetailSheet: View {
                         }
 
                         // Pricing / Tariffs
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Current Pricing")
+                                .font(.headline)
+
+                            HStack(spacing: 10) {
+                                Image(systemName: "dollarsign.circle.fill")
+                                    .foregroundStyle(.green)
+                                Text(pricingSummary)
+                                    .font(.subheadline.weight(.semibold))
+                                Spacer()
+                            }
+                            .padding(10)
+                            .background(
+                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                    .fill(Color.green.opacity(0.08))
+                            )
+                        }
+
                         if let tariffIds = ocpiConnector?.tariffIds, !tariffIds.isEmpty {
                             VStack(alignment: .leading, spacing: 12) {
                                 Text("Pricing & Tariffs")
@@ -654,6 +631,31 @@ private struct ConnectorDetailSheet: View {
                                             .fill(Color.blue.opacity(0.06))
                                     )
                                 }
+                            }
+                        }
+
+                        VStack(alignment: .leading, spacing: 10) {
+                            if let actionFeedback {
+                                Text(actionFeedback)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+
+                            Button {
+                                Task { await startCharging() }
+                            } label: {
+                                Label("Start Charging", systemImage: "play.circle.fill")
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .controlSize(.large)
+                            .tint(.green)
+                            .disabled(isStarting || !canStartCharging)
+
+                            if !canStartCharging, let reason = startDisabledReason {
+                                Text(reason)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
                             }
                         }
                     }
@@ -683,6 +685,94 @@ private struct ConnectorDetailSheet: View {
         case .type2: return "ev.plug.ac.type.2"
         case .type1: return "ev.plug.ac.type.1"
         }
+    }
+
+    private var canStartCharging: Bool {
+        guard sessionStore.isAuthenticated else { return false }
+        if let ocpiConnector {
+            return ocpiConnector.available ?? connector.status == .available
+        }
+        return connector.status == .available
+    }
+
+    private var startDisabledReason: String? {
+        if !sessionStore.isAuthenticated {
+            return "Sign in to start a charging session."
+        }
+        if !canStartCharging {
+            return "Start Charging is available only when this connector is in AVAILABLE state."
+        }
+        return nil
+    }
+
+    private var pricingSummary: String {
+        guard let tariff = resolvedTariff else {
+            return "Pricing unavailable. The applicable tariff could not be resolved."
+        }
+
+        var chunks: [String] = []
+        if let energyPrice = tariff.energyPrice {
+            chunks.append("\(formatMoney(energyPrice, currency: tariff.currency))/kWh")
+        }
+        if let timePrice = tariff.timePrice {
+            chunks.append("\(formatMoney(timePrice, currency: tariff.currency))/min")
+        }
+        if let flatFee = tariff.flatFee {
+            chunks.append("\(formatMoney(flatFee, currency: tariff.currency)) session fee")
+        }
+
+        if chunks.isEmpty {
+            return "Tariff available (\(tariff.tariffId)), but no numeric price components were returned."
+        }
+        return chunks.joined(separator: " + ")
+    }
+
+    private var resolvedTariff: OcpiTariff? {
+        if let connectorTariff = ocpiConnector?.tariffs?.first {
+            return connectorTariff
+        }
+        return nil
+    }
+
+    private func formatMoney(_ value: Double, currency: String?) -> String {
+        let code = currency?.isEmpty == false ? currency! : "USD"
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = code
+        return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
+    }
+
+    private func startCharging() async {
+        guard canStartCharging else { return }
+        isStarting = true
+        defer { isStarting = false }
+
+        let payload = StartChargingRequest(
+            chargerId: chargerId,
+            locationId: locationId,
+            connectorId: connector.id,
+            connectorNumber: extractConnectorNumber(connector.id),
+            connectorType: connector.typeLabel,
+            paymentMethod: "WALLET",
+            idToken: sessionStore.userId,
+            idTokenType: nil,
+            authMethod: nil,
+            idempotencyKey: UUID().uuidString,
+            currency: "USD"
+        )
+
+        do {
+            let response = try await chargingSessionService.startSession(payload: payload)
+            actionFeedback = response.message
+            onSessionStarted(response.sessionId)
+        } catch {
+            actionFeedback = "Unable to start charging: \(error.localizedDescription)"
+        }
+    }
+
+    private func extractConnectorNumber(_ connectorID: String) -> Int? {
+        let digits = connectorID.filter(\.isNumber)
+        return Int(digits)
     }
 }
 

@@ -161,6 +161,15 @@ struct UpdateUserProfileRequest: Codable {
 enum ChargingStatus: String, Codable, Hashable {
     case completed = "Completed"
     case inProgress = "In Progress"
+
+    static func fromBackend(_ status: String) -> ChargingStatus {
+        switch status.trimmingCharacters(in: .whitespacesAndNewlines).uppercased() {
+        case "COMPLETED", "BILLED":
+            return .completed
+        default:
+            return .inProgress
+        }
+    }
 }
 
 struct ChargingSession: Codable, Hashable, Identifiable {

@@ -8,7 +8,9 @@ private struct ShareableFile: Identifiable {
 struct ChargingHistoryView: View {
     let services: AppServices
 
-    private let sessions = ChargingSession.samples
+    @State private var sessions: [ChargingSession] = []
+    @State private var isLoading = false
+    @State private var errorMessage: String?
 
     var body: some View {
         List {
@@ -26,7 +28,11 @@ struct ChargingHistoryView: View {
             ForEach(sessions) { session in
                 if session.isCompleted {
                     NavigationLink {
-                        ReceiptDetailView(session: session, receiptPDFService: services.receiptPDFService)
+                        ReceiptDetailView(
+                            session: session,
+                            receiptPDFService: services.receiptPDFService,
+                            chargingSessionService: services.chargingSessionService
+                        )
                     } label: {
                         ChargingSessionRow(session: session)
                     }
@@ -34,10 +40,43 @@ struct ChargingHistoryView: View {
                     ChargingSessionRow(session: session)
                 }
             }
+
+            if isLoading {
+                HStack {
+                    Spacer()
+                    ProgressView("Loading history…")
+                    Spacer()
+                }
+            }
+
+            if let errorMessage {
+                Text(errorMessage)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
         }
         .listStyle(.insetGrouped)
         .navigationTitle("History")
         .navigationBarTitleDisplayMode(.inline)
+        .task {
+            await loadHistory()
+        }
+    }
+
+    private func loadHistory() async {
+        guard !isLoading else { return }
+        isLoading = true
+        defer { isLoading = false }
+
+        do {
+            sessions = try await services.chargingSessionService.getSessionHistory(page: 0, size: 50)
+            errorMessage = nil
+        } catch {
+            if sessions.isEmpty {
+                sessions = ChargingSession.samples
+            }
+            errorMessage = "Unable to load history right now. Showing cached sample data."
+        }
     }
 }
 
@@ -82,9 +121,11 @@ private struct ChargingSessionRow: View {
 private struct ReceiptDetailView: View {
     let session: ChargingSession
     let receiptPDFService: ReceiptPDFService
+    let chargingSessionService: ChargingSessionService
 
     @State private var shareableFile: ShareableFile?
     @State private var exportError: String?
+    @State private var resolvedSession: ChargingSession?
 
     var body: some View {
         ScrollView {
@@ -92,21 +133,21 @@ private struct ReceiptDetailView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Charging Receipt")
                         .font(.system(size: 32, weight: .bold, design: .rounded))
-                    Text("Session \(session.sessionId)")
+                    Text("Session \(displaySession.sessionId)")
                         .foregroundStyle(.secondary)
                 }
 
                 PortalCard {
                     VStack(alignment: .leading, spacing: 14) {
-                        receiptRow("Station", session.station)
-                        receiptRow("Connector", session.connector)
-                        receiptRow("Started", session.startedAt)
-                        receiptRow("Ended", session.endedAt)
-                        receiptRow("Energy consumed", "\(String(format: "%.1f", session.energyKwh)) kWh")
-                        receiptRow("Tariff", "$\(String(format: "%.2f", session.tariffPerKwh)) / kWh")
-                        receiptRow("Taxes", "$\(String(format: "%.2f", session.taxesUsd))")
-                        receiptRow("Total paid", "$\(String(format: "%.2f", session.costUsd))", isTotal: true)
-                        receiptRow("Payment method", session.paymentMethod)
+                        receiptRow("Station", displaySession.station)
+                        receiptRow("Connector", displaySession.connector)
+                        receiptRow("Started", displaySession.startedAt)
+                        receiptRow("Ended", displaySession.endedAt)
+                        receiptRow("Energy consumed", "\(String(format: "%.1f", displaySession.energyKwh)) kWh")
+                        receiptRow("Tariff", "$\(String(format: "%.2f", displaySession.tariffPerKwh)) / kWh")
+                        receiptRow("Taxes", "$\(String(format: "%.2f", displaySession.taxesUsd))")
+                        receiptRow("Total paid", "$\(String(format: "%.2f", displaySession.costUsd))", isTotal: true)
+                        receiptRow("Payment method", displaySession.paymentMethod)
                     }
                 }
 
@@ -118,7 +159,7 @@ private struct ReceiptDetailView: View {
 
                 Button {
                     do {
-                        let exported = try receiptPDFService.export(session: session)
+                        let exported = try receiptPDFService.export(session: displaySession)
                         shareableFile = ShareableFile(url: exported)
                         exportError = nil
                     } catch {
@@ -135,8 +176,23 @@ private struct ReceiptDetailView: View {
         .background(Color(red: 0.96, green: 0.97, blue: 0.99))
         .navigationTitle("Receipt")
         .navigationBarTitleDisplayMode(.inline)
+        .task {
+            await loadReceipt()
+        }
         .sheet(item: $shareableFile) { file in
             ShareSheet(items: [file.url])
+        }
+    }
+
+    private var displaySession: ChargingSession {
+        resolvedSession ?? session
+    }
+
+    private func loadReceipt() async {
+        do {
+            resolvedSession = try await chargingSessionService.getReceipt(sessionId: session.sessionId)
+        } catch {
+            resolvedSession = nil
         }
     }
 

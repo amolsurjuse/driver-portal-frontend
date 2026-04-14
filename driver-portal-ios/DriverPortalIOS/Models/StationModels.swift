@@ -29,6 +29,10 @@ struct StationLocation: Codable, Hashable, Identifiable {
         connectors.count
     }
 
+    var busyConnectors: Int {
+        max(totalConnectors - availableConnectors, 0)
+    }
+
     var statusColor: String {
         switch status {
         case .available: return "green"
