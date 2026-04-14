@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: electra-hub-org-page
+  namespace: dev
+  labels:
+    app.kubernetes.io/name: electra-hub-org-page
+    app.kubernetes.io/instance: electra-hub-org-page
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: electra-hub-org-page
+      app.kubernetes.io/instance: electra-hub-org-page
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: electra-hub-org-page
+        app.kubernetes.io/instance: electra-hub-org-page
+    spec:
+      containers:
+        - name: electra-hub-org-page
+          image: amolsurjuse/electra-hub-org-page:20260316-200218
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 20
+            timeoutSeconds: 2
+            failureThreshold: 6
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: electra-hub-org-page
+  namespace: dev
+  labels:
+    app.kubernetes.io/name: electra-hub-org-page
+    app.kubernetes.io/instance: electra-hub-org-page
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: electra-hub-org-page
+    app.kubernetes.io/instance: electra-hub-org-page
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: electra-hub-org-page
+  namespace: dev
+  labels:
+    app.kubernetes.io/name: electra-hub-org-page
+    app.kubernetes.io/instance: electra-hub-org-page
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: "/$2"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: dev.electrahub.com
+      http:
+        paths:
+          - path: /org-page(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: electra-hub-org-page
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - dev.electrahub.com
+      secretName: electrahub-dev-tls

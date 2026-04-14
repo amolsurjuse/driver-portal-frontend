@@ -1,0 +1,165 @@
+{
+  "module": "charger-management-service",
+  "target": {
+    "protocol": "http",
+    "host": "charger-management-service",
+    "port": 8086
+  },
+  "endpointCount": 17,
+  "generatedAt": "2026-03-21T17:57:02.355004+00:00",
+  "endpoints": [
+    {
+      "name": "GET /api/v1/admin/chargers",
+      "method": "GET",
+      "pathTemplate": "/api/v1/admin/chargers",
+      "path": "/api/v1/admin/chargers",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "charger-management-service/src/main/java/com/electrahub/charger/api/ChargerAdminController.java"
+    },
+    {
+      "name": "POST /api/v1/admin/chargers",
+      "method": "POST",
+      "pathTemplate": "/api/v1/admin/chargers",
+      "path": "/api/v1/admin/chargers",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "charger-management-service/src/main/java/com/electrahub/charger/api/ChargerAdminController.java"
+    },
+    {
+      "name": "GET /api/v1/admin/enterprises",
+      "method": "GET",
+      "pathTemplate": "/api/v1/admin/enterprises",
+      "path": "/api/v1/admin/enterprises",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "charger-management-service/src/main/java/com/electrahub/charger/api/ChargerAdminController.java"
+    },
+    {
+      "name": "POST /api/v1/admin/enterprises",
+      "method": "POST",
+      "pathTemplate": "/api/v1/admin/enterprises",
+      "path": "/api/v1/admin/enterprises",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "charger-management-service/src/main/java/com/electrahub/charger/api/ChargerAdminController.java"
+    },
+    {
+      "name": "GET /api/v1/admin/locations",
+      "method": "GET",
+      "pathTemplate": "/api/v1/admin/locations",
+      "path": "/api/v1/admin/locations",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "charger-management-service/src/main/java/com/electrahub/charger/api/ChargerAdminController.java"
+    },
+    {
+      "name": "POST /api/v1/admin/locations",
+      "method": "POST",
+      "pathTemplate": "/api/v1/admin/locations",
+      "path": "/api/v1/admin/locations",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "charger-management-service/src/main/java/com/electrahub/charger/api/ChargerAdminController.java"
+    },
+    {
+      "name": "GET /api/v1/admin/networks",
+      "method": "GET",
+      "pathTemplate": "/api/v1/admin/networks",
+      "path": "/api/v1/admin/networks",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "charger-management-service/src/main/java/com/electrahub/charger/api/ChargerAdminController.java"
+    },
+    {
+      "name": "POST /api/v1/admin/networks",
+      "method": "POST",
+      "pathTemplate": "/api/v1/admin/networks",
+      "path": "/api/v1/admin/networks",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "charger-management-service/src/main/java/com/electrahub/charger/api/ChargerAdminController.java"
+    },
+    {
+      "name": "GET /api/v1/chargers",
+      "method": "GET",
+      "pathTemplate": "/api/v1/chargers",
+      "path": "/api/v1/chargers",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "charger-management-service/src/main/java/com/electrahub/charger/api/ChargerManagementController.java"
+    },
+    {
+      "name": "POST /api/v1/chargers",
+      "method": "POST",
+      "pathTemplate": "/api/v1/chargers",
+      "path": "/api/v1/chargers",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "charger-management-service/src/main/java/com/electrahub/charger/api/ChargerManagementController.java"
+    },
+    {
+      "name": "DELETE /api/v1/chargers/{chargerId}",
+      "method": "DELETE",
+      "pathTemplate": "/api/v1/chargers/{chargerId}",
+      "path": "/api/v1/chargers/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "charger-management-service/src/main/java/com/electrahub/charger/api/ChargerManagementController.java"
+    },
+    {
+      "name": "GET /api/v1/chargers/{chargerId}",
+      "method": "GET",
+      "pathTemplate": "/api/v1/chargers/{chargerId}",
+      "path": "/api/v1/chargers/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "charger-management-service/src/main/java/com/electrahub/charger/api/ChargerManagementController.java"
+    },
+    {
+      "name": "PUT /api/v1/chargers/{chargerId}",
+      "method": "PUT",
+      "pathTemplate": "/api/v1/chargers/{chargerId}",
+      "path": "/api/v1/chargers/11111111-1111-1111-1111-111111111111",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "charger-management-service/src/main/java/com/electrahub/charger/api/ChargerManagementController.java"
+    },
+    {
+      "name": "GET /api/v1/chargers/{chargerId}/settings",
+      "method": "GET",
+      "pathTemplate": "/api/v1/chargers/{chargerId}/settings",
+      "path": "/api/v1/chargers/11111111-1111-1111-1111-111111111111/settings",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "charger-management-service/src/main/java/com/electrahub/charger/api/ChargerManagementController.java"
+    },
+    {
+      "name": "PATCH /api/v1/chargers/{chargerId}/status",
+      "method": "PATCH",
+      "pathTemplate": "/api/v1/chargers/{chargerId}/status",
+      "path": "/api/v1/chargers/11111111-1111-1111-1111-111111111111/status",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "charger-management-service/src/main/java/com/electrahub/charger/api/ChargerManagementController.java"
+    },
+    {
+      "name": "GET /healthz",
+      "method": "GET",
+      "pathTemplate": "/healthz",
+      "path": "/healthz",
+      "body": "",
+      "expectedCodeRegex": "^2\\d\\d$",
+      "source": "charger-management-service/src/main/java/com/electrahub/charger/api/HealthController.java"
+    },
+    {
+      "name": "GET /readyz",
+      "method": "GET",
+      "pathTemplate": "/readyz",
+      "path": "/readyz",
+      "body": "",
+      "expectedCodeRegex": "^2\\d\\d$",
+      "source": "charger-management-service/src/main/java/com/electrahub/charger/api/HealthController.java"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 .auth-shell {
   display: grid;
-  width: min(1100px, 100%);
+  width: min(var(--max-width), calc(100% - 8px));
   margin: 0 auto;
   gap: 28px 40px;
   grid-template-columns: minmax(320px, 1fr) minmax(360px, 420px);
@@ -12,9 +12,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 4px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #d9e2ec;
+  margin-bottom: 10px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 12px 32px rgba(30, 80, 66, 0.08);
 }
 
 .signin-brand {
@@ -28,39 +32,59 @@
   box-shadow: none;
 }
 
-.signin-brand img {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+.signin-wordmark {
+  width: 160px;
+  height: auto;
+  display: block;
 }
 
-.signin-brand strong {
-  display: block;
-  font-size: 1.1rem;
-  line-height: 1.2;
+.signin-portal-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(26, 138, 110, 0.14);
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--primary-strong);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
-.signin-brand span {
-  display: block;
-  color: var(--muted);
-  font-size: 0.85rem;
+.signin-portal-label::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--primary);
 }
 
 .signin-header-copy {
   margin: 0;
   color: var(--muted);
-  font-size: 0.95rem;
+  font-size: 0.8rem;
   font-weight: 600;
 }
 
 .auth-hero {
-  max-width: 520px;
+  max-width: 560px;
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  background:
+    radial-gradient(circle at top right, rgba(26, 138, 110, 0.18), transparent 30%),
+    radial-gradient(circle at left center, rgba(200, 240, 221, 0.28), transparent 26%),
+    var(--surface-accent);
+  box-shadow: var(--shadow-soft);
 }
 
 .auth-hero h1 {
-  font-size: clamp(2rem, 2vw + 1.5rem, 3.2rem);
+  font-size: clamp(1.5rem, 2vw + 0.8rem, 2.5rem);
   margin: 0 0 14px;
-  line-height: 1.05;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
 }
 
 .auth-hero p {
@@ -72,16 +96,40 @@
 .hero-card {
   margin-top: 24px;
   padding: 20px;
-  background: var(--card-bg);
-  border-radius: 18px;
-  box-shadow: var(--shadow-soft);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(26, 138, 110, 0.12);
+  background: rgba(255, 255, 255, 0.74);
   max-width: 420px;
 }
 
+.hero-card .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(26, 138, 110, 0.12);
+  color: var(--primary-strong);
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.hero-card .chip::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--primary);
+}
+
 .auth-card {
-  background: #fff;
-  padding: 28px;
-  border-radius: 18px;
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(18px);
+  padding: 20px;
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-soft);
   display: grid;
   gap: 16px;
@@ -95,25 +143,36 @@
 label {
   display: grid;
   gap: 6px;
-  font-weight: 500;
+  font-weight: 600;
+  color: #435567;
 }
 
 input {
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: 1px solid #e0e5eb;
-  font-size: 1rem;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.82);
+  font-size: 0.88rem;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(26, 138, 110, 0.12);
+  background: rgba(255, 255, 255, 0.96);
 }
 
 button {
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--primary), #5bb89a);
   color: #fff;
   border: none;
-  padding: 12px 14px;
-  border-radius: 12px;
-  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-weight: 700;
   cursor: pointer;
+  font-size: 13px;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 18px 28px rgba(26, 138, 110, 0.24);
 }
 
 button:disabled {
@@ -130,7 +189,7 @@ button:not(:disabled):hover {
   color: #b42318;
   background: #fff1f0;
   padding: 10px 12px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
 }
 
 .hint {
@@ -138,8 +197,122 @@ button:not(:disabled):hover {
 }
 
 .hint a {
-  color: var(--accent);
+  color: var(--primary-strong);
   font-weight: 600;
+}
+
+/* --- Password Toggle --- */
+.password-wrap {
+  position: relative;
+}
+
+.password-wrap input {
+  width: 100%;
+  padding-right: 44px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  color: var(--muted, #5e6e7d);
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  box-shadow: none;
+  transition: color 0.15s ease;
+}
+
+.password-toggle:hover {
+  color: var(--primary, #1a8a6e);
+  transform: translateY(-50%);
+  box-shadow: none;
+}
+
+.password-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* --- Submit Loading --- */
+.submit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 999px;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* --- Error with icon --- */
+.error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: slideInUp 0.25s ease;
+}
+
+.error-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: #c53030;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Hero glow effect --- */
+.hero-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(26, 138, 110, 0.08), transparent 60%);
+  animation: subtleGlow 6s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes subtleGlow {
+  from { transform: translate(-10%, -10%); }
+  to { transform: translate(10%, 10%); }
 }
 
 @media (max-width: 900px) {
@@ -164,5 +337,9 @@ button:not(:disabled):hover {
 
   .auth-card {
     width: min(460px, 100%);
+  }
+
+  .signin-wordmark {
+    width: 140px;
   }
 }

@@ -2,12 +2,9 @@
   <ng-container *ngIf="!isAuthRoute(); else authLayout">
     <header class="top-nav">
       <div class="logo">
-        <img src="/electra-hub-icon.svg" alt="Electra Hub logo">
-        <span>Electra Hub</span>
+        <img class="logo-wordmark" src="/electra-hub-logo-dark.svg" alt="Electra Hub">
       </div>
-      <div class="search">
-        <input type="text" placeholder="Search drivers, devices, or policies" />
-      </div>
+     
       <nav class="nav-links">
         <a routerLink="/login" *ngIf="!(isAuthenticated$ | async)">Sign in</a>
         <a routerLink="/register" *ngIf="!(isAuthenticated$ | async)">Join now</a>
@@ -15,11 +12,21 @@
           <button class="user-menu-trigger" type="button" (click)="toggleUserMenu($event)">
             <span class="user-avatar">{{ userInitials((email$ | async) || '') }}</span>
             <span class="user-name">{{ userDisplayName((email$ | async) || '') }}</span>
-            <span class="user-caret" aria-hidden="true">▾</span>
+            <span class="user-caret" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m6 9 6 6 6-6"></path>
+              </svg>
+            </span>
           </button>
           <div class="user-menu-panel" *ngIf="userMenuOpen()">
-            <a routerLink="/profile" (click)="closeUserMenu()">User profile</a>
-            <button type="button" (click)="logout()">Log out</button>
+            <a routerLink="/profile" (click)="closeUserMenu()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="menu-icon"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>
+              <span>User profile</span>
+            </a>
+            <button type="button" (click)="logout()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="menu-icon"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              <span>Log out</span>
+            </button>
           </div>
         </div>
       </nav>
@@ -32,7 +39,7 @@
       [class.is-mobile]="isMobile()"
     >
       <button class="mobile-left-nav-toggle" type="button" *ngIf="(isAuthenticated$ | async) && isMobile()" (click)="openMobileSidebar()">
-        <span aria-hidden="true">☰</span>
+        <svg class="hamburger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         <span>Menu</span>
       </button>
 
@@ -45,25 +52,64 @@
       ></button>
 
       <aside class="left-nav" *ngIf="(isAuthenticated$ | async)">
-        <button class="left-nav-user" type="button" (click)="toggleSidebarFromUserName()">
+        <button
+          class="left-nav-user"
+          type="button"
+          (click)="toggleSidebarFromUserName()"
+          [title]="userDisplayName((email$ | async) || '')"
+          aria-label="Toggle sidebar"
+        >
           <span class="left-nav-user-avatar">
-            {{ sidebarCollapsed() && !isMobile() ? userInitials((email$ | async) || '') : '👤' }}
+            {{ userInitials((email$ | async) || '') }}
           </span>
           <span class="left-nav-user-name" *ngIf="!(sidebarCollapsed() && !isMobile())">
             {{ userDisplayName((email$ | async) || '') }}
           </span>
+          <span class="left-nav-toggle" aria-hidden="true" *ngIf="!isMobile()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path [attr.d]="sidebarCollapsed() ? 'm9 6 6 6-6 6' : 'm15 6-6 6 6 6'"></path>
+            </svg>
+          </span>
         </button>
         <nav>
-          <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="onLeftNavClick()">
-            <span class="left-nav-icon" aria-hidden="true">🏠</span>
+          <a routerLink="/profile" routerLinkActive="active" (click)="onLeftNavClick()" title="Profile">
+            <span class="left-nav-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="8" r="4"/>
+                <path d="M4 20c0-4 4-7 8-7s8 3 8 7"/>
+              </svg>
+            </span>
+            <span class="left-nav-label">Profile</span>
+          </a>
+          <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="onLeftNavClick()" title="Dashboard">
+            <span class="left-nav-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 11.5L12 4l9 7.5"></path>
+                <path d="M5.5 10.8V20h13V10.8"></path>
+                <path d="M9.5 20v-5h5v5"></path>
+              </svg>
+            </span>
             <span class="left-nav-label">Dashboard</span>
           </a>
-          <a routerLink="/payment" routerLinkActive="active" (click)="onLeftNavClick()">
-            <span class="left-nav-icon" aria-hidden="true">💳</span>
+          <a routerLink="/payment" routerLinkActive="active" (click)="onLeftNavClick()" title="Payment">
+            <span class="left-nav-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="5" width="18" height="14" rx="2.5"></rect>
+                <path d="M3 10h18"></path>
+                <path d="M7 15h4"></path>
+                <path d="M14 15h3"></path>
+              </svg>
+            </span>
             <span class="left-nav-label">Payment</span>
           </a>
-          <a routerLink="/charging-history" routerLinkActive="active" (click)="onLeftNavClick()">
-            <span class="left-nav-icon" aria-hidden="true">⚡</span>
+          <a routerLink="/charging-history" routerLinkActive="active" (click)="onLeftNavClick()" title="Charging history">
+            <span class="left-nav-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12a9 9 0 1 0 3-6.7"></path>
+                <path d="M3 3v4h4"></path>
+                <path d="M12 7v5l3 2"></path>
+              </svg>
+            </span>
             <span class="left-nav-label">Charging history</span>
           </a>
         </nav>
@@ -89,4 +135,6 @@
       <div class="muted">Build trusted access for EV charging operations.</div>
     </footer>
   </ng-template>
+
+  <app-toast />
 </div>

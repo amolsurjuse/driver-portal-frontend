@@ -1,32 +1,92 @@
-<section class="receipt" *ngIf="session; else missing">
-  <header class="receipt-head">
-    <div>
-      <h1>Charging Receipt</h1>
-      <p class="muted">Session {{ session.sessionId }}</p>
-    </div>
-    <div class="actions">
-      <a routerLink="/charging-history" class="ghost">Back to history</a>
-      <button type="button" class="primary" (click)="downloadPdf()">Download PDF</button>
-    </div>
-  </header>
+<section class="receipt-page">
+  <a routerLink="/charging-history" class="back-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="back-icon">
+      <path d="m15 18-6-6 6-6"/>
+    </svg>
+    Back to history
+  </a>
 
-  <article class="receipt-card">
-    <div class="row"><span>Station</span><strong>{{ session.station }}</strong></div>
-    <div class="row"><span>Connector</span><strong>{{ session.connector }}</strong></div>
-    <div class="row"><span>Started</span><strong>{{ session.startedAt }}</strong></div>
-    <div class="row"><span>Ended</span><strong>{{ session.endedAt }}</strong></div>
-    <div class="row"><span>Energy consumed</span><strong>{{ session.energyKwh }} kWh</strong></div>
-    <div class="row"><span>Tariff</span><strong>${{ session.tariffPerKwh.toFixed(2) }} / kWh</strong></div>
-    <div class="row"><span>Taxes</span><strong>${{ session.taxesUsd.toFixed(2) }}</strong></div>
-    <div class="row total"><span>Total paid</span><strong>${{ session.costUsd.toFixed(2) }}</strong></div>
-    <div class="row"><span>Payment method</span><strong>{{ session.paymentMethod }}</strong></div>
+  <article class="receipt-card" *ngIf="session; else notFound">
+    <header class="receipt-header">
+      <div class="receipt-brand">
+        <img class="receipt-logo" src="/electra-hub-logo-dark.svg" alt="Electra Hub" />
+        <span class="receipt-label">Charging Receipt</span>
+      </div>
+      <span class="receipt-session-badge">{{ session.sessionId }}</span>
+    </header>
+
+    <div class="receipt-status">
+      <span class="badge" [ngClass]="session.status === 'Completed' ? 'badge-success' : 'badge-warning'">{{ session.status }}</span>
+    </div>
+
+    <div class="receipt-details">
+      <div class="receipt-row">
+        <span class="receipt-key">Station</span>
+        <span class="receipt-val">{{ session.station }}</span>
+      </div>
+      <div class="receipt-row">
+        <span class="receipt-key">Connector</span>
+        <span class="receipt-val">{{ session.connector }}</span>
+      </div>
+      <div class="receipt-row">
+        <span class="receipt-key">Started</span>
+        <span class="receipt-val">{{ session.startedAt }}</span>
+      </div>
+      <div class="receipt-row">
+        <span class="receipt-key">Ended</span>
+        <span class="receipt-val">{{ session.endedAt || '—' }}</span>
+      </div>
+    </div>
+
+    <div class="receipt-charges">
+      <h3>Charges</h3>
+      <div class="receipt-row">
+        <span class="receipt-key">Energy consumed</span>
+        <span class="receipt-val">{{ session.energyKwh.toFixed(1) }} kWh</span>
+      </div>
+      <div class="receipt-row">
+        <span class="receipt-key">Tariff</span>
+        <span class="receipt-val">${{ session.tariffPerKwh.toFixed(2) }} / kWh</span>
+      </div>
+      <div class="receipt-row">
+        <span class="receipt-key">Energy charge</span>
+        <span class="receipt-val">${{ (session.costUsd - session.taxesUsd).toFixed(2) }}</span>
+      </div>
+      <div class="receipt-row">
+        <span class="receipt-key">Taxes</span>
+        <span class="receipt-val">${{ session.taxesUsd.toFixed(2) }}</span>
+      </div>
+      <div class="receipt-row receipt-total">
+        <span class="receipt-key">Total</span>
+        <span class="receipt-val">${{ session.costUsd.toFixed(2) }}</span>
+      </div>
+    </div>
+
+    <div class="receipt-payment">
+      <div class="receipt-row">
+        <span class="receipt-key">Paid with</span>
+        <span class="receipt-val">{{ session.paymentMethod }}</span>
+      </div>
+    </div>
+
+    <footer class="receipt-footer">
+      <button class="btn-primary" type="button" (click)="downloadPdf()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="download-icon">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Download PDF
+      </button>
+    </footer>
   </article>
-</section>
 
-<ng-template #missing>
-  <section class="receipt">
-    <h1>Receipt not found</h1>
-    <p class="muted">The requested charging session receipt does not exist.</p>
-    <a routerLink="/charging-history" class="ghost">Back to history</a>
-  </section>
-</ng-template>
+  <ng-template #notFound>
+    <article class="receipt-not-found">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="not-found-icon">
+        <circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>
+      </svg>
+      <h2>Receipt not found</h2>
+      <p class="muted">We couldn't find a charging session with that ID.</p>
+      <a routerLink="/charging-history" class="btn-ghost">View charging history</a>
+    </article>
+  </ng-template>
+</section>

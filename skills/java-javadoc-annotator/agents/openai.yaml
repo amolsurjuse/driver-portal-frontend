@@ -1,0 +1,4 @@
+interface:
+  display_name: "Java Javadoc Annotator"
+  short_description: "Add class and method Javadocs across Java repositories."
+  default_prompt: "Document Java classes and methods with clear class-level and method-level Javadocs."

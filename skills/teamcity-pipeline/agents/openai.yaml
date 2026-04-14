@@ -1,0 +1,4 @@
+interface:
+  display_name: "TeamCity Pipeline"
+  short_description: "Create, trigger, and repair TeamCity pipelines"
+  default_prompt: "Use $teamcity-pipeline to create a TeamCity pipeline, trigger a build, or debug a broken configuration."

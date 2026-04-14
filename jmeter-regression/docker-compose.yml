@@ -1,0 +1,29 @@
+name: jmeter-regression
+
+services:
+  ocpi-simulator:
+    build:
+      context: ../ocpi-simulator
+      dockerfile: Dockerfile
+    environment:
+      PORT: 8011
+      BASE_URL: http://ocpi-simulator:8011
+      WS_CONNECTOR_BASE_URL: http://web-socket-connector:8091
+    networks:
+      - electrahub-local_default
+
+  jmeter:
+    image: justb4/jmeter:latest
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace
+    depends_on:
+      ocpi-simulator:
+        condition: service_started
+    entrypoint: ["jmeter"]
+    networks:
+      - electrahub-local_default
+
+networks:
+  electrahub-local_default:
+    external: true

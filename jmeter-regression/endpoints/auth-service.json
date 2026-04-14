@@ -1,0 +1,66 @@
+{
+  "module": "auth-service",
+  "target": {
+    "protocol": "http",
+    "host": "auth-service",
+    "port": 8080
+  },
+  "endpointCount": 6,
+  "generatedAt": "2026-03-21T17:57:02.349925+00:00",
+  "endpoints": [
+    {
+      "name": "POST /api/auth/login",
+      "method": "POST",
+      "pathTemplate": "/api/auth/login",
+      "path": "/api/auth/login",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "auth-service/src/main/java/com/electrahub/identity/web/AuthController.java"
+    },
+    {
+      "name": "POST /api/auth/logout-all",
+      "method": "POST",
+      "pathTemplate": "/api/auth/logout-all",
+      "path": "/api/auth/logout-all",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "auth-service/src/main/java/com/electrahub/identity/web/AuthController.java"
+    },
+    {
+      "name": "POST /api/auth/logout-device",
+      "method": "POST",
+      "pathTemplate": "/api/auth/logout-device",
+      "path": "/api/auth/logout-device",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "auth-service/src/main/java/com/electrahub/identity/web/AuthController.java"
+    },
+    {
+      "name": "POST /api/auth/refresh",
+      "method": "POST",
+      "pathTemplate": "/api/auth/refresh",
+      "path": "/api/auth/refresh",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "auth-service/src/main/java/com/electrahub/identity/web/AuthController.java"
+    },
+    {
+      "name": "POST /api/auth/register",
+      "method": "POST",
+      "pathTemplate": "/api/auth/register",
+      "path": "/api/auth/register",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "auth-service/src/main/java/com/electrahub/identity/web/AuthController.java"
+    },
+    {
+      "name": "GET /api/countries",
+      "method": "GET",
+      "pathTemplate": "/api/countries",
+      "path": "/api/countries",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "auth-service/src/main/java/com/electrahub/identity/web/CountryController.java"
+    }
+  ]
+}

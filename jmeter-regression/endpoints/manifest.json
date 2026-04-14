@@ -1,0 +1,72 @@
+{
+  "generatedAt": "2026-03-21T17:57:02.378976+00:00",
+  "moduleCount": 13,
+  "totalEndpoints": 226,
+  "modules": [
+    {
+      "module": "api-gateway",
+      "endpointCount": 1,
+      "file": "endpoints/api-gateway.json"
+    },
+    {
+      "module": "auth-service",
+      "endpointCount": 6,
+      "file": "endpoints/auth-service.json"
+    },
+    {
+      "module": "billing-service",
+      "endpointCount": 19,
+      "file": "endpoints/billing-service.json"
+    },
+    {
+      "module": "charger-management-service",
+      "endpointCount": 17,
+      "file": "endpoints/charger-management-service.json"
+    },
+    {
+      "module": "ocpi-service",
+      "endpointCount": 35,
+      "file": "endpoints/ocpi-service.json"
+    },
+    {
+      "module": "ocpi-simulator",
+      "endpointCount": 28,
+      "file": "endpoints/ocpi-simulator.json"
+    },
+    {
+      "module": "ocpp-service",
+      "endpointCount": 13,
+      "file": "endpoints/ocpp-service.json"
+    },
+    {
+      "module": "payment-service",
+      "endpointCount": 11,
+      "file": "endpoints/payment-service.json"
+    },
+    {
+      "module": "session-service",
+      "endpointCount": 25,
+      "file": "endpoints/session-service.json"
+    },
+    {
+      "module": "station-management-service",
+      "endpointCount": 36,
+      "file": "endpoints/station-management-service.json"
+    },
+    {
+      "module": "subscription-service",
+      "endpointCount": 11,
+      "file": "endpoints/subscription-service.json"
+    },
+    {
+      "module": "user-service",
+      "endpointCount": 17,
+      "file": "endpoints/user-service.json"
+    },
+    {
+      "module": "web-socket-connector",
+      "endpointCount": 7,
+      "file": "endpoints/web-socket-connector.json"
+    }
+  ]
+}

@@ -1,8 +1,20 @@
 <section class="dashboard">
   <section class="widget-grid">
-    <article class="widget-card" *ngFor="let stat of stats">
+    <article class="widget-card" *ngFor="let stat of stats()">
       <div class="widget-top">
-        <div class="widget-icon" [ngClass]="'tone-' + stat.tone">{{ stat.icon }}</div>
+        <div class="widget-icon" [ngClass]="'tone-' + stat.tone">
+          <ng-container *ngIf="stat.key === 'wallet'; else defaultIcon">
+            <svg class="wallet-svg" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M4 8.5C4 7.12 5.12 6 6.5 6H18a2 2 0 0 1 2 2v1h-2.5A2.5 2.5 0 0 0 15 11.5v1A2.5 2.5 0 0 0 17.5 15H20v1a2 2 0 0 1-2 2H6.5A2.5 2.5 0 0 1 4 15.5v-7Z"
+              />
+              <path d="M16 11.5a1.5 1.5 0 0 1 1.5-1.5H21v4h-3.5a1.5 1.5 0 0 1-1.5-1.5v-1Z" />
+              <circle cx="18" cy="12.5" r="0.8" />
+              <path d="M6.5 6V5a1 1 0 0 1 .8-.98l8.4-1.7a.8.8 0 0 1 .96.78V6" />
+            </svg>
+          </ng-container>
+          <ng-template #defaultIcon>{{ stat.icon }}</ng-template>
+        </div>
         <div class="widget-main">
           <p class="widget-label">{{ stat.label }}</p>
           <p class="widget-value">{{ stat.value }}</p>
@@ -103,5 +115,49 @@
     </div>
 
     <footer class="usage-chart-foot">↻ Updated 3 minutes ago</footer>
+  </section>
+
+  <section class="quick-actions-grid">
+    <article class="quick-action-card" *ngFor="let action of quickActions" (click)="navigate(action.route)" tabindex="0" role="button">
+      <div class="quick-action-icon">
+        <svg *ngIf="action.icon === 'wallet'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 8.5C4 7.12 5.12 6 6.5 6H18a2 2 0 0 1 2 2v1h-2.5A2.5 2.5 0 0 0 15 11.5v1A2.5 2.5 0 0 0 17.5 15H20v1a2 2 0 0 1-2 2H6.5A2.5 2.5 0 0 1 4 15.5v-7Z"/>
+          <path d="M16 11.5a1.5 1.5 0 0 1 1.5-1.5H21v4h-3.5a1.5 1.5 0 0 1-1.5-1.5v-1Z"/>
+        </svg>
+        <svg *ngIf="action.icon === 'receipt'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 3v4h4"/><path d="M12 7v5l3 2"/>
+        </svg>
+        <svg *ngIf="action.icon === 'profile'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/>
+        </svg>
+      </div>
+      <div class="quick-action-text">
+        <h3>{{ action.label }}</h3>
+        <p>{{ action.description }}</p>
+      </div>
+      <span class="quick-action-arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+      </span>
+    </article>
+  </section>
+
+  <section class="recent-sessions-card" *ngIf="recentSessions.length > 0">
+    <header class="recent-sessions-head">
+      <h2>Recent sessions</h2>
+      <button class="btn-ghost" type="button" (click)="navigate('/charging-history')">View all</button>
+    </header>
+    <div class="recent-sessions-list">
+      <article class="session-row" *ngFor="let session of recentSessions">
+        <div class="session-info">
+          <h4>{{ session.station }}</h4>
+          <p class="muted">{{ session.startedAt }}</p>
+        </div>
+        <div class="session-meta">
+          <span class="session-energy">{{ session.energyKwh }} kWh</span>
+          <span class="session-cost">${{ session.costUsd.toFixed(2) }}</span>
+        </div>
+        <span class="badge" [ngClass]="session.status === 'Completed' ? 'badge-success' : 'badge-warning'">{{ session.status }}</span>
+      </article>
+    </div>
   </section>
 </section>

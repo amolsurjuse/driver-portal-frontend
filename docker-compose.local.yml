@@ -1,0 +1,368 @@
+name: electrahub-local
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: electrahub-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  redis:
+    image: redis:7
+    container_name: electrahub-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    container_name: auth-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SERVER_PORT: 8080
+      ENV_AUTH_DATASOURCE_URL: jdbc:postgresql://postgres:5432/user_db
+      ENV_AUTH_DATASOURCE_USERNAME: postgres
+      ENV_AUTH_DATASOURCE_PASSWORD: postgres
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: ""
+      APP_USER_SERVICE_BASE_URL: http://user-service:8082
+      APP_SECURITY_JWT_SECRET: CHANGE_ME_TO_A_LONG_RANDOM_64+_CHAR_SECRET_CHANGE_ME
+    ports:
+      - "8080:8080"
+      - "9080:9080"
+
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    container_name: user-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SERVER_PORT: 8082
+      SPRING_PROFILES_ACTIVE: dev
+      ENV_USER_DATASOURCE_URL: jdbc:postgresql://postgres:5432/user_db
+      ENV_USER_DATASOURCE_USERNAME: postgres
+      ENV_USER_DATASOURCE_PASSWORD: postgres
+      APP_PAYMENT_SERVICE_BASE_URL: http://payment-service:8083
+      APP_SECURITY_JWT_SECRET: CHANGE_ME_TO_A_LONG_RANDOM_64+_CHAR_SECRET_CHANGE_ME
+      APP_RBAC_GATEWAY_BASE_URL: http://api-gateway:8090
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: 5
+      SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: 1
+    ports:
+      - "8082:8082"
+      - "9082:9082"
+
+  payment-service:
+    build:
+      context: ./payment-service
+      dockerfile: Dockerfile
+    container_name: payment-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SERVER_PORT: 8083
+      ENV_PAYMENT_DATASOURCE_URL: jdbc:postgresql://postgres:5432/payment_db
+      ENV_PAYMENT_DATASOURCE_USERNAME: postgres
+      ENV_PAYMENT_DATASOURCE_PASSWORD: postgres
+    ports:
+      - "8083:8083"
+      - "9083:9083"
+
+  subscription-service:
+    build:
+      context: ./subscription-service
+      dockerfile: Dockerfile
+    container_name: subscription-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SERVER_PORT: 8086
+      ENV_SUBSCRIPTION_DATASOURCE_URL: jdbc:postgresql://postgres:5432/subscription_db
+      ENV_SUBSCRIPTION_DATASOURCE_USERNAME: postgres
+      ENV_SUBSCRIPTION_DATASOURCE_PASSWORD: postgres
+    ports:
+      - "8086:8086"
+      - "9086:9086"
+
+  charger-management-service:
+    build:
+      context: ./charger-management-service
+      dockerfile: Dockerfile
+    container_name: charger-management-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SERVER_PORT: 8086
+      ENV_CHARGER_DATASOURCE_URL: jdbc:postgresql://postgres:5432/charger_management_db
+      ENV_CHARGER_DATASOURCE_USERNAME: postgres
+      ENV_CHARGER_DATASOURCE_PASSWORD: postgres
+    ports:
+      - "8088:8086"
+      - "9086:9086"
+
+  station-management-service:
+    build:
+      context: ./station-management-service
+      dockerfile: Dockerfile
+    container_name: station-management-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SERVER_PORT: 8081
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/station_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "8081:8081"
+
+  session-service:
+    build:
+      context: ./session-service
+      dockerfile: Dockerfile
+    container_name: session-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      station-management-service:
+        condition: service_started
+    environment:
+      SERVER_PORT: 8083
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/session_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      STATION_SERVICE_URL: http://station-management-service:8081
+    ports:
+      - "8087:8083"
+
+  billing-service:
+    build:
+      context: ./billing-service
+      dockerfile: Dockerfile
+    container_name: billing-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      session-service:
+        condition: service_started
+      station-management-service:
+        condition: service_started
+    environment:
+      SERVER_PORT: 8085
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/billing_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      SESSION_SERVICE_URL: http://session-service:8083
+      STATION_SERVICE_URL: http://station-management-service:8081
+    ports:
+      - "8085:8085"
+
+  ocpi-service:
+    build:
+      context: ./ocpi-service
+      dockerfile: Dockerfile
+    container_name: ocpi-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      station-management-service:
+        condition: service_started
+      session-service:
+        condition: service_started
+      billing-service:
+        condition: service_started
+    environment:
+      SERVER_PORT: 8084
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/ocpi_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      STATION_SERVICE_URL: http://station-management-service:8081
+      SESSION_SERVICE_URL: http://session-service:8083
+      BILLING_SERVICE_URL: http://billing-service:8085
+    ports:
+      - "8084:8084"
+
+  ocpp-service:
+    build:
+      context: ./ocpp-service
+      dockerfile: Dockerfile
+    container_name: ocpp-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      station-management-service:
+        condition: service_started
+      session-service:
+        condition: service_started
+    environment:
+      SERVER_PORT: 8082
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/ocpp_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      STATION_SERVICE_URL: http://station-management-service:8081
+      SESSION_SERVICE_URL: http://session-service:8083
+    ports:
+      - "8089:8082"
+
+  web-socket-connector:
+    build:
+      context: ./web-socket-connector
+      dockerfile: Dockerfile
+    container_name: web-socket-connector
+    environment:
+      PORT: 8091
+    ports:
+      - "8091:8091"
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    depends_on:
+      redis:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+      user-service:
+        condition: service_started
+      payment-service:
+        condition: service_started
+      subscription-service:
+        condition: service_started
+      charger-management-service:
+        condition: service_started
+      web-socket-connector:
+        condition: service_started
+    environment:
+      SERVER_PORT: 8090
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: ""
+      APP_SECURITY_JWT_ISSUER: auth-service
+      APP_SECURITY_JWT_SECRET: CHANGE_ME_TO_A_LONG_RANDOM_64+_CHAR_SECRET_CHANGE_ME
+      APP_RBAC_REMOTE_POLICY_ENABLED: "true"
+      APP_RBAC_REMOTE_POLICY_SOURCE_URL: http://user-service:8082/api/internal/rbac/policy
+      GATEWAY_ROUTE_AUTH: http://auth-service:8080
+      GATEWAY_ROUTE_USER: http://user-service:8082
+      GATEWAY_ROUTE_SUBSCRIPTION: http://subscription-service:8086
+      GATEWAY_ROUTE_PAYMENT: http://payment-service:8083
+      GATEWAY_ROUTE_CHARGER_MANAGEMENT: http://charger-management-service:8086
+      GATEWAY_ROUTE_CHARGER: http://charger-management-service:8086
+      GATEWAY_ROUTE_WS_CONNECTOR: http://web-socket-connector:8091
+      GATEWAY_ROUTE_PRICING: http://pricing-service:8092
+    ports:
+      - "8090:8090"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    container_name: electrahub-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - cluster.name=electrahub-cluster
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  pricing-service:
+    build:
+      context: ./pricing-service
+      dockerfile: Dockerfile
+    container_name: pricing-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+      billing-service:
+        condition: service_started
+      session-service:
+        condition: service_started
+      station-management-service:
+        condition: service_started
+    environment:
+      SERVER_PORT: 8092
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pricing_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      ELASTICSEARCH_URIS: http://elasticsearch:9200
+      BILLING_SERVICE_URL: http://billing-service:8085
+      SESSION_SERVICE_URL: http://session-service:8083
+      STATION_SERVICE_URL: http://station-management-service:8081
+    ports:
+      - "8092:8092"
+      - "9092:9092"
+
+volumes:
+  postgres-data:
+  redis-data:
+  elasticsearch-data:

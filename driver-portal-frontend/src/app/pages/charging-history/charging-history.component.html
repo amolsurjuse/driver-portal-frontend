@@ -4,7 +4,21 @@
     <p class="muted">Recent charging sessions linked to your account.</p>
   </header>
 
-  <div class="table-wrap">
+  <div class="filter-toolbar">
+    <div class="search-wrap">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>
+      </svg>
+      <input type="text" class="search-input" placeholder="Search by station or session ID..." [ngModel]="searchQuery()" (ngModelChange)="onSearchChange($event)" />
+    </div>
+    <select class="status-filter" [ngModel]="statusFilter()" (ngModelChange)="onStatusFilterChange($event)">
+      <option value="all">All statuses</option>
+      <option value="Completed">Completed</option>
+      <option value="In Progress">In Progress</option>
+    </select>
+  </div>
+
+  <div class="table-wrap" *ngIf="filteredSessions().length > 0; else emptyState">
     <table>
       <thead>
         <tr>
@@ -12,36 +26,74 @@
           <th>Station</th>
           <th>Started</th>
           <th>Ended</th>
-          <th>Energy (kWh)</th>
-          <th>Cost (USD)</th>
+          <th>Energy</th>
+          <th>Cost</th>
           <th>Status</th>
           <th>Receipt</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let session of sessions">
-          <td>{{ session.sessionId }}</td>
-          <td>{{ session.station }}</td>
-          <td>{{ session.startedAt }}</td>
-          <td>{{ session.endedAt }}</td>
-          <td>{{ session.energyKwh }}</td>
-          <td>{{ session.costUsd }}</td>
-          <td>
-            <span class="status" [class.in-progress]="session.status === 'In Progress'">{{ session.status }}</span>
-          </td>
-          <td>
-            <a
-              class="view-btn"
-              [class.disabled]="session.status !== 'Completed'"
-              [routerLink]="['/charging-history', session.sessionId, 'receipt']"
-              [attr.aria-disabled]="session.status !== 'Completed'"
-              [attr.tabindex]="session.status !== 'Completed' ? -1 : null"
-            >
-              View
-            </a>
-          </td>
-        </tr>
+        <ng-container *ngFor="let session of filteredSessions()">
+          <tr class="session-row" [class.expanded]="isExpanded(session.sessionId)" (click)="toggleExpanded(session.sessionId)">
+            <td><span class="session-id">{{ session.sessionId }}</span></td>
+            <td><strong>{{ session.station }}</strong></td>
+            <td>{{ session.startedAt }}</td>
+            <td>{{ session.endedAt || '—' }}</td>
+            <td>{{ session.energyKwh }} kWh</td>
+            <td>${{ session.costUsd.toFixed(2) }}</td>
+            <td>
+              <span class="badge" [ngClass]="session.status === 'Completed' ? 'badge-success' : 'badge-warning'">{{ session.status }}</span>
+            </td>
+            <td>
+              <a
+                class="view-btn"
+                [class.disabled]="session.status !== 'Completed'"
+                [routerLink]="['/charging-history', session.sessionId, 'receipt']"
+                [attr.aria-disabled]="session.status !== 'Completed'"
+                [attr.tabindex]="session.status !== 'Completed' ? -1 : null"
+                (click)="$event.stopPropagation()"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="view-icon">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                </svg>
+                View
+              </a>
+            </td>
+          </tr>
+          <tr class="detail-row" *ngIf="isExpanded(session.sessionId)">
+            <td colspan="8">
+              <div class="detail-grid">
+                <div class="detail-item">
+                  <span class="detail-label">Connector</span>
+                  <span class="detail-value">{{ session.connector }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Tariff</span>
+                  <span class="detail-value">${{ session.tariffPerKwh.toFixed(2) }} / kWh</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Taxes</span>
+                  <span class="detail-value">${{ session.taxesUsd.toFixed(2) }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Payment</span>
+                  <span class="detail-value">{{ session.paymentMethod }}</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </ng-container>
       </tbody>
     </table>
   </div>
+
+  <ng-template #emptyState>
+    <div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-icon">
+        <circle cx="12" cy="12" r="10"/><path d="M8 15h8"/><circle cx="9" cy="9" r="1"/><circle cx="15" cy="9" r="1"/>
+      </svg>
+      <h3>No sessions found</h3>
+      <p class="muted">Try adjusting your search or filter criteria.</p>
+    </div>
+  </ng-template>
 </section>

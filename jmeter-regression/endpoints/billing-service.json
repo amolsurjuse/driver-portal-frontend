@@ -1,0 +1,183 @@
+{
+  "module": "billing-service",
+  "target": {
+    "protocol": "http",
+    "host": "billing-service",
+    "port": 8085
+  },
+  "endpointCount": 19,
+  "generatedAt": "2026-03-21T17:57:02.352888+00:00",
+  "endpoints": [
+    {
+      "name": "GET /api/v1/billing/cdrs",
+      "method": "GET",
+      "pathTemplate": "/api/v1/billing/cdrs",
+      "path": "/api/v1/billing/cdrs",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "billing-service/src/main/java/com/electrahub/billing/web/controller/CdrController.java"
+    },
+    {
+      "name": "POST /api/v1/billing/cdrs/generate/{sessionId}",
+      "method": "POST",
+      "pathTemplate": "/api/v1/billing/cdrs/generate/{sessionId}",
+      "path": "/api/v1/billing/cdrs/generate/11111111-1111-1111-1111-111111111111",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "billing-service/src/main/java/com/electrahub/billing/web/controller/CdrController.java"
+    },
+    {
+      "name": "GET /api/v1/billing/cdrs/session/{sessionId}",
+      "method": "GET",
+      "pathTemplate": "/api/v1/billing/cdrs/session/{sessionId}",
+      "path": "/api/v1/billing/cdrs/session/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "billing-service/src/main/java/com/electrahub/billing/web/controller/CdrController.java"
+    },
+    {
+      "name": "GET /api/v1/billing/cdrs/{cdrId}",
+      "method": "GET",
+      "pathTemplate": "/api/v1/billing/cdrs/{cdrId}",
+      "path": "/api/v1/billing/cdrs/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "billing-service/src/main/java/com/electrahub/billing/web/controller/CdrController.java"
+    },
+    {
+      "name": "PUT /api/v1/billing/cdrs/{cdrId}/status",
+      "method": "PUT",
+      "pathTemplate": "/api/v1/billing/cdrs/{cdrId}/status",
+      "path": "/api/v1/billing/cdrs/11111111-1111-1111-1111-111111111111/status",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "billing-service/src/main/java/com/electrahub/billing/web/controller/CdrController.java"
+    },
+    {
+      "name": "POST /api/v1/billing/invoices",
+      "method": "POST",
+      "pathTemplate": "/api/v1/billing/invoices",
+      "path": "/api/v1/billing/invoices",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "billing-service/src/main/java/com/electrahub/billing/web/controller/InvoiceController.java"
+    },
+    {
+      "name": "GET /api/v1/billing/invoices/driver/{driverId}",
+      "method": "GET",
+      "pathTemplate": "/api/v1/billing/invoices/driver/{driverId}",
+      "path": "/api/v1/billing/invoices/driver/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "billing-service/src/main/java/com/electrahub/billing/web/controller/InvoiceController.java"
+    },
+    {
+      "name": "GET /api/v1/billing/invoices/{invoiceId}",
+      "method": "GET",
+      "pathTemplate": "/api/v1/billing/invoices/{invoiceId}",
+      "path": "/api/v1/billing/invoices/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "billing-service/src/main/java/com/electrahub/billing/web/controller/InvoiceController.java"
+    },
+    {
+      "name": "POST /api/v1/billing/invoices/{invoiceId}/issue",
+      "method": "POST",
+      "pathTemplate": "/api/v1/billing/invoices/{invoiceId}/issue",
+      "path": "/api/v1/billing/invoices/11111111-1111-1111-1111-111111111111/issue",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "billing-service/src/main/java/com/electrahub/billing/web/controller/InvoiceController.java"
+    },
+    {
+      "name": "PUT /api/v1/billing/invoices/{invoiceId}/paid",
+      "method": "PUT",
+      "pathTemplate": "/api/v1/billing/invoices/{invoiceId}/paid",
+      "path": "/api/v1/billing/invoices/11111111-1111-1111-1111-111111111111/paid",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "billing-service/src/main/java/com/electrahub/billing/web/controller/InvoiceController.java"
+    },
+    {
+      "name": "POST /api/v1/billing/payments",
+      "method": "POST",
+      "pathTemplate": "/api/v1/billing/payments",
+      "path": "/api/v1/billing/payments",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "billing-service/src/main/java/com/electrahub/billing/web/controller/PaymentController.java"
+    },
+    {
+      "name": "GET /api/v1/billing/payments/invoice/{invoiceId}",
+      "method": "GET",
+      "pathTemplate": "/api/v1/billing/payments/invoice/{invoiceId}",
+      "path": "/api/v1/billing/payments/invoice/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "billing-service/src/main/java/com/electrahub/billing/web/controller/PaymentController.java"
+    },
+    {
+      "name": "POST /api/v1/billing/payments/{transactionId}/refund",
+      "method": "POST",
+      "pathTemplate": "/api/v1/billing/payments/{transactionId}/refund",
+      "path": "/api/v1/billing/payments/11111111-1111-1111-1111-111111111111/refund",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "billing-service/src/main/java/com/electrahub/billing/web/controller/PaymentController.java"
+    },
+    {
+      "name": "GET /api/v1/billing/tariffs",
+      "method": "GET",
+      "pathTemplate": "/api/v1/billing/tariffs",
+      "path": "/api/v1/billing/tariffs",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "billing-service/src/main/java/com/electrahub/billing/web/controller/TariffController.java"
+    },
+    {
+      "name": "POST /api/v1/billing/tariffs",
+      "method": "POST",
+      "pathTemplate": "/api/v1/billing/tariffs",
+      "path": "/api/v1/billing/tariffs",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "billing-service/src/main/java/com/electrahub/billing/web/controller/TariffController.java"
+    },
+    {
+      "name": "GET /api/v1/billing/tariffs/location/{locationId}",
+      "method": "GET",
+      "pathTemplate": "/api/v1/billing/tariffs/location/{locationId}",
+      "path": "/api/v1/billing/tariffs/location/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "billing-service/src/main/java/com/electrahub/billing/web/controller/TariffController.java"
+    },
+    {
+      "name": "DELETE /api/v1/billing/tariffs/{tariffId}",
+      "method": "DELETE",
+      "pathTemplate": "/api/v1/billing/tariffs/{tariffId}",
+      "path": "/api/v1/billing/tariffs/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "billing-service/src/main/java/com/electrahub/billing/web/controller/TariffController.java"
+    },
+    {
+      "name": "GET /api/v1/billing/tariffs/{tariffId}",
+      "method": "GET",
+      "pathTemplate": "/api/v1/billing/tariffs/{tariffId}",
+      "path": "/api/v1/billing/tariffs/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "billing-service/src/main/java/com/electrahub/billing/web/controller/TariffController.java"
+    },
+    {
+      "name": "PUT /api/v1/billing/tariffs/{tariffId}",
+      "method": "PUT",
+      "pathTemplate": "/api/v1/billing/tariffs/{tariffId}",
+      "path": "/api/v1/billing/tariffs/11111111-1111-1111-1111-111111111111",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "billing-service/src/main/java/com/electrahub/billing/web/controller/TariffController.java"
+    }
+  ]
+}

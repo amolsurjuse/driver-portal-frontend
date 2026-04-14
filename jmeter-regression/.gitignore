@@ -1,0 +1,6 @@
+reports/*.jtl
+reports/*.log
+reports/*-report/
+reports/*.out
+reports/*.pid
+

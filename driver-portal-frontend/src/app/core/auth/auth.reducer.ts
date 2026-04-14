@@ -4,6 +4,7 @@ import { decodeJwt } from '../util/jwt';
 
 export type AuthState = {
   accessToken: string | null;
+  userId: string | null;
   email: string | null;
   roles: string[];
   loading: boolean;
@@ -12,6 +13,7 @@ export type AuthState = {
 
 export const initialAuthState: AuthState = {
   accessToken: null,
+  userId: null,
   email: null,
   roles: [],
   loading: false,
@@ -23,6 +25,7 @@ function enrichWithToken(state: AuthState, accessToken: string | null): AuthStat
   return {
     ...state,
     accessToken,
+    userId: payload?.uid ?? null,
     email: payload?.sub ?? null,
     roles: payload?.roles ?? [],
   };

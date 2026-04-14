@@ -1,0 +1,111 @@
+{
+  "module": "subscription-service",
+  "target": {
+    "protocol": "http",
+    "host": "subscription-service",
+    "port": 8086
+  },
+  "endpointCount": 11,
+  "generatedAt": "2026-03-21T17:57:02.375581+00:00",
+  "endpoints": [
+    {
+      "name": "GET /api/v1/health",
+      "method": "GET",
+      "pathTemplate": "/api/v1/health",
+      "path": "/api/v1/health",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "subscription-service/src/main/java/com/electrahub/subscription/api/HealthController.java"
+    },
+    {
+      "name": "GET /api/v1/subscriptions/allocations",
+      "method": "GET",
+      "pathTemplate": "/api/v1/subscriptions/allocations",
+      "path": "/api/v1/subscriptions/allocations",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "subscription-service/src/main/java/com/electrahub/subscription/api/SubscriptionAllocationController.java"
+    },
+    {
+      "name": "POST /api/v1/subscriptions/allocations",
+      "method": "POST",
+      "pathTemplate": "/api/v1/subscriptions/allocations",
+      "path": "/api/v1/subscriptions/allocations",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "subscription-service/src/main/java/com/electrahub/subscription/api/SubscriptionAllocationController.java"
+    },
+    {
+      "name": "PATCH /api/v1/subscriptions/allocations/{allocationId}/status",
+      "method": "PATCH",
+      "pathTemplate": "/api/v1/subscriptions/allocations/{allocationId}/status",
+      "path": "/api/v1/subscriptions/allocations/11111111-1111-1111-1111-111111111111/status",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "subscription-service/src/main/java/com/electrahub/subscription/api/SubscriptionAllocationController.java"
+    },
+    {
+      "name": "GET /api/v1/subscriptions/audit-logs",
+      "method": "GET",
+      "pathTemplate": "/api/v1/subscriptions/audit-logs",
+      "path": "/api/v1/subscriptions/audit-logs",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "subscription-service/src/main/java/com/electrahub/subscription/api/SubscriptionAuditController.java"
+    },
+    {
+      "name": "GET /api/v1/subscriptions/plans",
+      "method": "GET",
+      "pathTemplate": "/api/v1/subscriptions/plans",
+      "path": "/api/v1/subscriptions/plans",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "subscription-service/src/main/java/com/electrahub/subscription/api/SubscriptionPlanController.java"
+    },
+    {
+      "name": "POST /api/v1/subscriptions/plans",
+      "method": "POST",
+      "pathTemplate": "/api/v1/subscriptions/plans",
+      "path": "/api/v1/subscriptions/plans",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "subscription-service/src/main/java/com/electrahub/subscription/api/SubscriptionPlanController.java"
+    },
+    {
+      "name": "GET /api/v1/subscriptions/plans/{planId}",
+      "method": "GET",
+      "pathTemplate": "/api/v1/subscriptions/plans/{planId}",
+      "path": "/api/v1/subscriptions/plans/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "subscription-service/src/main/java/com/electrahub/subscription/api/SubscriptionPlanController.java"
+    },
+    {
+      "name": "GET /api/v1/subscriptions/utilizations",
+      "method": "GET",
+      "pathTemplate": "/api/v1/subscriptions/utilizations",
+      "path": "/api/v1/subscriptions/utilizations",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "subscription-service/src/main/java/com/electrahub/subscription/api/SubscriptionUtilizationController.java"
+    },
+    {
+      "name": "POST /api/v1/subscriptions/utilizations",
+      "method": "POST",
+      "pathTemplate": "/api/v1/subscriptions/utilizations",
+      "path": "/api/v1/subscriptions/utilizations",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "subscription-service/src/main/java/com/electrahub/subscription/api/SubscriptionUtilizationController.java"
+    },
+    {
+      "name": "POST /api/v1/subscriptions/utilizations/preview",
+      "method": "POST",
+      "pathTemplate": "/api/v1/subscriptions/utilizations/preview",
+      "path": "/api/v1/subscriptions/utilizations/preview",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "subscription-service/src/main/java/com/electrahub/subscription/api/SubscriptionUtilizationController.java"
+    }
+  ]
+}

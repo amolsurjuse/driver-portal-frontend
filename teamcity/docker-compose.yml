@@ -1,0 +1,39 @@
+version: '3.7'
+services:
+  teamcity-server:
+    image: jetbrains/teamcity-server:latest
+    container_name: teamcity-server
+    restart: always
+    ports:
+      - "8111:8111" # Web UI port
+    volumes:
+      - ~/teamcity_data/server/datadir:/data/teamcity_server/datadir
+      - ~/teamcity_data/server/logs:/opt/teamcity/logs
+  
+  teamcity-agent:
+    image: jetbrains/teamcity-agent:latest
+    container_name: teamcity-agent
+    restart: always
+    environment:
+      SERVER_URL: "http://teamcity-server:8111" # Connects to the server service name
+    volumes:
+      - ~/teamcity_data/agent/conf:/data/teamcity_agent/conf
+      - ~/teamcity_data/agent/logs:/opt/teamcity/logs
+      - /var/run/docker.sock:/var/run/docker.sock # Optional: allows agent to run Docker commands on the host
+
+  teamcity-agent-node:
+    build:
+      context: .
+      dockerfile: teamcity-agent-node.Dockerfile
+    image: teamcity-agent-node:latest
+    container_name: teamcity-agent-node
+    restart: always
+    depends_on:
+      - teamcity-server
+    environment:
+      SERVER_URL: "http://teamcity-server:8111"
+    user: "0:0"
+    volumes:
+      - ~/teamcity_data/agent-node/conf:/data/teamcity_agent/conf
+      - ~/teamcity_data/agent-node/logs:/opt/teamcity/logs
+      - /var/run/docker.sock:/var/run/docker.sock

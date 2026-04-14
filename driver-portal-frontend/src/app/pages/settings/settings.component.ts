@@ -9,6 +9,7 @@ import {
   TopUpSourceApi,
   WalletTopUp,
 } from '../../core/api/payment-api.service';
+import { ToastService } from '../../core/toast/toast.service';
 
 type PaymentCardView = {
   id: string;
@@ -33,6 +34,8 @@ type AutoTopUpDraft = {
   cardId: string;
 };
 
+type AutoTopUpChangeSource = 'toggle' | 'config';
+
 @Component({
   selector: 'app-settings',
   standalone: true,
@@ -44,11 +47,14 @@ type AutoTopUpDraft = {
 export class SettingsComponent implements OnInit, OnDestroy {
   private fb = new FormBuilder();
   private paymentApi = inject(PaymentApiService);
+  private toast = inject(ToastService);
   private autoReloadTimer: ReturnType<typeof setInterval> | null = null;
 
   walletBalance = signal(0);
   walletBudget = signal(0);
-  readonly quickAmounts = [10, 25, 50, 100] as const;
+  currencyCode = signal('USD');
+  currencySymbol = signal('$');
+  quickAmounts = signal<number[]>([10, 25, 50, 100]);
   lastSyncedAt = signal('--');
   walletTopUps = signal<WalletTopUpView[]>([]);
   cards = signal<PaymentCardView[]>([]);
@@ -85,7 +91,20 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.stopAutoReload();
   }
 
+  hasActiveCards(): boolean {
+    return this.cards().length > 0;
+  }
+
+  hasSelectedAutoTopUpCard(): boolean {
+    const cardId = this.autoTopUpForm.getRawValue().cardId ?? '';
+    return cardId.trim().length > 0;
+  }
+
   addWalletBalance() {
+    if (!this.hasActiveCards()) {
+      this.errorMessage.set('Add a credit card before adding wallet balance.');
+      return;
+    }
     if (this.walletForm.invalid) return;
     const amount = Number(this.walletForm.value.amount ?? 0);
     if (!Number.isFinite(amount) || amount <= 0) return;
@@ -95,8 +114,9 @@ export class SettingsComponent implements OnInit, OnDestroy {
         .addTopUp({ amount, source: 'MANUAL' })
         .pipe(switchMap(() => this.paymentApi.getState())),
       (state) => {
-        this.walletForm.patchValue({ amount: 25 });
+        this.walletForm.patchValue({ amount: this.defaultTopUpAmount() });
         this.applyState(state);
+        this.toast.show('Balance added successfully', 'success');
       }
     );
   }
@@ -105,8 +125,13 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.walletForm.patchValue({ amount });
   }
 
-  onAutoTopUpConfigChange() {
+  onAutoTopUpConfigChange(source: AutoTopUpChangeSource = 'config') {
     if (this.loading() || this.pendingAutoTopUp()) return;
+    if (!this.hasActiveCards()) {
+      this.autoTopUpForm.patchValue({ enabled: false, cardId: '' }, { emitEvent: false });
+      this.pendingAutoTopUp.set(null);
+      return;
+    }
     if (this.autoTopUpForm.invalid) return;
     const raw = this.autoTopUpForm.getRawValue();
     const cardId = raw.cardId ?? '';
@@ -130,7 +155,20 @@ export class SettingsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.pendingAutoTopUp.set(draft);
+    if (source === 'toggle' && this.shouldConfirmAutoTopUpEnable(current, draft)) {
+      this.pendingAutoTopUp.set(draft);
+      return;
+    }
+
+    this.pendingAutoTopUp.set(null);
+    this.submitAutoTopUpChange(draft);
+  }
+
+  onAutoTopUpCardChange() {
+    if (!this.hasSelectedAutoTopUpCard()) {
+      this.autoTopUpForm.patchValue({ enabled: false }, { emitEvent: false });
+    }
+    this.onAutoTopUpConfigChange('config');
   }
 
   cancelAutoTopUpChange() {
@@ -146,15 +184,13 @@ export class SettingsComponent implements OnInit, OnDestroy {
     if (!draft) {
       return;
     }
+    if (!this.hasActiveCards()) {
+      this.pendingAutoTopUp.set(null);
+      this.errorMessage.set('Add a credit card before configuring auto top-up.');
+      return;
+    }
 
-    this.runApi(
-      this.paymentApi.updateAutoTopUp(draft).pipe(switchMap(() => this.paymentApi.getState())),
-      (state) => {
-        this.applyState(state);
-        this.pendingAutoTopUp.set(null);
-      },
-      false
-    );
+    this.submitAutoTopUpChange(draft);
   }
 
   addCard() {
@@ -176,6 +212,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
           expiry: '',
         });
         this.applyState(state);
+        this.toast.show('Card added successfully', 'success');
       }
     );
   }
@@ -205,6 +242,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
       (state) => {
         this.applyState(state);
         this.pendingDeleteCard.set(null);
+        this.toast.show('Card deleted', 'success');
       }
     );
   }
@@ -249,6 +287,11 @@ export class SettingsComponent implements OnInit, OnDestroy {
     const cards = state.cards ?? [];
     this.walletBalance.set(this.moneyToNumber(state.wallet?.balance));
     this.walletBudget.set(this.moneyToNumber(state.wallet?.budget));
+    const currencyCode = this.resolveCurrencyCode(state.wallet?.currency);
+    const countryCode = (state.wallet?.countryCode ?? '').trim().toUpperCase();
+    this.currencyCode.set(currencyCode);
+    this.currencySymbol.set(this.resolveCurrencySymbol(state.wallet?.currencySymbol));
+    this.quickAmounts.set(this.resolveTopUpPresets(state.wallet?.topUpPresets, currencyCode, countryCode));
     this.cards.set(cards);
     const pendingCard = this.pendingDeleteCard();
     if (pendingCard && !cards.some((card) => card.id === pendingCard.id)) {
@@ -260,7 +303,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
     const requestedCardId = state.autoTopUp?.cardId ?? '';
     const resolvedCardId = this.resolveCardId(requestedCardId, cards);
     const currentAutoTopUp: AutoTopUpDraft = {
-      enabled: cards.length > 0 ? !!state.autoTopUp?.enabled : false,
+      enabled: cards.length > 0 && !!resolvedCardId ? !!state.autoTopUp?.enabled : false,
       threshold: this.moneyToNumber(state.autoTopUp?.threshold),
       amount: this.moneyToNumber(state.autoTopUp?.amount),
       cardId: resolvedCardId,
@@ -320,6 +363,22 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.autoTopUpForm.patchValue(current, { emitEvent: false });
   }
 
+  private shouldConfirmAutoTopUpEnable(current: AutoTopUpDraft | null, draft: AutoTopUpDraft): boolean {
+    return !current?.enabled && draft.enabled;
+  }
+
+  private submitAutoTopUpChange(draft: AutoTopUpDraft) {
+    this.runApi(
+      this.paymentApi.updateAutoTopUp(draft).pipe(switchMap(() => this.paymentApi.getState())),
+      (state) => {
+        this.applyState(state);
+        this.pendingAutoTopUp.set(null);
+        this.toast.show('Auto top-up updated', 'success');
+      },
+      false
+    );
+  }
+
   private isSameAutoTopUpConfig(left: AutoTopUpDraft, right: AutoTopUpDraft): boolean {
     return (
       left.enabled === right.enabled &&
@@ -354,6 +413,22 @@ export class SettingsComponent implements OnInit, OnDestroy {
     }).format(date);
   }
 
+  formatCurrency(amount: number): string {
+    const code = this.currencyCode();
+    try {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: code,
+      }).format(amount);
+    } catch {
+      return `${this.currencySymbol()}${amount.toFixed(2)}`;
+    }
+  }
+
+  formatQuickAmount(amount: number): string {
+    return this.formatCurrency(amount);
+  }
+
   private runApi<T>(
     request$: Observable<T>,
     onSuccess: (response: T) => void,
@@ -370,7 +445,9 @@ export class SettingsComponent implements OnInit, OnDestroy {
         next: (response) => onSuccess(response),
         error: (error: unknown) => {
           if (showError) {
-            this.errorMessage.set(this.extractErrorMessage(error));
+            const message = this.extractErrorMessage(error);
+            this.errorMessage.set(message);
+            this.toast.show('Failed to add balance', 'error');
           }
         },
       });
@@ -412,5 +489,68 @@ export class SettingsComponent implements OnInit, OnDestroy {
     }
 
     return 'Payment API request failed.';
+  }
+
+  private resolveCurrencyCode(value: string | null | undefined): string {
+    const normalized = (value ?? '').trim().toUpperCase();
+    return normalized || 'USD';
+  }
+
+  private resolveCurrencySymbol(value: string | null | undefined): string {
+    const normalized = (value ?? '').trim();
+    return normalized || '$';
+  }
+
+  private resolveTopUpPresets(values: number[] | null | undefined, currencyCode: string, countryCode: string): number[] {
+    const fallback = this.defaultTopUpPresets(currencyCode, countryCode);
+    if (!Array.isArray(values) || values.length === 0) {
+      return fallback;
+    }
+
+    const parsed = values
+      .map((value) => Number(value))
+      .filter((value) => Number.isFinite(value) && value > 0)
+      .map((value) => Number(value.toFixed(2)));
+
+    return parsed.length > 0 ? parsed : fallback;
+  }
+
+  private defaultTopUpPresets(currencyCode: string, countryCode: string): number[] {
+    const country = countryCode.trim().toUpperCase();
+    const currency = currencyCode.trim().toUpperCase();
+
+    if (country === 'IN' || currency === 'INR') {
+      return [500, 1000, 2000, 5000];
+    }
+    if (country === 'JP' || currency === 'JPY') {
+      return [1000, 3000, 5000, 10000];
+    }
+    if (country === 'GB' || currency === 'GBP') {
+      return [10, 20, 40, 80];
+    }
+    if (country === 'SE' || currency === 'SEK') {
+      return [100, 250, 500, 1000];
+    }
+    if (country === 'NO' || currency === 'NOK') {
+      return [120, 300, 600, 1200];
+    }
+    if (country === 'DK' || currency === 'DKK') {
+      return [75, 200, 350, 700];
+    }
+    if (country === 'AE' || currency === 'AED') {
+      return [25, 50, 100, 200];
+    }
+    if (currency === 'EUR') {
+      return [10, 25, 50, 100];
+    }
+    return [10, 25, 50, 100];
+  }
+
+  private defaultTopUpAmount(): number {
+    const values = this.quickAmounts();
+    if (values.length === 0) {
+      return 25;
+    }
+    return values[Math.min(1, values.length - 1)];
   }
 }

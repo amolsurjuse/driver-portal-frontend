@@ -10,14 +10,19 @@
   <div class="error-banner" *ngIf="errorMessage() as error">{{ error }}</div>
 
   <div class="layout">
-    <article class="panel wallet-panel">
+    <article class="panel wallet-panel" [class.panel-disabled]="!hasActiveCards()">
       <div class="wallet-hero">
         <div>
           <p class="wallet-caption">Wallet balance</p>
-          <h2>${{ walletBalance().toFixed(2) }}</h2>
+          <h2>{{ formatCurrency(walletBalance()) }}</h2>
           <p class="muted">Available for charging sessions</p>
         </div>
-        <div class="wallet-icon" aria-hidden="true">💼</div>
+        <div class="wallet-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 8.5C4 7.12 5.12 6 6.5 6H18a2 2 0 0 1 2 2v1h-2.5A2.5 2.5 0 0 0 15 11.5v1A2.5 2.5 0 0 0 17.5 15H20v1a2 2 0 0 1-2 2H6.5A2.5 2.5 0 0 1 4 15.5v-7Z"/>
+            <path d="M16 11.5a1.5 1.5 0 0 1 1.5-1.5H21v4h-3.5a1.5 1.5 0 0 1-1.5-1.5v-1Z"/>
+          </svg>
+        </div>
       </div>
 
       <div class="wallet-meter">
@@ -28,52 +33,57 @@
         <div class="meter-track">
           <div class="meter-fill" [style.width.%]="walletUsagePercent()"></div>
         </div>
-        <p class="muted">Against monthly target of ${{ walletBudget().toFixed(2) }}</p>
+        <p class="muted">Against monthly target of {{ formatCurrency(walletBudget()) }}</p>
       </div>
 
       <div class="quick-amounts">
         <button
           type="button"
           class="quick-amount"
-          *ngFor="let amount of quickAmounts"
+          *ngFor="let amount of quickAmounts()"
           (click)="setWalletAmount(amount)"
+          [disabled]="!hasActiveCards() || loading()"
         >
-          +${{ amount }}
+          +{{ formatQuickAmount(amount) }}
         </button>
       </div>
 
       <form [formGroup]="walletForm" (ngSubmit)="addWalletBalance()" class="inline-form">
         <label>
-          Amount (USD)
-          <input type="number" min="1" step="1" formControlName="amount" />
+          Amount ({{ currencyCode() }})
+          <input type="number" min="1" step="1" formControlName="amount" [disabled]="!hasActiveCards() || loading()" />
         </label>
-        <button class="primary" type="submit" [disabled]="walletForm.invalid || loading()">Add balance</button>
+        <button class="btn-primary" type="submit" [disabled]="walletForm.invalid || loading() || !hasActiveCards()">Add balance</button>
       </form>
+      <p class="wallet-guard muted" *ngIf="!hasActiveCards()">Add a credit card to enable wallet top-ups and auto top-up.</p>
 
-      <div class="auto-topup" [formGroup]="autoTopUpForm">
+      <div class="auto-topup" [formGroup]="autoTopUpForm" [class.section-disabled]="!hasActiveCards()">
         <div class="auto-topup-head">
           <div>
             <h3>Auto top-up</h3>
             <p class="muted">Top up automatically when wallet balance is low.</p>
           </div>
-          <label class="toggle">
-            <input type="checkbox" formControlName="enabled" (change)="onAutoTopUpConfigChange()" />
-            <span>{{ autoTopUpForm.value.enabled ? 'ON' : 'OFF' }}</span>
+          <label class="toggle-switch">
+            <input type="checkbox" formControlName="enabled" (change)="onAutoTopUpConfigChange('toggle')" [disabled]="!hasSelectedAutoTopUpCard() || loading()" />
+            <span class="toggle-track">
+              <span class="toggle-thumb"></span>
+            </span>
+            <span class="toggle-label">{{ autoTopUpForm.value.enabled ? 'ON' : 'OFF' }}</span>
           </label>
         </div>
 
         <div class="grid">
           <label>
-            Threshold (USD)
-            <input type="number" min="1" formControlName="threshold" (change)="onAutoTopUpConfigChange()" />
+            Threshold ({{ currencyCode() }})
+            <input type="number" min="1" formControlName="threshold" (change)="onAutoTopUpConfigChange('config')" [disabled]="!hasActiveCards() || loading()" />
           </label>
           <label>
-            Auto top-up amount (USD)
-            <input type="number" min="1" formControlName="amount" (change)="onAutoTopUpConfigChange()" />
+            Auto top-up amount ({{ currencyCode() }})
+            <input type="number" min="1" formControlName="amount" (change)="onAutoTopUpConfigChange('config')" [disabled]="!hasActiveCards() || loading()" />
           </label>
           <label>
             Funding card
-            <select formControlName="cardId" (change)="onAutoTopUpConfigChange()">
+            <select formControlName="cardId" (change)="onAutoTopUpCardChange()" [disabled]="!hasActiveCards() || loading()">
               <option *ngIf="cards().length === 0" value="" disabled>No cards available</option>
               <option *ngFor="let card of cards()" [value]="card.id">
                 {{ card.brand }} •••• {{ card.last4 }}
@@ -87,7 +97,7 @@
         <h3>Recent top-ups</h3>
         <div class="history-row" *ngFor="let topUp of walletTopUps()">
           <div>
-            <span>+${{ topUp.amount.toFixed(2) }}</span>
+            <span>+{{ formatCurrency(topUp.amount) }}</span>
             <span class="history-source" [class.auto]="topUp.source === 'Auto'">{{ topUp.source }}</span>
             <div class="muted" *ngIf="topUp.note">{{ topUp.note }}</div>
           </div>
@@ -124,16 +134,21 @@
             <input type="text" formControlName="expiry" maxlength="5" placeholder="10/28" />
           </label>
         </div>
-        <button class="primary" type="submit" [disabled]="cardForm.invalid || loading()">Add card</button>
+        <button class="btn-primary" type="submit" [disabled]="cardForm.invalid || loading()">Add card</button>
       </form>
 
       <div class="cards-list">
         <div class="card-item" *ngFor="let card of cards()">
-          <div>
-            <h3>{{ card.nickname }}</h3>
-            <p class="muted">{{ card.brand }} •••• {{ card.last4 }} · Expires {{ card.expiry }}</p>
+          <div class="card-item-info">
+            <div class="card-brand-icon" [ngClass]="'brand-' + card.brand.toLowerCase()">
+              {{ card.brand.charAt(0) }}
+            </div>
+            <div>
+              <h3>{{ card.nickname }}</h3>
+              <p class="muted">{{ card.brand }} •••• {{ card.last4 }} · Expires {{ card.expiry }}</p>
+            </div>
           </div>
-          <button class="danger" type="button" (click)="openDeleteCardDialog(card)" [disabled]="loading()">Delete</button>
+          <button class="btn-danger" type="button" (click)="openDeleteCardDialog(card)" [disabled]="loading()">Delete</button>
         </div>
         <p class="muted" *ngIf="cards().length === 0">No cards added yet.</p>
       </div>
@@ -153,9 +168,9 @@
           Apply auto top-up as
           <strong>ON</strong>
           with threshold
-          <strong>${{ pending.threshold.toFixed(2) }}</strong>
+          <strong>{{ formatCurrency(pending.threshold) }}</strong>
           and amount
-          <strong>${{ pending.amount.toFixed(2) }}</strong>?
+          <strong>{{ formatCurrency(pending.amount) }}</strong>?
         </p>
         <p class="muted">
           Funding card:
@@ -166,8 +181,8 @@
         <p>Are you sure you want to turn off auto top-up?</p>
       </ng-template>
       <div class="dialog-actions">
-        <button class="ghost" type="button" (click)="cancelAutoTopUpChange()" [disabled]="loading()">Cancel</button>
-        <button class="primary" type="button" (click)="confirmAutoTopUpChange()" [disabled]="loading()">Confirm</button>
+        <button class="btn-ghost" type="button" (click)="cancelAutoTopUpChange()" [disabled]="loading()">Cancel</button>
+        <button class="btn-primary" type="button" (click)="confirmAutoTopUpChange()" [disabled]="loading()">Confirm</button>
       </div>
     </article>
   </div>
@@ -186,8 +201,8 @@
       </p>
       <p class="muted">This card will no longer be available for payments or auto top-up.</p>
       <div class="dialog-actions">
-        <button class="ghost" type="button" (click)="closeDeleteCardDialog()" [disabled]="loading()">Cancel</button>
-        <button class="danger" type="button" (click)="confirmDeleteCard()" [disabled]="loading()">Delete card</button>
+        <button class="btn-ghost" type="button" (click)="closeDeleteCardDialog()" [disabled]="loading()">Cancel</button>
+        <button class="btn-danger" type="button" (click)="confirmDeleteCard()" [disabled]="loading()">Delete card</button>
       </div>
     </article>
   </div>

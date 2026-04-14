@@ -1,32 +1,160 @@
 <section class="profile-page">
   <h1>User Profile</h1>
 
-  <article class="profile-card" *ngIf="email$ | async as email">
+  <article class="profile-card" *ngIf="!loading(); else loadingState">
     <div class="profile-head">
-      <span class="avatar">{{ initials(email) }}</span>
-      <div>
-        <h2>{{ displayName(email) }}</h2>
-        <p class="muted">{{ email }}</p>
+      <div class="avatar-wrap">
+        <span class="avatar-large">{{ initials(profile()?.email ?? email()) }}</span>
+      </div>
+      <div class="profile-head-info">
+        <h2>{{ fullName(profile(), email()) }}</h2>
+        <p class="muted">{{ profile()?.email ?? email() }}</p>
+        <div class="profile-tags">
+          <span class="badge" [ngClass]="profile()?.enabled ? 'badge-success' : 'badge-danger'">
+            {{ profile()?.enabled ? 'Active' : 'Disabled' }}
+          </span>
+          <span class="profile-since muted" *ngIf="profile()?.createdAt">
+            Member since {{ relativeTime(profile()?.createdAt) }}
+          </span>
+        </div>
       </div>
     </div>
 
-    <div class="profile-grid">
-      <div class="field">
-        <label>Full name</label>
-        <div>{{ displayName(email) }}</div>
+    <form *ngIf="profile(); else noProfile" [formGroup]="form" (ngSubmit)="save()">
+      <div class="section">
+        <div class="section-head">
+          <div class="section-title">
+            <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/>
+            </svg>
+            <h3>Personal details</h3>
+          </div>
+          <button class="btn-ghost" type="button" *ngIf="!editing()" (click)="startEditing()" [disabled]="saving()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="edit-icon"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+            Edit
+          </button>
+        </div>
+
+        <div class="partition-grid">
+          <div class="field" [class.editable-field]="editing()">
+            <label for="firstName">First name</label>
+            <ng-container *ngIf="editing(); else firstNameReadonly">
+              <input id="firstName" type="text" formControlName="firstName" />
+              <p class="field-error" *ngIf="showControlError('firstName')">{{ controlErrorMessage('firstName') }}</p>
+            </ng-container>
+            <ng-template #firstNameReadonly>
+              <div class="field-value">{{ profile()?.firstName || 'Not set' }}</div>
+            </ng-template>
+          </div>
+
+          <div class="field" [class.editable-field]="editing()">
+            <label for="lastName">Last name</label>
+            <ng-container *ngIf="editing(); else lastNameReadonly">
+              <input id="lastName" type="text" formControlName="lastName" />
+              <p class="field-error" *ngIf="showControlError('lastName')">{{ controlErrorMessage('lastName') }}</p>
+            </ng-container>
+            <ng-template #lastNameReadonly>
+              <div class="field-value">{{ profile()?.lastName || 'Not set' }}</div>
+            </ng-template>
+          </div>
+
+          <div class="field">
+            <label>Email</label>
+            <div class="field-value">{{ profile()?.email ?? email() ?? 'Not set' }}</div>
+          </div>
+
+          <div class="field">
+            <label>Phone</label>
+            <div class="field-value">{{ profile()?.phoneNumber || 'Not set' }}</div>
+          </div>
+        </div>
       </div>
-      <div class="field">
-        <label>Email</label>
-        <div>{{ email }}</div>
+
+      <hr class="section-separator" />
+
+      <div class="section">
+        <div class="section-title">
+          <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+          <h3>Address</h3>
+        </div>
+        <div class="partition-grid">
+          <div class="field" [class.editable-field]="editing()">
+            <label for="street">Street</label>
+            <ng-container *ngIf="editing(); else streetReadonly">
+              <input id="street" type="text" formControlName="street" />
+              <p class="field-error" *ngIf="showControlError('street')">{{ controlErrorMessage('street') }}</p>
+            </ng-container>
+            <ng-template #streetReadonly>
+              <div class="field-value">{{ profile()?.street || 'Not set' }}</div>
+            </ng-template>
+          </div>
+
+          <div class="field" [class.editable-field]="editing()">
+            <label for="city">City</label>
+            <ng-container *ngIf="editing(); else cityReadonly">
+              <input id="city" type="text" formControlName="city" />
+              <p class="field-error" *ngIf="showControlError('city')">{{ controlErrorMessage('city') }}</p>
+            </ng-container>
+            <ng-template #cityReadonly>
+              <div class="field-value">{{ profile()?.city || 'Not set' }}</div>
+            </ng-template>
+          </div>
+
+          <div class="field" [class.editable-field]="editing()">
+            <label for="state">State</label>
+            <ng-container *ngIf="editing(); else stateReadonly">
+              <input id="state" type="text" formControlName="state" />
+              <p class="field-error" *ngIf="showControlError('state')">{{ controlErrorMessage('state') }}</p>
+            </ng-container>
+            <ng-template #stateReadonly>
+              <div class="field-value">{{ profile()?.state || 'Not set' }}</div>
+            </ng-template>
+          </div>
+
+          <div class="field" [class.editable-field]="editing()">
+            <label for="postalCode">Postal code</label>
+            <ng-container *ngIf="editing(); else postalCodeReadonly">
+              <input id="postalCode" type="text" formControlName="postalCode" />
+              <p class="field-error" *ngIf="showControlError('postalCode')">{{ controlErrorMessage('postalCode') }}</p>
+            </ng-container>
+            <ng-template #postalCodeReadonly>
+              <div class="field-value">{{ profile()?.postalCode || 'Not set' }}</div>
+            </ng-template>
+          </div>
+
+          <div class="field">
+            <label>Country</label>
+            <div class="field-value">{{ countryName(profile()) }}</div>
+          </div>
+        </div>
       </div>
-      <div class="field">
-        <label>Phone</label>
-        <div>Not set</div>
+
+      <div class="actions" *ngIf="editing()">
+        <button class="btn-ghost" type="button" (click)="resetForm()" [disabled]="saving()">Cancel</button>
+        <button class="btn-primary" type="submit" [disabled]="saving() || form.invalid || form.pristine">
+          {{ saving() ? 'Saving...' : 'Save changes' }}
+        </button>
       </div>
-      <div class="field">
-        <label>Country</label>
-        <div>Not set</div>
-      </div>
-    </div>
+    </form>
   </article>
+
+  <ng-template #noProfile>
+    <p class="muted">Profile details are unavailable right now.</p>
+  </ng-template>
+
+  <ng-template #loadingState>
+    <article class="profile-card">
+      <div class="skeleton-profile">
+        <div class="skeleton skeleton-avatar"></div>
+        <div class="skeleton-lines">
+          <div class="skeleton skeleton-line-lg"></div>
+          <div class="skeleton skeleton-line-sm"></div>
+        </div>
+      </div>
+      <div class="skeleton skeleton-block"></div>
+      <div class="skeleton skeleton-block"></div>
+    </article>
+  </ng-template>
 </section>

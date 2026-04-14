@@ -1,0 +1,21 @@
+{
+  "module": "api-gateway",
+  "target": {
+    "protocol": "http",
+    "host": "api-gateway",
+    "port": 8090
+  },
+  "endpointCount": 1,
+  "generatedAt": "2026-03-21T17:57:02.342317+00:00",
+  "endpoints": [
+    {
+      "name": "POST /internal/rbac/cache/invalidate",
+      "method": "POST",
+      "pathTemplate": "/internal/rbac/cache/invalidate",
+      "path": "/internal/rbac/cache/invalidate",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "api-gateway/src/main/java/com/electrahub/gateway/security/RbacCacheController.java"
+    }
+  ]
+}

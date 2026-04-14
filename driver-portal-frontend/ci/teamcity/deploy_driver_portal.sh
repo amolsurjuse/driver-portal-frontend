@@ -20,7 +20,9 @@ require_cmd perl
 DRY_RUN="${DRY_RUN:-false}"
 IMAGE_REPO="${IMAGE_REPO:-amolsurjuse/driver-portal-frontend}"
 IMAGE_TAG="${IMAGE_TAG:-${BUILD_NUMBER:-${TEAMCITY_BUILD_NUMBER:-local-$(date +%Y%m%d%H%M%S)}}}"
-K8S_REPO_URL="${K8S_REPO_URL:-git@github.com:amolsurjuse/k8s-platform.git}"
+GITHUB_USER="${GITHUB_USER:-}"
+GITHUB_TOKEN="${GITHUB_TOKEN:-}"
+K8S_REPO_URL="${K8S_REPO_URL:-}"
 K8S_BRANCH="${K8S_BRANCH:-develop}"
 K8S_VERSION_FILE="${K8S_VERSION_FILE:-charts/config/services/driver-portal-ui/us/version/dev-version.yaml}"
 K8S_COMMIT_NAME="${K8S_COMMIT_NAME:-TeamCity CI}"
@@ -38,6 +40,14 @@ fi
 FULL_IMAGE="${IMAGE_REPO}:${IMAGE_TAG}"
 log "Using app directory: ${APP_DIR}"
 log "Building image: ${FULL_IMAGE}"
+
+if [[ -z "$K8S_REPO_URL" ]]; then
+  if [[ -n "$GITHUB_USER" && -n "$GITHUB_TOKEN" ]]; then
+    K8S_REPO_URL="https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/amolsurjuse/k8s-platform.git"
+  else
+    K8S_REPO_URL="git@github.com:amolsurjuse/k8s-platform.git"
+  fi
+fi
 
 pushd "$APP_DIR" >/dev/null
 npm ci

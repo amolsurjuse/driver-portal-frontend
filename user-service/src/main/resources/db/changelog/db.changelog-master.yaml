@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changes/0000-create-schema.yaml
+  - include:
+      file: db/changelog/changes/0001-create-user-core.yaml
+  - include:
+      file: db/changelog/changes/0002-seed-countries.yaml
+  - include:
+      file: db/changelog/changes/0003-seed-system-admin-role.yaml
+  - include:
+      file: db/changelog/changes/0004-seed-ev-domain-roles.yaml
+  - include:
+      file: db/changelog/changes/0005-create-rbac-policy.yaml
+  - include:
+      file: db/changelog/changes/0006-add-auth-countries-public-rbac-rule.yaml
+  - include:
+      file: db/changelog/changes/0007-add-pricing-rbac-rules.yaml

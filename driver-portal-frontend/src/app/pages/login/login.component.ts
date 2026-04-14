@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
@@ -22,6 +22,7 @@ export class LoginComponent {
 
   loading$ = this.store.select(selectAuthLoading);
   error$ = this.store.select(selectAuthError);
+  passwordVisible = signal(false);
 
   form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -41,5 +42,9 @@ export class LoginComponent {
       password: this.form.value.password ?? '',
     };
     this.store.dispatch(AuthActions.login({ payload }));
+  }
+
+  togglePasswordVisibility() {
+    this.passwordVisible.update(v => !v);
   }
 }

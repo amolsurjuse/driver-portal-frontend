@@ -1,0 +1,327 @@
+{
+  "module": "ocpi-service",
+  "target": {
+    "protocol": "http",
+    "host": "ocpi-service",
+    "port": 8084
+  },
+  "endpointCount": 35,
+  "generatedAt": "2026-03-21T17:57:02.360394+00:00",
+  "endpoints": [
+    {
+      "name": "GET /api/v1/ocpi/admin/credentials",
+      "method": "GET",
+      "pathTemplate": "/api/v1/ocpi/admin/credentials",
+      "path": "/api/v1/ocpi/admin/credentials",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiAdminController.java"
+    },
+    {
+      "name": "POST /api/v1/ocpi/admin/credentials/register",
+      "method": "POST",
+      "pathTemplate": "/api/v1/ocpi/admin/credentials/register",
+      "path": "/api/v1/ocpi/admin/credentials/register",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiAdminController.java"
+    },
+    {
+      "name": "DELETE /api/v1/ocpi/admin/credentials/{credentialId}",
+      "method": "DELETE",
+      "pathTemplate": "/api/v1/ocpi/admin/credentials/{credentialId}",
+      "path": "/api/v1/ocpi/admin/credentials/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiAdminController.java"
+    },
+    {
+      "name": "POST /api/v1/ocpi/admin/sync/cdrs",
+      "method": "POST",
+      "pathTemplate": "/api/v1/ocpi/admin/sync/cdrs",
+      "path": "/api/v1/ocpi/admin/sync/cdrs",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiAdminController.java"
+    },
+    {
+      "name": "POST /api/v1/ocpi/admin/sync/locations",
+      "method": "POST",
+      "pathTemplate": "/api/v1/ocpi/admin/sync/locations",
+      "path": "/api/v1/ocpi/admin/sync/locations",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiAdminController.java"
+    },
+    {
+      "name": "POST /api/v1/ocpi/admin/sync/sessions",
+      "method": "POST",
+      "pathTemplate": "/api/v1/ocpi/admin/sync/sessions",
+      "path": "/api/v1/ocpi/admin/sync/sessions",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiAdminController.java"
+    },
+    {
+      "name": "GET /api/v1/ocpi/sync/queue",
+      "method": "GET",
+      "pathTemplate": "/api/v1/ocpi/sync/queue",
+      "path": "/api/v1/ocpi/sync/queue",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/SyncQueueController.java"
+    },
+    {
+      "name": "DELETE /api/v1/ocpi/sync/queue/completed",
+      "method": "DELETE",
+      "pathTemplate": "/api/v1/ocpi/sync/queue/completed",
+      "path": "/api/v1/ocpi/sync/queue/completed",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/SyncQueueController.java"
+    },
+    {
+      "name": "POST /api/v1/ocpi/sync/queue/{itemId}/retry",
+      "method": "POST",
+      "pathTemplate": "/api/v1/ocpi/sync/queue/{itemId}/retry",
+      "path": "/api/v1/ocpi/sync/queue/11111111-1111-1111-1111-111111111111/retry",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/SyncQueueController.java"
+    },
+    {
+      "name": "GET /api/v1/ocpi/sync/stats",
+      "method": "GET",
+      "pathTemplate": "/api/v1/ocpi/sync/stats",
+      "path": "/api/v1/ocpi/sync/stats",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/SyncQueueController.java"
+    },
+    {
+      "name": "GET /ocpi/2.2.1",
+      "method": "GET",
+      "pathTemplate": "/ocpi/2.2.1",
+      "path": "/ocpi/2.2.1",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiVersionsController.java"
+    },
+    {
+      "name": "GET /ocpi/2.2.1/cpo/cdrs",
+      "method": "GET",
+      "pathTemplate": "/ocpi/2.2.1/cpo/cdrs",
+      "path": "/ocpi/2.2.1/cpo/cdrs",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiCdrsController.java"
+    },
+    {
+      "name": "GET /ocpi/2.2.1/cpo/cdrs/{cdrId}",
+      "method": "GET",
+      "pathTemplate": "/ocpi/2.2.1/cpo/cdrs/{cdrId}",
+      "path": "/ocpi/2.2.1/cpo/cdrs/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiCdrsController.java"
+    },
+    {
+      "name": "GET /ocpi/2.2.1/cpo/locations",
+      "method": "GET",
+      "pathTemplate": "/ocpi/2.2.1/cpo/locations",
+      "path": "/ocpi/2.2.1/cpo/locations",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiLocationsController.java"
+    },
+    {
+      "name": "GET /ocpi/2.2.1/cpo/locations/{locationId}",
+      "method": "GET",
+      "pathTemplate": "/ocpi/2.2.1/cpo/locations/{locationId}",
+      "path": "/ocpi/2.2.1/cpo/locations/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiLocationsController.java"
+    },
+    {
+      "name": "GET /ocpi/2.2.1/cpo/locations/{locationId}/{evseUid}",
+      "method": "GET",
+      "pathTemplate": "/ocpi/2.2.1/cpo/locations/{locationId}/{evseUid}",
+      "path": "/ocpi/2.2.1/cpo/locations/11111111-1111-1111-1111-111111111111/1",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiLocationsController.java"
+    },
+    {
+      "name": "GET /ocpi/2.2.1/cpo/locations/{locationId}/{evseUid}/{connectorId}",
+      "method": "GET",
+      "pathTemplate": "/ocpi/2.2.1/cpo/locations/{locationId}/{evseUid}/{connectorId}",
+      "path": "/ocpi/2.2.1/cpo/locations/11111111-1111-1111-1111-111111111111/1/1",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiLocationsController.java"
+    },
+    {
+      "name": "GET /ocpi/2.2.1/cpo/sessions",
+      "method": "GET",
+      "pathTemplate": "/ocpi/2.2.1/cpo/sessions",
+      "path": "/ocpi/2.2.1/cpo/sessions",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiSessionsController.java"
+    },
+    {
+      "name": "GET /ocpi/2.2.1/cpo/sessions/{sessionId}",
+      "method": "GET",
+      "pathTemplate": "/ocpi/2.2.1/cpo/sessions/{sessionId}",
+      "path": "/ocpi/2.2.1/cpo/sessions/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiSessionsController.java"
+    },
+    {
+      "name": "GET /ocpi/2.2.1/cpo/tariffs",
+      "method": "GET",
+      "pathTemplate": "/ocpi/2.2.1/cpo/tariffs",
+      "path": "/ocpi/2.2.1/cpo/tariffs",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiTariffsController.java"
+    },
+    {
+      "name": "GET /ocpi/2.2.1/cpo/tariffs/{tariffId}",
+      "method": "GET",
+      "pathTemplate": "/ocpi/2.2.1/cpo/tariffs/{tariffId}",
+      "path": "/ocpi/2.2.1/cpo/tariffs/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiTariffsController.java"
+    },
+    {
+      "name": "GET /ocpi/2.2.1/credentials",
+      "method": "GET",
+      "pathTemplate": "/ocpi/2.2.1/credentials",
+      "path": "/ocpi/2.2.1/credentials",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiCredentialsController.java"
+    },
+    {
+      "name": "POST /ocpi/2.2.1/credentials",
+      "method": "POST",
+      "pathTemplate": "/ocpi/2.2.1/credentials",
+      "path": "/ocpi/2.2.1/credentials",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiCredentialsController.java"
+    },
+    {
+      "name": "PUT /ocpi/2.2.1/credentials",
+      "method": "PUT",
+      "pathTemplate": "/ocpi/2.2.1/credentials",
+      "path": "/ocpi/2.2.1/credentials",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiCredentialsController.java"
+    },
+    {
+      "name": "DELETE /ocpi/2.2.1/credentials/{credentialId}",
+      "method": "DELETE",
+      "pathTemplate": "/ocpi/2.2.1/credentials/{credentialId}",
+      "path": "/ocpi/2.2.1/credentials/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiCredentialsController.java"
+    },
+    {
+      "name": "POST /ocpi/2.2.1/emsp/commands/CANCEL_RESERVATION",
+      "method": "POST",
+      "pathTemplate": "/ocpi/2.2.1/emsp/commands/CANCEL_RESERVATION",
+      "path": "/ocpi/2.2.1/emsp/commands/CANCEL_RESERVATION",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiCommandsController.java"
+    },
+    {
+      "name": "POST /ocpi/2.2.1/emsp/commands/RESERVE_NOW",
+      "method": "POST",
+      "pathTemplate": "/ocpi/2.2.1/emsp/commands/RESERVE_NOW",
+      "path": "/ocpi/2.2.1/emsp/commands/RESERVE_NOW",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiCommandsController.java"
+    },
+    {
+      "name": "POST /ocpi/2.2.1/emsp/commands/START_SESSION",
+      "method": "POST",
+      "pathTemplate": "/ocpi/2.2.1/emsp/commands/START_SESSION",
+      "path": "/ocpi/2.2.1/emsp/commands/START_SESSION",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiCommandsController.java"
+    },
+    {
+      "name": "POST /ocpi/2.2.1/emsp/commands/STOP_SESSION",
+      "method": "POST",
+      "pathTemplate": "/ocpi/2.2.1/emsp/commands/STOP_SESSION",
+      "path": "/ocpi/2.2.1/emsp/commands/STOP_SESSION",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiCommandsController.java"
+    },
+    {
+      "name": "POST /ocpi/2.2.1/emsp/commands/UNLOCK_CONNECTOR",
+      "method": "POST",
+      "pathTemplate": "/ocpi/2.2.1/emsp/commands/UNLOCK_CONNECTOR",
+      "path": "/ocpi/2.2.1/emsp/commands/UNLOCK_CONNECTOR",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiCommandsController.java"
+    },
+    {
+      "name": "GET /ocpi/2.2.1/emsp/tokens",
+      "method": "GET",
+      "pathTemplate": "/ocpi/2.2.1/emsp/tokens",
+      "path": "/ocpi/2.2.1/emsp/tokens",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiTokensController.java"
+    },
+    {
+      "name": "PUT /ocpi/2.2.1/emsp/tokens/{countryCode}/{partyId}/{tokenUid}",
+      "method": "PUT",
+      "pathTemplate": "/ocpi/2.2.1/emsp/tokens/{countryCode}/{partyId}/{tokenUid}",
+      "path": "/ocpi/2.2.1/emsp/tokens/US/11111111-1111-1111-1111-111111111111/11111111-1111-1111-1111-111111111111",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiTokensController.java"
+    },
+    {
+      "name": "GET /ocpi/2.2.1/emsp/tokens/{tokenUid}",
+      "method": "GET",
+      "pathTemplate": "/ocpi/2.2.1/emsp/tokens/{tokenUid}",
+      "path": "/ocpi/2.2.1/emsp/tokens/11111111-1111-1111-1111-111111111111",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiTokensController.java"
+    },
+    {
+      "name": "POST /ocpi/2.2.1/emsp/tokens/{tokenUid}/authorize",
+      "method": "POST",
+      "pathTemplate": "/ocpi/2.2.1/emsp/tokens/{tokenUid}/authorize",
+      "path": "/ocpi/2.2.1/emsp/tokens/11111111-1111-1111-1111-111111111111/authorize",
+      "body": "{}",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiTokensController.java"
+    },
+    {
+      "name": "GET /ocpi/versions",
+      "method": "GET",
+      "pathTemplate": "/ocpi/versions",
+      "path": "/ocpi/versions",
+      "body": "",
+      "expectedCodeRegex": "^(2\\d\\d|3\\d\\d|4\\d\\d)$",
+      "source": "ocpi-service/src/main/java/com/electrahub/ocpi/web/OcpiVersionsController.java"
+    }
+  ]
+}
