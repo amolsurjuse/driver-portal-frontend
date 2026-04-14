@@ -50,12 +50,54 @@
 ## Risks
 - 
 
-## Acceptance Criteria (Given / When / Then)
-1. Given ... When ... Then ...
-2. Given ... When ... Then ...
-3. Given ... When ... Then ...
+## Acceptance Criteria (Given / When / Then) — MANDATORY
 
-## Validation Plan
+> **This section is REQUIRED. A story cannot be created, approved, or handed off without validated acceptance criteria.**
+> Minimum: 3 (Small), 5 (Medium), 8 (Large/XL). Every functional requirement must have at least one AC.
+
+### Happy Path
+AC-1: <Short descriptive title>
+  Given <precondition / initial state>
+  When  <action / trigger>
+  Then  <expected outcome / observable result>
+  Verification: <unit test / integration test / manual QA>
+  Priority: MUST
+
+AC-2: <Short descriptive title>
+  Given ...
+  When  ...
+  Then  ...
+  Verification: ...
+  Priority: MUST
+
+### Input Validation / Edge Cases
+AC-3: <Short descriptive title — e.g., missing input, empty state, boundary>
+  Given ...
+  When  ...
+  Then  ...
+  Verification: ...
+  Priority: MUST
+
+### Error / Negative Scenarios
+AC-4: <Short descriptive title — e.g., service failure, timeout, unauthorized>
+  Given ...
+  When  ...
+  Then  ...
+  Verification: ...
+  Priority: MUST
+
+### Additional Criteria (add as needed)
+AC-5: ...
+
+### Acceptance Criteria Summary
+| # | Title | Category | Priority | Functional Req # |
+|---|-------|----------|----------|-----------------|
+| AC-1 | | Happy Path | MUST | FR-1 |
+| AC-2 | | Happy Path | MUST | FR-2 |
+| AC-3 | | Edge Case | MUST | FR-1 |
+| AC-4 | | Error | MUST | FR-3 |
+
+## Validation Plan (linked to Acceptance Criteria)
 - Unit tests to add/update:
 - Integration tests to run:
 - Protocol compliance checks (OCPP/OCPI where relevant):
@@ -73,6 +115,7 @@
 - Rollback approach:
 
 ## Definition of Done
+- [ ] Acceptance criteria validated (count, coverage, negative scenarios, format)
 - [ ] Plan approved
 - [ ] Implementation completed in approved scope
 - [ ] Unit tests updated and passing

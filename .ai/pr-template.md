@@ -7,6 +7,9 @@
 - Story/Ticket:
 - Requirement link:
 
+## Branching
+- Base branch: `develop` (unless explicitly overridden)
+
 ## Business Summary
 - What user/business outcome this PR delivers:
 
@@ -53,6 +56,13 @@
 - Sonar/static analysis notes:
 - Security checks and sensitive logging review:
 
+## K8 Configuration Governance (When Backend Config Keys Change)
+- K8 impact decision: `K8_CHANGE_REQUIRED | K8_NO_CHANGE_REQUIRED | K8_CHANGE_BLOCKED`
+- Keys added/changed:
+- Placement mapping (`config.data` / `env` / `secrets.env` / `extraSecretEnv`):
+- `k8s-platform` files updated:
+- Alignment check command and output summary:
+
 ## Backward Compatibility
 - Compatibility impact:
 - Consumer impact:
@@ -72,5 +82,6 @@
 - [ ] Tests are adequate and passing
 - [ ] OCPP/OCPI impact reviewed where applicable
 - [ ] Angular/React/iOS impact reviewed where applicable
+- [ ] K8 config governance evidence included when backend config keys changed
 - [ ] No unrelated changes included
 - [ ] Risk notes and rollout guidance are clear
