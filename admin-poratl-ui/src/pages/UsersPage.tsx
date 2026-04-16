@@ -9,7 +9,7 @@ import type { UserSummary } from '../types/admin';
 
 type SortField = 'email' | 'name' | 'status' | 'createdAt';
 type SortDirection = 'asc' | 'desc';
-type StatusFilter = 'all' | 'enabled' | 'disabled';
+type StatusFilter = 'all' | 'enabled' | 'disabled' | 'pending';
 
 const emptyPageInfo = {
   total: 0,
@@ -56,15 +56,20 @@ export default function UsersPage() {
     void fetchUsers();
   }, [token, debouncedQuery, page]);
 
-  const activeCount = useMemo(() => users.filter((user) => user.enabled).length, [users]);
+  const activeCount = useMemo(
+    () => users.filter((user) => user.enabled && !user.pendingDeletion).length,
+    [users]
+  );
 
   const filteredUsers = useMemo(() => {
     let filtered = users;
 
     if (statusFilter === 'enabled') {
-      filtered = filtered.filter((user) => user.enabled);
+      filtered = filtered.filter((user) => user.enabled && !user.pendingDeletion);
     } else if (statusFilter === 'disabled') {
-      filtered = filtered.filter((user) => !user.enabled);
+      filtered = filtered.filter((user) => !user.enabled && !user.pendingDeletion);
+    } else if (statusFilter === 'pending') {
+      filtered = filtered.filter((user) => user.pendingDeletion);
     }
 
     return [...filtered].sort((a, b) => {
@@ -81,8 +86,8 @@ export default function UsersPage() {
           bVal = displayName(b).toLowerCase();
           break;
         case 'status':
-          aVal = a.enabled ? 1 : 0;
-          bVal = b.enabled ? 1 : 0;
+          aVal = statusRank(a);
+          bVal = statusRank(b);
           break;
         case 'createdAt':
           aVal = new Date(a.createdAt).getTime();
@@ -149,6 +154,7 @@ export default function UsersPage() {
             <option value="all">All users</option>
             <option value="enabled">Enabled only</option>
             <option value="disabled">Disabled only</option>
+            <option value="pending">Pending deletion</option>
           </select>
         </label>
       </div>
@@ -208,8 +214,8 @@ export default function UsersPage() {
                   <td>{displayName(user)}</td>
                   <td>{user.phoneNumber || 'Not provided'}</td>
                   <td>
-                    <span className={`status-pill ${user.enabled ? 'enabled' : 'disabled'}`}>
-                      {user.enabled ? 'Enabled' : 'Disabled'}
+                    <span className={`status-pill ${statusMeta(user).className}`}>
+                      {statusMeta(user).label}
                     </span>
                   </td>
                   <td>{formatDate(user.createdAt)}</td>
@@ -293,10 +299,13 @@ export default function UsersPage() {
             </div>
 
             <div className="meta-bar">
-              <span className={`status-pill ${selectedUser.enabled ? 'enabled' : 'disabled'}`}>
-                {selectedUser.enabled ? 'Enabled' : 'Disabled'}
+              <span className={`status-pill ${statusMeta(selectedUser).className}`}>
+                {statusMeta(selectedUser).label}
               </span>
               <span className="subtle-copy">Created {formatDate(selectedUser.createdAt)}</span>
+              {selectedUser.deletionRequestedAt ? (
+                <span className="subtle-copy">Deletion requested {formatDateTime(selectedUser.deletionRequestedAt)}</span>
+              ) : null}
             </div>
 
             <section className="form-block">
@@ -310,7 +319,7 @@ export default function UsersPage() {
                 <DetailValueCard label="First name" value={selectedUser.firstName} />
                 <DetailValueCard label="Last name" value={selectedUser.lastName} />
                 <DetailValueCard label="Phone number" value={selectedUser.phoneNumber} />
-                <DetailValueCard label="Account status" value={selectedUser.enabled ? 'Enabled' : 'Disabled'} />
+                <DetailValueCard label="Account status" value={statusMeta(selectedUser).label} />
               </div>
             </section>
           </div>
@@ -364,6 +373,22 @@ function displayName(user: Pick<UserSummary, 'firstName' | 'lastName' | 'email'>
   return user.email.split('@')[0] ?? user.email;
 }
 
+function statusMeta(user: Pick<UserSummary, 'enabled' | 'pendingDeletion'>): { label: string; className: 'enabled' | 'disabled' | 'pending' } {
+  if (user.pendingDeletion) {
+    return { label: 'Pending deletion', className: 'pending' };
+  }
+  if (user.enabled) {
+    return { label: 'Enabled', className: 'enabled' };
+  }
+  return { label: 'Disabled', className: 'disabled' };
+}
+
+function statusRank(user: Pick<UserSummary, 'enabled' | 'pendingDeletion'>) {
+  if (user.pendingDeletion) return 2;
+  if (user.enabled) return 1;
+  return 0;
+}
+
 function initialsForUser(user: Pick<UserSummary, 'firstName' | 'lastName' | 'email'>) {
   const words = displayName(user)
     .replace(/[._-]+/g, ' ')
@@ -376,4 +401,8 @@ function initialsForUser(user: Pick<UserSummary, 'firstName' | 'lastName' | 'ema
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(new Date(value));
+}
+
+function formatDateTime(value: string) {
+  return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value));
 }

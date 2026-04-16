@@ -42,17 +42,21 @@ struct StationMapView: View {
                 }
             }
 
-            // Floating station count pill
+            // Floating station count pill — glass style
             if !viewModel.stations.isEmpty {
                 HStack(spacing: 6) {
                     Image(systemName: "ev.plug.dc.ccs2")
                         .font(.caption.weight(.bold))
+                        .foregroundStyle(ChargingTheme.neonCyan)
                     Text("\(viewModel.stations.count) stations nearby")
                         .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(ChargingTheme.brightText)
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 10)
                 .background(.ultraThinMaterial, in: Capsule())
+                .overlay(Capsule().stroke(Color.white.opacity(0.5), lineWidth: 1))
+                .shadow(color: ChargingTheme.glassShadow, radius: 12, y: 4)
                 .padding(.bottom, selectedStation != nil ? 240 : 16)
                 .animation(.spring(duration: 0.35), value: selectedStation)
             }
@@ -62,12 +66,18 @@ struct StationMapView: View {
                 VStack {
                     ProgressView()
                         .controlSize(.large)
-                    Text("Finding stations…")
+                        .tint(ChargingTheme.neonCyan)
+                    Text("Finding stations\u{2026}")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(ChargingTheme.dimText)
                 }
                 .padding(24)
                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .stroke(Color.white.opacity(0.5), lineWidth: 1)
+                )
+                .shadow(color: ChargingTheme.glassShadow, radius: 16, y: 6)
             }
 
             // Error banner
@@ -83,10 +93,16 @@ struct StationMapView: View {
                         Task { await viewModel.loadStations(service: stationService) }
                     }
                     .buttonStyle(.borderedProminent)
+                    .tint(ChargingTheme.neonCyan)
                     .controlSize(.small)
                 }
                 .padding(16)
                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .stroke(Color.white.opacity(0.5), lineWidth: 1)
+                )
+                .shadow(color: ChargingTheme.glassShadow, radius: 12, y: 4)
                 .padding()
             }
         }
@@ -116,14 +132,13 @@ private struct StationAnnotationView: View {
                 Circle()
                     .fill(annotationColor)
                     .frame(width: 36, height: 36)
-                    .shadow(color: annotationColor.opacity(0.4), radius: 6, y: 3)
+                    .shadow(color: annotationColor.opacity(0.35), radius: 6, y: 3)
 
                 Image(systemName: "ev.plug.dc.ccs2")
                     .font(.system(size: 16, weight: .bold))
                     .foregroundStyle(.white)
             }
 
-            // Triangle pointer
             Triangle()
                 .fill(annotationColor)
                 .frame(width: 12, height: 8)
@@ -133,9 +148,9 @@ private struct StationAnnotationView: View {
 
     private var annotationColor: Color {
         switch station.status {
-        case .available: return .green
+        case .available: return ChargingTheme.neonGreen
         case .occupied: return .orange
-        case .offline: return .gray
+        case .offline: return ChargingTheme.dimText
         case .faulted: return .red
         }
     }
@@ -152,7 +167,7 @@ private struct Triangle: Shape {
     }
 }
 
-// MARK: - Station Detail Sheet
+// MARK: - Station Detail Sheet (Glass)
 
 private struct StationDetailSheet: View {
     let station: StationLocation
@@ -160,67 +175,72 @@ private struct StationDetailSheet: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    // Header
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            PortalBadge(
-                                title: station.status.rawValue.capitalized,
-                                tint: Color(station.statusColor == "green" ? .systemGreen :
-                                            station.statusColor == "orange" ? .systemOrange :
-                                            station.statusColor == "red" ? .systemRed : .systemGray)
-                            )
-                            Spacer()
-                            if let hours = station.operatingHours {
-                                Label(hours, systemImage: "clock")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
+            ZStack {
+                SpaceBackground()
+
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
+                        // Header
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                PortalBadge(
+                                    title: station.status.rawValue.capitalized,
+                                    tint: Color(station.statusColor == "green" ? .systemGreen :
+                                                station.statusColor == "orange" ? .systemOrange :
+                                                station.statusColor == "red" ? .systemRed : .systemGray)
+                                )
+                                Spacer()
+                                if let hours = station.operatingHours {
+                                    Label(hours, systemImage: "clock")
+                                        .font(.caption)
+                                        .foregroundStyle(ChargingTheme.dimText)
+                                }
+                            }
+
+                            Text(station.name)
+                                .font(.title2.weight(.bold))
+                                .foregroundStyle(ChargingTheme.brightText)
+
+                            Label("\(station.address), \(station.city), \(station.state) \(station.postalCode)",
+                                  systemImage: "mappin.and.ellipse")
+                                .font(.subheadline)
+                                .foregroundStyle(ChargingTheme.dimText)
+                        }
+
+                        // Availability summary
+                        HStack(spacing: 16) {
+                            StatBox(value: "\(station.availableConnectors)", label: "Available", tint: ChargingTheme.neonGreen)
+                            StatBox(value: "\(station.totalConnectors)", label: "Total", tint: ChargingTheme.neonCyan)
+                            StatBox(value: "\(station.connectors.first?.power ?? 0) kW", label: "Max Power", tint: .orange)
+                        }
+
+                        // Connectors list
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Connectors")
+                                .font(.headline)
+                                .foregroundStyle(ChargingTheme.brightText)
+
+                            ForEach(station.connectors) { connector in
+                                ConnectorRow(connector: connector)
                             }
                         }
 
-                        Text(station.name)
-                            .font(.title2.weight(.bold))
-
-                        Label("\(station.address), \(station.city), \(station.state) \(station.postalCode)",
-                              systemImage: "mappin.and.ellipse")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    // Availability summary
-                    HStack(spacing: 16) {
-                        StatBox(value: "\(station.availableConnectors)", label: "Available", tint: .green)
-                        StatBox(value: "\(station.totalConnectors)", label: "Total", tint: .blue)
-                        StatBox(value: "\(station.connectors.first?.power ?? 0) kW", label: "Max Power", tint: .orange)
-                    }
-
-                    // Connectors list
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Connectors")
-                            .font(.headline)
-
-                        ForEach(station.connectors) { connector in
-                            ConnectorRow(connector: connector)
+                        // Actions
+                        VStack(spacing: 12) {
+                            Button {
+                                openInMaps()
+                            } label: {
+                                Label("Get Directions", systemImage: "arrow.triangle.turn.up.right.diamond.fill")
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .controlSize(.large)
+                            .tint(ChargingTheme.neonCyan)
                         }
                     }
-
-                    // Actions
-                    VStack(spacing: 12) {
-                        Button {
-                            openInMaps()
-                        } label: {
-                            Label("Get Directions", systemImage: "arrow.triangle.turn.up.right.diamond.fill")
-                                .frame(maxWidth: .infinity)
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .controlSize(.large)
-                        .tint(Color(red: 0.10, green: 0.38, blue: 0.73))
-                    }
+                    .padding(20)
                 }
-                .padding(20)
             }
-            .background(Color(red: 0.96, green: 0.97, blue: 0.99))
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }
@@ -249,13 +269,17 @@ private struct StatBox: View {
                 .foregroundStyle(tint)
             Text(label)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(ChargingTheme.dimText)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 14)
         .background(
             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(tint.opacity(0.08))
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .stroke(tint.opacity(0.2), lineWidth: 1)
+                )
         )
     }
 }
@@ -267,7 +291,7 @@ private struct ConnectorRow: View {
         HStack {
             ZStack {
                 Circle()
-                    .fill(statusColor.opacity(0.14))
+                    .fill(statusColor.opacity(0.12))
                     .frame(width: 40, height: 40)
                 Image(systemName: connectorIcon)
                     .foregroundStyle(statusColor)
@@ -277,9 +301,10 @@ private struct ConnectorRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(connector.typeLabel)
                     .font(.subheadline.weight(.semibold))
-                Text("\(connector.powerLabel) · $\(String(format: "%.2f", connector.tariffPerKwh))/kWh")
+                    .foregroundStyle(ChargingTheme.brightText)
+                Text("\(connector.powerLabel) \u{00B7} $\(String(format: "%.2f", connector.tariffPerKwh))/kWh")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(ChargingTheme.dimText)
             }
 
             Spacer()
@@ -289,18 +314,22 @@ private struct ConnectorRow: View {
         .padding(12)
         .background(
             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(.white)
-                .shadow(color: .black.opacity(0.04), radius: 8, y: 4)
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .stroke(Color.white.opacity(0.4), lineWidth: 1)
+                )
+                .shadow(color: ChargingTheme.glassShadow, radius: 8, y: 4)
         )
     }
 
     private var statusColor: Color {
         switch connector.status {
-        case .available: return .green
-        case .charging: return .blue
+        case .available: return ChargingTheme.neonGreen
+        case .charging: return ChargingTheme.neonCyan
         case .faulted: return .red
-        case .offline: return .gray
-        case .reserved: return .purple
+        case .offline: return ChargingTheme.dimText
+        case .reserved: return ChargingTheme.meshPurple
         }
     }
 
@@ -332,7 +361,7 @@ final class StationMapViewModel: ObservableObject {
         } catch {
             // Fallback to sample data for development
             stations = StationLocation.samples
-            self.error = nil // Suppress error when using samples
+            self.error = nil
         }
 
         isLoading = false

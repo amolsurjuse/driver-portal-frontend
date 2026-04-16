@@ -119,12 +119,12 @@ extension OcpiCharger {
         )
 
         let connectorSummaries = evses.flatMap { evse in
-            evse.connectors.map { connector in
+            evse.connectors.map { connector -> ConnectorSummary in
                 let connectorTariff = connector.tariffs?.first
-                    ?? connector.tariffIds?.compactMap { pricingByTariffId[$0] }.first
+                    ?? connector.tariffIds?.compactMap({ pricingByTariffId[$0] }).first
                 let perKwhPrice = connectorTariff?.energyPrice ?? 0.0
 
-                ConnectorSummary(
+                return ConnectorSummary(
                     id: connector.id,
                     type: Self.mapConnectorStandard(connector.standard),
                     power: Self.estimatePower(standard: connector.standard, powerType: connector.powerType),

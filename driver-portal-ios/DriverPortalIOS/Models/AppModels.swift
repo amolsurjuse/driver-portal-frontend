@@ -125,6 +125,8 @@ struct UserSummaryResponse: Codable, Hashable, Identifiable {
     let lastName: String?
     let phoneNumber: String?
     let enabled: Bool
+    let pendingDeletion: Bool?
+    let deletionRequestedAt: String?
     let createdAt: String
 }
 
@@ -149,7 +151,32 @@ struct UserProfileResponse: Codable {
     let countryName: String?
     let countryDialCode: String?
     let enabled: Bool
+    let pendingDeletion: Bool?
+    let deletionRequestedAt: String?
     let createdAt: String
+}
+
+enum AccountDeletionDecision: String, Codable {
+    case activeSessionInProgress = "ACTIVE_SESSION_IN_PROGRESS"
+    case confirmDirectDeletion = "CONFIRM_DIRECT_DELETION"
+    case accountMarkedPendingDeletion = "ACCOUNT_MARKED_PENDING_DELETION"
+    case accountDeleted = "ACCOUNT_DELETED"
+    case alreadyPendingDeletion = "ALREADY_PENDING_DELETION"
+}
+
+struct AccountDeletionRequest: Codable {
+    let confirmDirectDeletion: Bool
+}
+
+struct AccountDeletionResponse: Codable {
+    let decision: AccountDeletionDecision
+    let message: String
+    let walletBalance: Double
+    let activeCharging: Bool
+    let pendingDeletion: Bool
+    let deleted: Bool
+    let directDeletionEligible: Bool
+    let deletionRequestedAt: String?
 }
 
 struct UpdateUserProfileRequest: Codable {

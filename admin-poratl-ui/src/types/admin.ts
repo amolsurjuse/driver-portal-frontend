@@ -22,6 +22,8 @@ export type AdminUserSummary = {
   lastName: string | null;
   phoneNumber: string | null;
   enabled: boolean;
+  pendingDeletion?: boolean;
+  deletionRequestedAt?: string | null;
   createdAt: string;
   updatedAt: string;
   roles: string[];
@@ -45,6 +47,8 @@ export type UserSummary = {
   lastName: string | null;
   phoneNumber: string | null;
   enabled: boolean;
+  pendingDeletion?: boolean;
+  deletionRequestedAt?: string | null;
   createdAt: string;
 };
 
@@ -73,6 +77,8 @@ export type AdminUserDetail = {
   countryName: string | null;
   countryDialCode: string | null;
   enabled: boolean;
+  pendingDeletion?: boolean;
+  deletionRequestedAt?: string | null;
   createdAt: string;
   updatedAt: string;
   roles: string[];

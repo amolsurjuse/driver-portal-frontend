@@ -32,7 +32,7 @@ struct MainTabView: View {
                                     }
                                 } label: {
                                     Image(systemName: "person.crop.circle.fill")
-                                        .foregroundStyle(Color(red: 0.10, green: 0.38, blue: 0.73))
+                                        .foregroundStyle(ChargingTheme.neonCyan)
                                 }
                             } else {
                                 Button {
@@ -94,7 +94,7 @@ struct MainTabView: View {
                 .tag(5)
             }
         }
-        .tint(Color(red: 0.10, green: 0.38, blue: 0.73))
+        .tint(ChargingTheme.neonCyan)
         .sheet(isPresented: $showAuthSheet) {
             AuthFlowView(services: services)
                 .environmentObject(sessionStore)

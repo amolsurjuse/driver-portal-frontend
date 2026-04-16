@@ -1,8 +1,8 @@
 import SwiftUI
 
-// MARK: - Skeleton / Shimmer Loading Modifier
+// MARK: - Skeleton / Shimmer Loading Modifier (Glass Style)
 
-struct ShimmerModifier: ViewModifier {
+struct SkeletonShimmerModifier: ViewModifier {
     @State private var phase: CGFloat = 0
 
     func body(content: Content) -> some View {
@@ -12,7 +12,7 @@ struct ShimmerModifier: ViewModifier {
                     LinearGradient(
                         gradient: Gradient(colors: [
                             .clear,
-                            .white.opacity(0.4),
+                            .white.opacity(0.5),
                             .clear
                         ]),
                         startPoint: .leading,
@@ -33,7 +33,7 @@ struct ShimmerModifier: ViewModifier {
 
 extension View {
     func shimmer() -> some View {
-        modifier(ShimmerModifier())
+        modifier(SkeletonShimmerModifier())
     }
 }
 
@@ -50,7 +50,7 @@ struct SkeletonBox: View {
 
     var body: some View {
         RoundedRectangle(cornerRadius: height / 2, style: .continuous)
-            .fill(Color.gray.opacity(0.12))
+            .fill(Color.white.opacity(0.25))
             .frame(width: width, height: height)
             .shimmer()
     }
@@ -66,8 +66,12 @@ struct SkeletonCard: View {
         .padding(20)
         .background(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .fill(.white)
-                .shadow(color: .black.opacity(0.04), radius: 16, y: 8)
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                        .stroke(Color.white.opacity(0.4), lineWidth: 1)
+                )
+                .shadow(color: ChargingTheme.glassShadow, radius: 16, y: 8)
         )
     }
 }

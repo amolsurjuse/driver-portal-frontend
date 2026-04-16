@@ -18,6 +18,8 @@
 		7F7397122F6EF269004A0F39 /* ChargingAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F7397112F6EF269004A0F39 /* ChargingAnimations.swift */; };
 		7F7397142F6EF26A004A0F39 /* StationMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F7397132F6EF26A004A0F39 /* StationMapView.swift */; };
 		7F7397162F6EF26B004A0F39 /* NotificationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F7397152F6EF26B004A0F39 /* NotificationsView.swift */; };
+		7FE97B972F8EDE8500BF235A /* ChargerGraphQLService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FE97B962F8EDE8500BF235A /* ChargerGraphQLService.swift */; };
+		7FE97B992F8EDEA900BF235A /* OcpiChargerModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FE97B982F8EDEA900BF235A /* OcpiChargerModels.swift */; };
 		A10000000000000000000001 /* DriverPortalIOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000001 /* DriverPortalIOSApp.swift */; };
 		A10000000000000000000002 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000002 /* RootView.swift */; };
 		A10000000000000000000003 /* AppModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000003 /* AppModels.swift */; };
@@ -45,6 +47,8 @@
 		7F7397112F6EF269004A0F39 /* ChargingAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargingAnimations.swift; sourceTree = "<group>"; };
 		7F7397132F6EF26A004A0F39 /* StationMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationMapView.swift; sourceTree = "<group>"; };
 		7F7397152F6EF26B004A0F39 /* NotificationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsView.swift; sourceTree = "<group>"; };
+		7FE97B962F8EDE8500BF235A /* ChargerGraphQLService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargerGraphQLService.swift; sourceTree = "<group>"; };
+		7FE97B982F8EDEA900BF235A /* OcpiChargerModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OcpiChargerModels.swift; sourceTree = "<group>"; };
 		B10000000000000000000001 /* DriverPortalIOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriverPortalIOSApp.swift; sourceTree = "<group>"; };
 		B10000000000000000000002 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		B10000000000000000000003 /* AppModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModels.swift; sourceTree = "<group>"; };
@@ -143,6 +147,7 @@
 				B10000000000000000000003 /* AppModels.swift */,
 				7F7396F42F6E3BBE004A0F39 /* StationModels.swift */,
 				7F7397082F6E4132004A0F39 /* MeterValueEvent.swift */,
+				7FE97B982F8EDEA900BF235A /* OcpiChargerModels.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -154,6 +159,7 @@
 				7F7396F02F6E3BBD004A0F39 /* KeychainService.swift */,
 				7F7396F22F6E3BBD004A0F39 /* StationService.swift */,
 				7F7397062F6E412A004A0F39 /* SSEClient.swift */,
+				7FE97B962F8EDE8500BF235A /* ChargerGraphQLService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -312,6 +318,7 @@
 			files = (
 				7F7397142F6EF26A004A0F39 /* StationMapView.swift in Sources */,
 				A10000000000000000000001 /* DriverPortalIOSApp.swift in Sources */,
+				7FE97B972F8EDE8500BF235A /* ChargerGraphQLService.swift in Sources */,
 				7F7396F92F6E3BC0004A0F39 /* SkeletonModifier.swift in Sources */,
 				A10000000000000000000002 /* RootView.swift in Sources */,
 				A10000000000000000000003 /* AppModels.swift in Sources */,
@@ -332,6 +339,7 @@
 				7F7396F72F6E3BC0004A0F39 /* HapticFeedback.swift in Sources */,
 				A1000000000000000000000B /* ProfileView.swift in Sources */,
 				7F7397072F6E412A004A0F39 /* SSEClient.swift in Sources */,
+				7FE97B992F8EDEA900BF235A /* OcpiChargerModels.swift in Sources */,
 				A1000000000000000000000C /* ChargingHistoryView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

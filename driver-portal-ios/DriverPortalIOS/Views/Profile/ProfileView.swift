@@ -13,6 +13,7 @@ private final class ProfileViewModel: ObservableObject {
     @Published var isLoading = true
     @Published var isSaving = false
     @Published var isEditing = false
+    @Published var isDeletingAccount = false
     @Published var errorMessage: String?
     @Published var saveMessage: String?
 
@@ -99,6 +100,29 @@ private final class ProfileViewModel: ObservableObject {
         }
     }
 
+    func requestAccountDeletion(confirmDirectDeletion: Bool) async -> AccountDeletionResponse? {
+        guard let profile else {
+            errorMessage = "Unable to delete account right now."
+            return nil
+        }
+
+        isDeletingAccount = true
+        defer { isDeletingAccount = false }
+
+        do {
+            let response = try await userService.requestAccountDeletion(
+                userId: profile.userId,
+                confirmDirectDeletion: confirmDirectDeletion
+            )
+            errorMessage = nil
+            saveMessage = nil
+            return response
+        } catch {
+            errorMessage = error.localizedDescription
+            return nil
+        }
+    }
+
     var formIsValid: Bool {
         !firstName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             && !lastName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -156,135 +180,173 @@ struct ProfileView: View {
     @StateObject private var model: ProfileViewModel
     @State private var confirmLogoutDevice = false
     @State private var confirmLogoutAll = false
+    @State private var confirmDeleteAccount = false
+    @State private var showConfirmDirectDeletion = false
+    @State private var deletionAlertTitle = "Account deletion"
+    @State private var deletionAlertMessage = ""
+    @State private var showDeletionAlert = false
+    @State private var logoutAfterDeletionAlert = false
 
     init(userService: UserService) {
         _model = StateObject(wrappedValue: ProfileViewModel(userService: userService))
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                Text("User Profile")
-                    .font(.system(size: 34, weight: .bold, design: .rounded))
+        ZStack {
+            SpaceBackground()
 
-                if model.isLoading {
-                    ProgressView("Loading profile...")
-                        .frame(maxWidth: .infinity, alignment: .center)
-                } else if let profile = model.profile {
-                    PortalCard {
-                        VStack(alignment: .leading, spacing: 18) {
-                            HStack(spacing: 16) {
-                                ZStack {
-                                    Circle()
-                                        .fill(Color.blue.opacity(0.14))
-                                        .frame(width: 68, height: 68)
-                                    Text(model.initials(email: profile.email))
-                                        .font(.title3.weight(.bold))
-                                        .foregroundStyle(.blue)
-                                }
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    Text("User Profile")
+                        .font(.system(size: 34, weight: .bold, design: .rounded))
+                        .foregroundStyle(ChargingTheme.brightText)
 
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(model.fullName(email: profile.email))
-                                        .font(.title2.weight(.bold))
-                                    Text(profile.email)
-                                        .foregroundStyle(.secondary)
-                                }
-
-                                Spacer()
-
-                                if !model.isEditing {
-                                    Button("Edit") {
-                                        model.startEditing()
+                    if model.isLoading {
+                        ProgressView("Loading profile...")
+                            .tint(ChargingTheme.neonCyan)
+                            .foregroundStyle(ChargingTheme.dimText)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                    } else if let profile = model.profile {
+                        PortalCard {
+                            VStack(alignment: .leading, spacing: 18) {
+                                HStack(spacing: 16) {
+                                    ZStack {
+                                        Circle()
+                                            .fill(
+                                                LinearGradient(
+                                                    colors: [ChargingTheme.neonCyan.opacity(0.2), ChargingTheme.neonBlue.opacity(0.15)],
+                                                    startPoint: .topLeading,
+                                                    endPoint: .bottomTrailing
+                                                )
+                                            )
+                                            .frame(width: 68, height: 68)
+                                        Text(model.initials(email: profile.email))
+                                            .font(.title3.weight(.bold))
+                                            .foregroundStyle(ChargingTheme.neonCyan)
                                     }
-                                    .buttonStyle(.bordered)
-                                }
-                            }
 
-                            if let error = model.errorMessage {
-                                Text(error)
-                                    .font(.footnote)
-                                    .foregroundStyle(.red)
-                            }
-
-                            if let saveMessage = model.saveMessage {
-                                Text(saveMessage)
-                                    .font(.footnote.weight(.semibold))
-                                    .foregroundStyle(.green)
-                            }
-
-                            VStack(alignment: .leading, spacing: 16) {
-                                profileField(title: "First name", text: $model.firstName, editable: model.isEditing)
-                                profileField(title: "Last name", text: $model.lastName, editable: model.isEditing)
-                                readonlyField(title: "Email", value: profile.email)
-                                readonlyField(title: "Phone", value: profile.phoneNumber ?? "Not set")
-                                readonlyField(title: "Status", value: profile.enabled ? "Active" : "Disabled")
-                                readonlyField(title: "Member since", value: PortalFormatters.memberTime(profile.createdAt))
-                            }
-
-                            Divider()
-
-                            VStack(alignment: .leading, spacing: 16) {
-                                Text("Address")
-                                    .font(.headline)
-                                profileField(title: "Street", text: $model.street, editable: model.isEditing)
-                                profileField(title: "City", text: $model.city, editable: model.isEditing)
-                                profileField(title: "State", text: $model.state, editable: model.isEditing)
-                                profileField(title: "Postal code", text: $model.postalCode, editable: model.isEditing)
-                                profileField(title: "Country code", text: $model.countryCode, editable: model.isEditing)
-                            }
-
-                            if model.isEditing {
-                                HStack {
-                                    Button("Cancel") {
-                                        model.reset()
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(model.fullName(email: profile.email))
+                                            .font(.title2.weight(.bold))
+                                            .foregroundStyle(ChargingTheme.brightText)
+                                        Text(profile.email)
+                                            .foregroundStyle(ChargingTheme.dimText)
                                     }
-                                    .buttonStyle(.bordered)
 
-                                    Button {
-                                        Task { await model.save() }
-                                    } label: {
-                                        if model.isSaving {
-                                            ProgressView()
-                                                .tint(.white)
-                                        } else {
-                                            Text("Save changes")
+                                    Spacer()
+
+                                    if !model.isEditing {
+                                        Button("Edit") {
+                                            model.startEditing()
                                         }
+                                        .buttonStyle(.bordered)
+                                        .tint(ChargingTheme.neonCyan)
                                     }
-                                    .buttonStyle(.borderedProminent)
-                                    .disabled(!model.formIsValid || model.isSaving)
+                                }
+
+                                if let error = model.errorMessage {
+                                    Text(error)
+                                        .font(.footnote)
+                                        .foregroundStyle(.red)
+                                }
+
+                                if let saveMessage = model.saveMessage {
+                                    Text(saveMessage)
+                                        .font(.footnote.weight(.semibold))
+                                        .foregroundStyle(ChargingTheme.neonGreen)
+                                }
+
+                                VStack(alignment: .leading, spacing: 16) {
+                                    profileField(title: "First name", text: $model.firstName, editable: model.isEditing)
+                                    profileField(title: "Last name", text: $model.lastName, editable: model.isEditing)
+                                    readonlyField(title: "Email", value: profile.email)
+                                    readonlyField(title: "Phone", value: profile.phoneNumber ?? "Not set")
+                                    readonlyField(
+                                        title: "Status",
+                                        value: profile.pendingDeletion == true ? "Pending deletion" : (profile.enabled ? "Active" : "Disabled")
+                                    )
+                                    readonlyField(title: "Member since", value: PortalFormatters.memberTime(profile.createdAt))
+                                }
+
+                                Divider().overlay(ChargingTheme.dimText.opacity(0.15))
+
+                                VStack(alignment: .leading, spacing: 16) {
+                                    Text("Address")
+                                        .font(.headline)
+                                        .foregroundStyle(ChargingTheme.brightText)
+                                    profileField(title: "Street", text: $model.street, editable: model.isEditing)
+                                    profileField(title: "City", text: $model.city, editable: model.isEditing)
+                                    profileField(title: "State", text: $model.state, editable: model.isEditing)
+                                    profileField(title: "Postal code", text: $model.postalCode, editable: model.isEditing)
+                                    profileField(title: "Country code", text: $model.countryCode, editable: model.isEditing)
+                                }
+
+                                if model.isEditing {
+                                    HStack {
+                                        Button("Cancel") {
+                                            model.reset()
+                                        }
+                                        .buttonStyle(.bordered)
+
+                                        Button {
+                                            Task { await model.save() }
+                                        } label: {
+                                            if model.isSaving {
+                                                ProgressView()
+                                                    .tint(.white)
+                                            } else {
+                                                Text("Save changes")
+                                            }
+                                        }
+                                        .buttonStyle(.borderedProminent)
+                                        .tint(ChargingTheme.neonCyan)
+                                        .disabled(!model.formIsValid || model.isSaving)
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    PortalCard {
-                        VStack(alignment: .leading, spacing: 16) {
-                            Text("Account actions")
-                                .font(.title3.weight(.bold))
-                            Text("Use the same session controls exposed in the web portal.")
-                                .foregroundStyle(.secondary)
+                        PortalCard {
+                            VStack(alignment: .leading, spacing: 16) {
+                                Text("Account actions")
+                                    .font(.title3.weight(.bold))
+                                    .foregroundStyle(ChargingTheme.brightText)
+                                Text("Use the same session controls exposed in the web portal.")
+                                    .foregroundStyle(ChargingTheme.dimText)
 
-                            Button("Log out on this device", role: .destructive) {
-                                confirmLogoutDevice = true
+                                Button("Log out on this device", role: .destructive) {
+                                    confirmLogoutDevice = true
+                                }
+                                .buttonStyle(.bordered)
+
+                                Button("Log out on all devices", role: .destructive) {
+                                    confirmLogoutAll = true
+                                }
+                                .buttonStyle(.bordered)
+
+                                Button("Delete account", role: .destructive) {
+                                    confirmDeleteAccount = true
+                                }
+                                .buttonStyle(.bordered)
+                                .disabled(model.isDeletingAccount)
+
+                                if model.isDeletingAccount {
+                                    ProgressView("Submitting account deletion request...")
+                                        .tint(ChargingTheme.neonCyan)
+                                        .foregroundStyle(ChargingTheme.dimText)
+                                }
                             }
-                            .buttonStyle(.bordered)
-
-                            Button("Log out on all devices", role: .destructive) {
-                                confirmLogoutAll = true
-                            }
-                            .buttonStyle(.bordered)
                         }
-                    }
-                } else {
-                    PortalCard {
-                        Text(model.errorMessage ?? "Profile details are unavailable right now.")
-                            .foregroundStyle(.secondary)
+                    } else {
+                        PortalCard {
+                            Text(model.errorMessage ?? "Profile details are unavailable right now.")
+                                .foregroundStyle(ChargingTheme.dimText)
+                        }
                     }
                 }
+                .padding(20)
             }
-            .padding(20)
         }
-        .background(Color(red: 0.96, green: 0.97, blue: 0.99))
         .navigationTitle("Profile")
         .navigationBarTitleDisplayMode(.inline)
         .task {
@@ -302,6 +364,67 @@ struct ProfileView: View {
                 Task { await sessionStore.logoutAll() }
             }
         }
+        .alert("Delete your account?", isPresented: $confirmDeleteAccount) {
+            Button("Cancel", role: .cancel) {}
+            Button("Continue", role: .destructive) {
+                Task {
+                    await requestAccountDeletion(confirmDirectDeletion: false)
+                }
+            }
+        } message: {
+            Text("This request may permanently delete your account or mark it for pending deletion based on your wallet and active charging status.")
+        }
+        .alert("Confirm permanent deletion", isPresented: $showConfirmDirectDeletion) {
+            Button("Cancel", role: .cancel) {}
+            Button("Delete account", role: .destructive) {
+                Task {
+                    await requestAccountDeletion(confirmDirectDeletion: true)
+                }
+            }
+        } message: {
+            Text("Your wallet is empty and no active charging session was found. Deleting now is permanent.")
+        }
+        .alert(deletionAlertTitle, isPresented: $showDeletionAlert) {
+            Button("OK") {
+                if logoutAfterDeletionAlert {
+                    sessionStore.clearSession()
+                }
+            }
+        } message: {
+            Text(deletionAlertMessage)
+        }
+    }
+
+    @MainActor
+    private func requestAccountDeletion(confirmDirectDeletion: Bool) async {
+        guard let response = await model.requestAccountDeletion(confirmDirectDeletion: confirmDirectDeletion) else {
+            return
+        }
+
+        switch response.decision {
+        case .activeSessionInProgress:
+            logoutAfterDeletionAlert = false
+            deletionAlertTitle = "Finish active charging"
+            deletionAlertMessage = response.message
+            showDeletionAlert = true
+        case .confirmDirectDeletion:
+            showConfirmDirectDeletion = true
+        case .accountMarkedPendingDeletion:
+            logoutAfterDeletionAlert = true
+            deletionAlertTitle = "Deletion request submitted"
+            deletionAlertMessage = response.message
+            showDeletionAlert = true
+        case .accountDeleted:
+            logoutAfterDeletionAlert = true
+            deletionAlertTitle = "Account deleted"
+            deletionAlertMessage = response.message
+            showDeletionAlert = true
+        case .alreadyPendingDeletion:
+            logoutAfterDeletionAlert = true
+            deletionAlertTitle = "Pending deletion"
+            deletionAlertMessage = response.message
+            showDeletionAlert = true
+        }
     }
 
     @ViewBuilder
@@ -309,14 +432,15 @@ struct ProfileView: View {
         VStack(alignment: .leading, spacing: 6) {
             Text(title)
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(ChargingTheme.dimText)
             if editable {
                 TextField(title, text: text)
                     .padding()
-                    .background(Color(.secondarySystemBackground))
+                    .background(Color.white.opacity(0.5))
                     .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
             } else {
                 Text(text.wrappedValue.isEmpty ? "Not set" : text.wrappedValue)
+                    .foregroundStyle(ChargingTheme.brightText)
             }
         }
     }
@@ -326,8 +450,9 @@ struct ProfileView: View {
         VStack(alignment: .leading, spacing: 6) {
             Text(title)
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(ChargingTheme.dimText)
             Text(value)
+                .foregroundStyle(ChargingTheme.brightText)
         }
     }
 }

@@ -44,17 +44,21 @@ struct StationMapView: View {
                 }
             }
 
-            // Floating charger count pill
+            // Floating charger count pill — glass style
             if !viewModel.stations.isEmpty {
                 HStack(spacing: 6) {
                     Image(systemName: "ev.plug.dc.ccs2")
                         .font(.caption.weight(.bold))
+                        .foregroundStyle(ChargingTheme.neonCyan)
                     Text("\(viewModel.stations.count) chargers nearby")
                         .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(ChargingTheme.brightText)
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 10)
                 .background(.ultraThinMaterial, in: Capsule())
+                .overlay(Capsule().stroke(Color.white.opacity(0.5), lineWidth: 1))
+                .shadow(color: ChargingTheme.glassShadow, radius: 12, y: 4)
                 .padding(.bottom, selectedStation != nil ? 240 : 16)
                 .animation(.spring(duration: 0.35), value: selectedStation)
             }
@@ -200,11 +204,12 @@ private struct StationDetailSheet: View {
 
                         Text(station.name)
                             .font(.title2.weight(.bold))
+                            .foregroundStyle(ChargingTheme.brightText)
 
                         Label("\(station.address), \(station.city), \(station.state) \(station.postalCode)",
                               systemImage: "mappin.and.ellipse")
                             .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(ChargingTheme.dimText)
                     }
 
                     // Availability summary
@@ -218,6 +223,7 @@ private struct StationDetailSheet: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Connectors")
                             .font(.headline)
+                            .foregroundStyle(ChargingTheme.brightText)
 
                         ForEach(station.connectors) { connector in
                             ConnectorRow(connector: connector)
@@ -246,7 +252,7 @@ private struct StationDetailSheet: View {
                             HStack(spacing: 8) {
                                 Image(systemName: "info.circle.fill")
                                     .foregroundStyle(.blue)
-                                Text("Select a connector to see pricing and start charging.")
+                                Text(actionHintText)
                                     .font(.subheadline)
                                     .foregroundStyle(.secondary)
                                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -297,12 +303,14 @@ private struct StationDetailSheet: View {
                         }
                         .buttonStyle(.borderedProminent)
                         .controlSize(.large)
-                        .tint(Color(red: 0.10, green: 0.38, blue: 0.73))
+                        .tint(ChargingTheme.neonBlue)
                     }
                 }
                 .padding(20)
             }
-            .background(Color(red: 0.96, green: 0.97, blue: 0.99))
+            .background {
+                SpaceBackground()
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }
@@ -395,29 +403,47 @@ private struct StationDetailSheet: View {
     }
 
     private var actionState: ChargerActionState {
-        switch effectiveStatus {
-        case "CHARGING":
-            guard let currentSession = chargerDetail?.currentSession else {
-                return .disabled(reason: "Another driver is actively using this charger.")
-            }
-
-            guard let loggedInUserId = sessionStore.userId, !loggedInUserId.isEmpty else {
-                return .disabled(reason: "Sign in to manage this charging session.")
-            }
-
-            guard let sessionOwner = currentSession.userId, sessionOwner == loggedInUserId else {
-                return .disabled(reason: "Another driver is actively using this charger.")
-            }
-
-            return .stopEnabled(sessionId: currentSession.id)
-        default:
-            return .disabled(reason: "No active session to stop at this charger.")
+        guard let currentSession = chargerDetail?.currentSession else {
+            return .disabled(reason: "Select a connector to see pricing and start charging.")
         }
+
+        guard let loggedInUserId = sessionStore.userId, !loggedInUserId.isEmpty else {
+            return .disabled(reason: "Sign in to manage this charging session.")
+        }
+
+        guard let sessionOwner = currentSession.userId, sessionOwner == loggedInUserId else {
+            return .disabled(reason: "Another driver is actively using this charger.")
+        }
+
+        let sessionStatus = (currentSession.status ?? effectiveStatus).uppercased()
+        guard isStoppable(status: sessionStatus) else {
+            return .disabled(reason: "This session is no longer stoppable from the app.")
+        }
+
+        return .stopEnabled(sessionId: currentSession.id)
     }
 
     private enum ChargerActionState {
         case stopEnabled(sessionId: String)
         case disabled(reason: String)
+    }
+
+    private var actionHintText: String {
+        switch actionState {
+        case .disabled(let reason):
+            return reason
+        case .stopEnabled:
+            return ""
+        }
+    }
+
+    private func isStoppable(status: String) -> Bool {
+        switch status {
+        case "PREPARING", "PENDING", "CHARGING", "ACTIVE", "SUSPENDED", "FINISHING", "OCCUPIED":
+            return true
+        default:
+            return false
+        }
     }
 
     private func openInMaps() {
@@ -440,13 +466,17 @@ private struct StatBox: View {
                 .foregroundStyle(tint)
             Text(label)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(ChargingTheme.dimText)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 14)
         .background(
             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(tint.opacity(0.08))
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .stroke(tint.opacity(0.2), lineWidth: 1)
+                )
         )
     }
 }
@@ -468,9 +498,10 @@ private struct ConnectorRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(connector.typeLabel)
                     .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(ChargingTheme.brightText)
                 Text("\(connector.powerLabel) · $\(String(format: "%.2f", connector.tariffPerKwh))/kWh")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(ChargingTheme.dimText)
             }
 
             Spacer()
@@ -480,8 +511,12 @@ private struct ConnectorRow: View {
         .padding(12)
         .background(
             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(.white)
-                .shadow(color: .black.opacity(0.04), radius: 8, y: 4)
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .stroke(Color.white.opacity(0.4), lineWidth: 1)
+                )
+                .shadow(color: ChargingTheme.glassShadow, radius: 8, y: 4)
         )
     }
 
@@ -539,9 +574,10 @@ private struct ConnectorDetailSheet: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(connector.typeLabel)
                                 .font(.title3.weight(.bold))
+                                .foregroundStyle(ChargingTheme.brightText)
                             Text("Connector \(connector.id)")
                                 .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(ChargingTheme.dimText)
                         }
 
                         Spacer()
@@ -573,6 +609,7 @@ private struct ConnectorDetailSheet: View {
                         VStack(alignment: .leading, spacing: 16) {
                             Text("Specifications")
                                 .font(.headline)
+                                .foregroundStyle(ChargingTheme.brightText)
 
                             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
                                 DetailCell(label: "Power", value: connector.powerLabel, icon: "bolt.fill", tint: .orange)
@@ -662,7 +699,9 @@ private struct ConnectorDetailSheet: View {
                 }
                 .padding(20)
             }
-            .background(Color(red: 0.96, green: 0.97, blue: 0.99))
+            .background {
+                SpaceBackground()
+            }
             .navigationTitle("Connector Details")
             .navigationBarTitleDisplayMode(.inline)
         }
@@ -690,7 +729,7 @@ private struct ConnectorDetailSheet: View {
     private var canStartCharging: Bool {
         guard sessionStore.isAuthenticated else { return false }
         if let ocpiConnector {
-            return ocpiConnector.available ?? connector.status == .available
+            return (ocpiConnector.available ?? false) || connector.status == .available
         }
         return connector.status == .available
     }
@@ -734,6 +773,14 @@ private struct ConnectorDetailSheet: View {
         return nil
     }
 
+    private var requestCurrency: String {
+        let candidate = resolvedTariff?.currency?.trimmingCharacters(in: .whitespacesAndNewlines)
+        if let candidate, !candidate.isEmpty {
+            return candidate.uppercased()
+        }
+        return "USD"
+    }
+
     private func formatMoney(_ value: Double, currency: String?) -> String {
         let code = currency?.isEmpty == false ? currency! : "USD"
         let formatter = NumberFormatter()
@@ -758,7 +805,7 @@ private struct ConnectorDetailSheet: View {
             idTokenType: nil,
             authMethod: nil,
             idempotencyKey: UUID().uuidString,
-            currency: "USD"
+            currency: requestCurrency
         )
 
         do {
@@ -771,8 +818,27 @@ private struct ConnectorDetailSheet: View {
     }
 
     private func extractConnectorNumber(_ connectorID: String) -> Int? {
-        let digits = connectorID.filter(\.isNumber)
-        return Int(digits)
+        let trimmed = connectorID.trimmingCharacters(in: .whitespacesAndNewlines)
+        if let exact = Int(trimmed) {
+            return exact
+        }
+
+        let separators = CharacterSet(charactersIn: "-_:*./#")
+        let tokens = trimmed
+            .components(separatedBy: separators)
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+
+        for token in tokens.reversed() where token.allSatisfy(\.isNumber) {
+            if let value = Int(token) {
+                return value
+            }
+        }
+
+        if let range = trimmed.range(of: "(\\d+)$", options: .regularExpression) {
+            return Int(trimmed[range])
+        }
+        return nil
     }
 }
 
@@ -788,19 +854,24 @@ private struct DetailCell: View {
                 Image(systemName: icon)
                     .font(.caption2)
                     .foregroundStyle(tint)
+                    .shadow(color: tint.opacity(0.5), radius: 3)
                 Text(label)
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(ChargingTheme.dimText)
             }
             Text(value)
                 .font(.subheadline.weight(.semibold))
+                .foregroundStyle(ChargingTheme.brightText)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(12)
         .background(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(.white)
-                .shadow(color: .black.opacity(0.04), radius: 6, y: 3)
+                .fill(ChargingTheme.tileBg)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .stroke(tint.opacity(0.15), lineWidth: 1)
+                )
         )
     }
 }

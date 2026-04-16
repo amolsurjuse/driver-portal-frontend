@@ -100,6 +100,10 @@ enum PortalFormatters {
     }
 }
 
+// =============================================================================
+// MARK: - Glass Portal Card
+// =============================================================================
+
 struct PortalCard<Content: View>: View {
     let content: Content
 
@@ -112,11 +116,30 @@ struct PortalCard<Content: View>: View {
             .padding(20)
             .background(
                 RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .fill(.white)
-                    .shadow(color: Color.black.opacity(0.06), radius: 22, x: 0, y: 14)
+                    .fill(.ultraThinMaterial)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 24, style: .continuous)
+                            .stroke(
+                                LinearGradient(
+                                    colors: [
+                                        Color.white.opacity(0.8),
+                                        Color.white.opacity(0.3),
+                                        Color.white.opacity(0.15)
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                                lineWidth: 1
+                            )
+                    )
+                    .shadow(color: ChargingTheme.glassShadow, radius: 20, y: 8)
             )
     }
 }
+
+// =============================================================================
+// MARK: - Glass Portal Badge
+// =============================================================================
 
 struct PortalBadge: View {
     let title: String
@@ -127,9 +150,81 @@ struct PortalBadge: View {
             .font(.caption.weight(.semibold))
             .padding(.horizontal, 10)
             .padding(.vertical, 5)
-            .background(tint.opacity(0.12))
+            .background(.ultraThinMaterial, in: Capsule())
             .foregroundStyle(tint)
-            .clipShape(Capsule())
+            .overlay(Capsule().stroke(tint.opacity(0.25), lineWidth: 1))
+    }
+}
+
+// =============================================================================
+// MARK: - ElectraHub Branding (Glass style)
+// =============================================================================
+
+enum ElectraHubLogoStyle {
+    case compact
+    case detailed
+}
+
+struct ElectraHubLogo: View {
+    var size: CGFloat = 40
+    var style: ElectraHubLogoStyle = .compact
+
+    var body: some View {
+        Group {
+            if UIImage(named: "ElectraHubIcon") != nil {
+                Image("ElectraHubIcon")
+                    .resizable()
+                    .scaledToFit()
+            } else {
+                ZStack {
+                    RoundedRectangle(cornerRadius: size * 0.25, style: .continuous)
+                        .fill(
+                            LinearGradient(
+                                colors: [ChargingTheme.neonCyan, ChargingTheme.neonBlue],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+
+                    Image(systemName: "bolt.fill")
+                        .font(.system(size: size * 0.45, weight: .bold))
+                        .foregroundStyle(.white)
+                }
+            }
+        }
+        .frame(width: size, height: size)
+        .accessibilityLabel("Electra Hub logo")
+    }
+}
+
+struct ElectraHubLogoFull: View {
+    var height: CGFloat = 56
+
+    var body: some View {
+        Group {
+            if UIImage(named: "ElectraHubLogo") != nil {
+                Image("ElectraHubLogo")
+                    .resizable()
+                    .scaledToFit()
+            } else {
+                HStack(spacing: height * 0.2) {
+                    ElectraHubLogo(size: height * 0.7, style: .detailed)
+
+                    Text("ElectraHub")
+                        .font(.system(size: height * 0.4, weight: .bold, design: .rounded))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [ChargingTheme.neonCyan, ChargingTheme.neonBlue],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                }
+                .frame(height: height)
+            }
+        }
+        .frame(height: height)
+        .accessibilityLabel("Electra Hub logo")
     }
 }
 

@@ -27,54 +27,77 @@ struct NotificationsView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                // Filter chips
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(NotificationFilter.allCases, id: \.self) { option in
-                            Button {
-                                Haptics.selection()
-                                withAnimation(.spring(duration: 0.25)) {
-                                    filter = option
+        ZStack {
+            SpaceBackground()
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    // Filter chips
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(NotificationFilter.allCases, id: \.self) { option in
+                                Button {
+                                    Haptics.selection()
+                                    withAnimation(.spring(duration: 0.25)) {
+                                        filter = option
+                                    }
+                                } label: {
+                                    Text(option.rawValue)
+                                        .font(.subheadline.weight(.semibold))
+                                        .padding(.horizontal, 14)
+                                        .padding(.vertical, 8)
+                                        .background(
+                                            filter == option
+                                                ? AnyShapeStyle(
+                                                    LinearGradient(
+                                                        colors: [ChargingTheme.neonCyan, ChargingTheme.neonBlue],
+                                                        startPoint: .leading,
+                                                        endPoint: .trailing
+                                                    )
+                                                )
+                                                : AnyShapeStyle(.ultraThinMaterial)
+                                        )
+                                        .foregroundStyle(filter == option ? .white : ChargingTheme.brightText)
+                                        .clipShape(Capsule())
+                                        .overlay(
+                                            Capsule()
+                                                .stroke(
+                                                    filter == option
+                                                        ? Color.clear
+                                                        : Color.white.opacity(0.5),
+                                                    lineWidth: 1
+                                                )
+                                        )
                                 }
-                            } label: {
-                                Text(option.rawValue)
-                                    .font(.subheadline.weight(.semibold))
-                                    .padding(.horizontal, 14)
-                                    .padding(.vertical, 8)
-                                    .background(filter == option ? Color(red: 0.10, green: 0.38, blue: 0.73) : Color.gray.opacity(0.1))
-                                    .foregroundStyle(filter == option ? .white : .primary)
-                                    .clipShape(Capsule())
+                            }
+                        }
+                    }
+
+                    if filteredNotifications.isEmpty {
+                        VStack(spacing: 12) {
+                            Image(systemName: "bell.slash")
+                                .font(.system(size: 44))
+                                .foregroundStyle(ChargingTheme.dimText)
+                            Text("No notifications")
+                                .font(.headline)
+                                .foregroundStyle(ChargingTheme.brightText)
+                            Text("You're all caught up.")
+                                .font(.subheadline)
+                                .foregroundStyle(ChargingTheme.dimText)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 60)
+                    } else {
+                        ForEach(filteredNotifications) { notification in
+                            NotificationRow(notification: notification) {
+                                markAsRead(notification)
                             }
                         }
                     }
                 }
-
-                if filteredNotifications.isEmpty {
-                    VStack(spacing: 12) {
-                        Image(systemName: "bell.slash")
-                            .font(.system(size: 44))
-                            .foregroundStyle(.tertiary)
-                        Text("No notifications")
-                            .font(.headline)
-                        Text("You're all caught up.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 60)
-                } else {
-                    ForEach(filteredNotifications) { notification in
-                        NotificationRow(notification: notification) {
-                            markAsRead(notification)
-                        }
-                    }
-                }
+                .padding(20)
             }
-            .padding(20)
         }
-        .background(Color(red: 0.96, green: 0.97, blue: 0.99))
         .navigationTitle("Notifications")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -121,7 +144,7 @@ private struct NotificationRow: View {
             HStack(alignment: .top, spacing: 14) {
                 ZStack {
                     Circle()
-                        .fill(iconColor.opacity(0.14))
+                        .fill(iconColor.opacity(0.12))
                         .frame(width: 42, height: 42)
                     Image(systemName: iconName)
                         .font(.system(size: 16, weight: .semibold))
@@ -132,32 +155,41 @@ private struct NotificationRow: View {
                     HStack {
                         Text(notification.title)
                             .font(.subheadline.weight(notification.isRead ? .regular : .bold))
-                            .foregroundStyle(.primary)
+                            .foregroundStyle(ChargingTheme.brightText)
 
                         Spacer()
 
                         if !notification.isRead {
                             Circle()
-                                .fill(.blue)
+                                .fill(ChargingTheme.neonCyan)
                                 .frame(width: 8, height: 8)
                         }
                     }
 
                     Text(notification.body)
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(ChargingTheme.dimText)
                         .lineLimit(2)
 
                     Text(notification.timestamp)
                         .font(.caption2)
-                        .foregroundStyle(.tertiary)
+                        .foregroundStyle(ChargingTheme.dimText.opacity(0.6))
                 }
             }
             .padding(14)
             .background(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(notification.isRead ? .white : Color.blue.opacity(0.04))
-                    .shadow(color: .black.opacity(0.04), radius: 8, y: 4)
+                    .fill(notification.isRead ? .ultraThinMaterial : .regularMaterial)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .stroke(
+                                notification.isRead
+                                    ? Color.white.opacity(0.4)
+                                    : ChargingTheme.neonCyan.opacity(0.2),
+                                lineWidth: 1
+                            )
+                    )
+                    .shadow(color: ChargingTheme.glassShadow, radius: 12, y: 4)
             )
         }
         .buttonStyle(.plain)
@@ -175,11 +207,11 @@ private struct NotificationRow: View {
 
     private var iconColor: Color {
         switch notification.type {
-        case .chargingComplete: return .green
+        case .chargingComplete: return ChargingTheme.neonGreen
         case .lowBalance: return .orange
-        case .stationAvailable: return .blue
-        case .promo: return .purple
-        case .system: return .gray
+        case .stationAvailable: return ChargingTheme.neonCyan
+        case .promo: return ChargingTheme.meshPurple
+        case .system: return ChargingTheme.dimText
         }
     }
 }

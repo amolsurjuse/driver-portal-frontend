@@ -801,6 +801,11 @@ select {
   color: #b42318;
 }
 
+.status-pill.pending {
+  background: #fff7e6;
+  color: #b66200;
+}
+
 .role-pill {
   background: #eef3f8;
   color: #35516f;
@@ -2052,6 +2057,11 @@ body::before {
 .status-pill.enabled {
   background: rgba(200, 240, 221, 0.72);
   color: var(--accent-strong);
+}
+
+.status-pill.pending {
+  background: rgba(255, 231, 179, 0.65);
+  color: #8a4f00;
 }
 
 .field input,

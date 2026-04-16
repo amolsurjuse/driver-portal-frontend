@@ -13,49 +13,54 @@ struct ChargingHistoryView: View {
     @State private var errorMessage: String?
 
     var body: some View {
-        List {
-            Section {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Charging history")
-                        .font(.system(size: 30, weight: .bold, design: .rounded))
-                    Text("Recent charging sessions linked to your account.")
-                        .foregroundStyle(.secondary)
-                }
-                .padding(.vertical, 8)
-                .listRowBackground(Color.clear)
-            }
+        ZStack {
+            SpaceBackground()
 
-            ForEach(sessions) { session in
-                if session.isCompleted {
-                    NavigationLink {
-                        ReceiptDetailView(
-                            session: session,
-                            receiptPDFService: services.receiptPDFService,
-                            chargingSessionService: services.chargingSessionService
-                        )
-                    } label: {
-                        ChargingSessionRow(session: session)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Charging history")
+                            .font(.system(size: 30, weight: .bold, design: .rounded))
+                            .foregroundStyle(ChargingTheme.brightText)
+                        Text("Recent charging sessions linked to your account.")
+                            .foregroundStyle(ChargingTheme.dimText)
                     }
-                } else {
-                    ChargingSessionRow(session: session)
-                }
-            }
 
-            if isLoading {
-                HStack {
-                    Spacer()
-                    ProgressView("Loading history…")
-                    Spacer()
-                }
-            }
+                    ForEach(sessions) { session in
+                        if session.isCompleted {
+                            NavigationLink {
+                                ReceiptDetailView(
+                                    session: session,
+                                    receiptPDFService: services.receiptPDFService,
+                                    chargingSessionService: services.chargingSessionService
+                                )
+                            } label: {
+                                ChargingSessionRow(session: session)
+                            }
+                            .buttonStyle(.plain)
+                        } else {
+                            ChargingSessionRow(session: session)
+                        }
+                    }
 
-            if let errorMessage {
-                Text(errorMessage)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                    if isLoading {
+                        HStack {
+                            Spacer()
+                            ProgressView("Loading history\u{2026}")
+                                .tint(ChargingTheme.neonCyan)
+                            Spacer()
+                        }
+                    }
+
+                    if let errorMessage {
+                        Text(errorMessage)
+                            .font(.footnote)
+                            .foregroundStyle(ChargingTheme.dimText)
+                    }
+                }
+                .padding(20)
             }
         }
-        .listStyle(.insetGrouped)
         .navigationTitle("History")
         .navigationBarTitleDisplayMode(.inline)
         .task {
@@ -88,15 +93,17 @@ private struct ChargingSessionRow: View {
             HStack {
                 Text(session.sessionId)
                     .font(.headline)
+                    .foregroundStyle(ChargingTheme.brightText)
                 Spacer()
                 PortalBadge(
                     title: session.status.rawValue,
-                    tint: session.isCompleted ? .green : .orange
+                    tint: session.isCompleted ? ChargingTheme.neonGreen : .orange
                 )
             }
 
             Text(session.station)
                 .font(.subheadline.weight(.semibold))
+                .foregroundStyle(ChargingTheme.neonCyan)
 
             HStack {
                 Label(session.startedAt, systemImage: "play.fill")
@@ -104,17 +111,35 @@ private struct ChargingSessionRow: View {
                 Label(session.endedAt, systemImage: "stop.fill")
             }
             .font(.footnote)
-            .foregroundStyle(.secondary)
+            .foregroundStyle(ChargingTheme.dimText)
 
             HStack {
                 Text("\(String(format: "%.1f", session.energyKwh)) kWh")
+                    .foregroundStyle(ChargingTheme.brightText)
                 Spacer()
                 Text("$\(String(format: "%.2f", session.costUsd))")
                     .fontWeight(.semibold)
+                    .foregroundStyle(ChargingTheme.neonGreen)
             }
             .font(.subheadline)
         }
-        .padding(.vertical, 6)
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
+                        .stroke(
+                            LinearGradient(
+                                colors: [Color.white.opacity(0.7), Color.white.opacity(0.2)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 1
+                        )
+                )
+                .shadow(color: ChargingTheme.glassShadow, radius: 16, y: 6)
+        )
     }
 }
 
@@ -128,52 +153,57 @@ private struct ReceiptDetailView: View {
     @State private var resolvedSession: ChargingSession?
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Charging Receipt")
-                        .font(.system(size: 32, weight: .bold, design: .rounded))
-                    Text("Session \(displaySession.sessionId)")
-                        .foregroundStyle(.secondary)
-                }
+        ZStack {
+            SpaceBackground()
 
-                PortalCard {
-                    VStack(alignment: .leading, spacing: 14) {
-                        receiptRow("Station", displaySession.station)
-                        receiptRow("Connector", displaySession.connector)
-                        receiptRow("Started", displaySession.startedAt)
-                        receiptRow("Ended", displaySession.endedAt)
-                        receiptRow("Energy consumed", "\(String(format: "%.1f", displaySession.energyKwh)) kWh")
-                        receiptRow("Tariff", "$\(String(format: "%.2f", displaySession.tariffPerKwh)) / kWh")
-                        receiptRow("Taxes", "$\(String(format: "%.2f", displaySession.taxesUsd))")
-                        receiptRow("Total paid", "$\(String(format: "%.2f", displaySession.costUsd))", isTotal: true)
-                        receiptRow("Payment method", displaySession.paymentMethod)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Charging Receipt")
+                            .font(.system(size: 32, weight: .bold, design: .rounded))
+                            .foregroundStyle(ChargingTheme.brightText)
+                        Text("Session \(displaySession.sessionId)")
+                            .foregroundStyle(ChargingTheme.dimText)
                     }
-                }
 
-                if let exportError {
-                    Text(exportError)
-                        .font(.footnote)
-                        .foregroundStyle(.red)
-                }
-
-                Button {
-                    do {
-                        let exported = try receiptPDFService.export(session: displaySession)
-                        shareableFile = ShareableFile(url: exported)
-                        exportError = nil
-                    } catch {
-                        exportError = error.localizedDescription
+                    PortalCard {
+                        VStack(alignment: .leading, spacing: 14) {
+                            receiptRow("Station", displaySession.station)
+                            receiptRow("Connector", displaySession.connector)
+                            receiptRow("Started", displaySession.startedAt)
+                            receiptRow("Ended", displaySession.endedAt)
+                            receiptRow("Energy consumed", "\(String(format: "%.1f", displaySession.energyKwh)) kWh")
+                            receiptRow("Tariff", "$\(String(format: "%.2f", displaySession.tariffPerKwh)) / kWh")
+                            receiptRow("Taxes", "$\(String(format: "%.2f", displaySession.taxesUsd))")
+                            receiptRow("Total paid", "$\(String(format: "%.2f", displaySession.costUsd))", isTotal: true)
+                            receiptRow("Payment method", displaySession.paymentMethod)
+                        }
                     }
-                } label: {
-                    Label("Export PDF", systemImage: "square.and.arrow.up")
-                        .frame(maxWidth: .infinity)
+
+                    if let exportError {
+                        Text(exportError)
+                            .font(.footnote)
+                            .foregroundStyle(.red)
+                    }
+
+                    Button {
+                        do {
+                            let exported = try receiptPDFService.export(session: displaySession)
+                            shareableFile = ShareableFile(url: exported)
+                            exportError = nil
+                        } catch {
+                            exportError = error.localizedDescription
+                        }
+                    } label: {
+                        Label("Export PDF", systemImage: "square.and.arrow.up")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(ChargingTheme.neonCyan)
                 }
-                .buttonStyle(.borderedProminent)
+                .padding(20)
             }
-            .padding(20)
         }
-        .background(Color(red: 0.96, green: 0.97, blue: 0.99))
         .navigationTitle("Receipt")
         .navigationBarTitleDisplayMode(.inline)
         .task {
@@ -200,13 +230,14 @@ private struct ReceiptDetailView: View {
     private func receiptRow(_ label: String, _ value: String, isTotal: Bool = false) -> some View {
         HStack(alignment: .top) {
             Text(label)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(ChargingTheme.dimText)
             Spacer()
             Text(value)
                 .fontWeight(isTotal ? .bold : .semibold)
+                .foregroundStyle(isTotal ? ChargingTheme.neonCyan : ChargingTheme.brightText)
         }
         if label != "Payment method" {
-            Divider()
+            Divider().overlay(ChargingTheme.dimText.opacity(0.15))
         }
     }
 }

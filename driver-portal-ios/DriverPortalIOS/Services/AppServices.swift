@@ -380,6 +380,16 @@ final class UserService {
         return try await client.request(request)
     }
 
+    func requestAccountDeletion(userId: String, confirmDirectDeletion: Bool) async throws -> AccountDeletionResponse {
+        let request = try client.makeRequest(
+            baseURL: configuration.userBaseURL,
+            path: "api/v1/users/\(userId)/account-deletion",
+            method: .post,
+            body: AccountDeletionRequest(confirmDirectDeletion: confirmDirectDeletion)
+        )
+        return try await client.request(request)
+    }
+
     func searchUsers(query: String, limit: Int = 25) async throws -> UserSearchResponse {
         let request = try client.makeRequest(
             baseURL: configuration.userBaseURL,

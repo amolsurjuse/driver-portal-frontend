@@ -1,0 +1,13 @@
+{
+  "servers": {
+    "atlassian": {
+      "url": "https://mcp.atlassian.com/v1/mcp",
+      "type": "http"
+    },
+    "forge-knowledge": {
+      "url": "https://mcp.atlassian.com/v1/forge/mcp",
+      "type": "http"
+    }
+  },
+  "inputs": []
+}

@@ -7,53 +7,6 @@ private enum AuthScreen: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 }
 
-// MARK: - Electra Hub Logo (Programmatic)
-
-struct ElectraHubLogo: View {
-    var size: CGFloat = 64
-
-    var body: some View {
-        ZStack {
-            // Outer glow ring
-            Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [
-                            Color(red: 0.0, green: 0.75, blue: 1.0).opacity(0.25),
-                            Color.clear
-                        ],
-                        center: .center,
-                        startRadius: size * 0.3,
-                        endRadius: size * 0.55
-                    )
-                )
-                .frame(width: size * 1.2, height: size * 1.2)
-
-            // Main circle with gradient
-            Circle()
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            Color(red: 0.06, green: 0.35, blue: 0.72),
-                            Color(red: 0.10, green: 0.55, blue: 0.95),
-                            Color(red: 0.0, green: 0.75, blue: 1.0)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .frame(width: size, height: size)
-                .shadow(color: Color(red: 0.06, green: 0.35, blue: 0.72).opacity(0.35), radius: 16, y: 8)
-
-            // Lightning bolt icon
-            Image(systemName: "bolt.fill")
-                .font(.system(size: size * 0.42, weight: .bold))
-                .foregroundStyle(.white)
-                .shadow(color: .white.opacity(0.5), radius: 4)
-        }
-    }
-}
-
 // MARK: - Auth Flow View
 
 struct AuthFlowView: View {
@@ -65,49 +18,20 @@ struct AuthFlowView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                // Gradient background with subtle animated mesh
-                LinearGradient(
-                    colors: [
-                        Color(red: 0.94, green: 0.96, blue: 1.0),
-                        Color(red: 0.88, green: 0.94, blue: 0.99),
-                        Color.white
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .ignoresSafeArea()
+                // Mesh gradient background
+                SpaceBackground()
 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 28) {
                         // Logo + Branding header
                         VStack(alignment: .leading, spacing: 16) {
-                            HStack(spacing: 14) {
-                                ElectraHubLogo(size: 56)
-                                    .scaleEffect(logoAppeared ? 1.0 : 0.5)
-                                    .opacity(logoAppeared ? 1.0 : 0)
-
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text("Electra Hub")
-                                        .font(.system(size: 26, weight: .bold, design: .rounded))
-                                        .foregroundStyle(
-                                            LinearGradient(
-                                                colors: [
-                                                    Color(red: 0.06, green: 0.35, blue: 0.72),
-                                                    Color(red: 0.10, green: 0.55, blue: 0.95)
-                                                ],
-                                                startPoint: .leading,
-                                                endPoint: .trailing
-                                            )
-                                        )
-                                    Text("Driver Portal")
-                                        .font(.caption.weight(.semibold))
-                                        .foregroundStyle(.secondary)
-                                }
-                            }
+                            ElectraHubLogoFull(height: 56)
+                                .scaleEffect(logoAppeared ? 1.0 : 0.5)
+                                .opacity(logoAppeared ? 1.0 : 0)
 
                             Text("Manage charging sessions, wallet, payments, and your profile — all in one place.")
                                 .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(ChargingTheme.dimText)
                                 .fixedSize(horizontal: false, vertical: true)
                         }
                         .padding(.top, 8)
@@ -133,7 +57,7 @@ struct AuthFlowView: View {
                         // Footer
                         Text("By signing in, you agree to Electra Hub's Terms of Service and Privacy Policy.")
                             .font(.caption2)
-                            .foregroundStyle(.tertiary)
+                            .foregroundStyle(ChargingTheme.dimText.opacity(0.6))
                             .multilineTextAlignment(.center)
                             .frame(maxWidth: .infinity)
                     }
@@ -164,19 +88,20 @@ private struct LoginView: View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Welcome back")
                 .font(.title2.weight(.bold))
+                .foregroundStyle(ChargingTheme.brightText)
 
             TextField("Email", text: $email)
                 .textInputAutocapitalization(.never)
                 .keyboardType(.emailAddress)
                 .autocorrectionDisabled()
                 .padding()
-                .background(Color(.secondarySystemBackground))
+                .background(Color.white.opacity(0.5))
                 .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
 
             SecureField("Password", text: $password)
                 .textInputAutocapitalization(.never)
                 .padding()
-                .background(Color(.secondarySystemBackground))
+                .background(Color.white.opacity(0.5))
                 .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
 
             if let authError = sessionStore.authError {
@@ -203,9 +128,14 @@ private struct LoginView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(formIsValid ? Color.blue : Color.gray.opacity(0.4))
+                .background(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .fill(formIsValid
+                              ? LinearGradient(colors: [ChargingTheme.neonCyan, ChargingTheme.neonBlue], startPoint: .leading, endPoint: .trailing)
+                              : LinearGradient(colors: [Color.gray.opacity(0.3), Color.gray.opacity(0.2)], startPoint: .leading, endPoint: .trailing)
+                        )
+                )
                 .foregroundStyle(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             }
             .disabled(!formIsValid || sessionStore.isBusy)
         }
@@ -253,6 +183,7 @@ private struct RegisterView: View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Create account")
                 .font(.title2.weight(.bold))
+                .foregroundStyle(ChargingTheme.brightText)
 
             Group {
                 TextField("Email", text: $email)
@@ -280,7 +211,7 @@ private struct RegisterView: View {
                         .font(.headline)
                         .frame(width: 64)
                         .padding(.vertical, 12)
-                        .background(Color(.secondarySystemBackground))
+                        .background(Color.white.opacity(0.5))
                         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
 
                     TextField("Phone number", text: $phoneNumber)
@@ -295,7 +226,7 @@ private struct RegisterView: View {
                 TextField("Postal code", text: $postalCode)
             }
             .padding()
-            .background(Color(.secondarySystemBackground))
+            .background(Color.white.opacity(0.5))
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
 
             if let countryLoadError {
@@ -342,9 +273,14 @@ private struct RegisterView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(formIsValid ? Color.blue : Color.gray.opacity(0.4))
+                .background(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .fill(formIsValid
+                              ? LinearGradient(colors: [ChargingTheme.neonCyan, ChargingTheme.neonBlue], startPoint: .leading, endPoint: .trailing)
+                              : LinearGradient(colors: [Color.gray.opacity(0.3), Color.gray.opacity(0.2)], startPoint: .leading, endPoint: .trailing)
+                        )
+                )
                 .foregroundStyle(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             }
             .disabled(!formIsValid || sessionStore.isBusy)
         }
@@ -359,11 +295,9 @@ private struct RegisterView: View {
         isLoadingCountries = true
         defer { isLoadingCountries = false }
 
-        // Use the in-memory cache populated at app launch
         if !authService.cachedCountries.isEmpty {
             countries = authService.cachedCountries
         } else {
-            // Fallback: fetch if cache wasn't populated (e.g. network was down at launch)
             do {
                 await authService.prefetchCountries()
                 countries = authService.cachedCountries

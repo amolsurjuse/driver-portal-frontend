@@ -14,11 +14,6 @@ final class ChargerGraphQLService {
     }
 
     /// Fetches OCPI chargers for a given country with pagination.
-    /// - Parameters:
-    ///   - countryCode: ISO country code (default "US")
-    ///   - limit: Maximum number of chargers to fetch (default 20)
-    ///   - offset: Pagination offset (default 0)
-    /// - Returns: Array of `OcpiCharger` from the GraphQL API
     func getOcpiChargers(countryCode: String = "US", limit: Int = 20, offset: Int = 0) async throws -> [OcpiCharger] {
         let query = """
         query {

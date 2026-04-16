@@ -265,237 +265,253 @@ struct PaymentsView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Payments")
-                        .font(.system(size: 34, weight: .bold, design: .rounded))
-                    Text("Manage wallet balance, funding cards, and automatic reloads.")
-                        .foregroundStyle(.secondary)
-                    Text("Last synced at \(model.lastSyncedAt)")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
+        ZStack {
+            SpaceBackground()
 
-                if let errorMessage = model.errorMessage {
-                    Text(errorMessage)
-                        .font(.footnote.weight(.semibold))
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.red.opacity(0.12))
-                        .foregroundStyle(.red)
-                        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-                }
-
-                PortalCard {
-                    VStack(alignment: .leading, spacing: 16) {
-                        HStack(alignment: .center) {
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text("Wallet balance")
-                                    .font(.headline)
-                                Text(PortalFormatters.currency(model.walletBalance, code: model.currencyCode, fallbackSymbol: model.currencySymbol))
-                                    .font(.system(size: 32, weight: .bold, design: .rounded))
-                                Text("Available for charging sessions")
-                                    .foregroundStyle(.secondary)
-                            }
-
-                            Spacer()
-
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 22, style: .continuous)
-                                    .fill(Color.blue.opacity(0.12))
-                                    .frame(width: 72, height: 72)
-                                Image(systemName: "wallet.pass.fill")
-                                    .font(.system(size: 28))
-                                    .foregroundStyle(.blue)
-                            }
-                        }
-
-                        VStack(alignment: .leading, spacing: 8) {
-                            HStack {
-                                Text("Budget coverage")
-                                Spacer()
-                                Text("\(Int(model.walletUsagePercent))%")
-                                    .fontWeight(.semibold)
-                            }
-                            ProgressView(value: model.walletUsagePercent, total: 100)
-                                .tint(.blue)
-                            Text("Against monthly target of \(PortalFormatters.currency(model.walletBudget, code: model.currencyCode, fallbackSymbol: model.currencySymbol))")
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                        }
-
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 12) {
-                                ForEach(model.quickAmounts, id: \.self) { amount in
-                                    Button("+\(Int(amount))") {
-                                        model.selectQuickAmount(amount)
-                                    }
-                                    .buttonStyle(.bordered)
-                                }
-                            }
-                        }
-
-                        HStack(spacing: 12) {
-                            TextField("Amount", text: $model.amountInput)
-                                .keyboardType(.decimalPad)
-                                .padding()
-                                .background(Color(.secondarySystemBackground))
-                                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-
-                            Button("Add balance") {
-                                Haptics.impact(.medium)
-                                Task { await model.addBalance() }
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .disabled(model.isLoading)
-                        }
-
-                        if model.cards.isEmpty {
-                            Text("Add a credit card to enable wallet top-ups and auto top-up.")
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                        }
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Payments")
+                            .font(.system(size: 34, weight: .bold, design: .rounded))
+                            .foregroundStyle(ChargingTheme.brightText)
+                        Text("Manage wallet balance, funding cards, and automatic reloads.")
+                            .foregroundStyle(ChargingTheme.dimText)
+                        Text("Last synced at \(model.lastSyncedAt)")
+                            .font(.footnote)
+                            .foregroundStyle(ChargingTheme.dimText)
                     }
-                }
 
-                PortalCard {
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("Auto top-up")
-                            .font(.title3.weight(.bold))
-
-                        Toggle("Enable auto top-up", isOn: $model.autoTopUpEnabled)
-                            .disabled(model.cards.isEmpty)
-
-                        HStack {
-                            TextField("Threshold", text: $model.autoTopUpThreshold)
-                                .keyboardType(.numberPad)
-                            TextField("Amount", text: $model.autoTopUpAmount)
-                                .keyboardType(.numberPad)
-                        }
-                        .padding()
-                        .background(Color(.secondarySystemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-
-                        Picker("Funding card", selection: $model.autoTopUpCardID) {
-                            if model.cards.isEmpty {
-                                Text("No cards available").tag("")
-                            }
-                            ForEach(model.cards) { card in
-                                Text("\(card.brand) •••• \(card.last4)").tag(card.id)
-                            }
-                        }
-                        .pickerStyle(.menu)
-
-                        Button("Save auto top-up") {
-                            Task { await model.saveAutoTopUp() }
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .disabled(model.isLoading || model.cards.isEmpty)
-                    }
-                }
-
-                PortalCard {
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("Recent top-ups")
-                            .font(.title3.weight(.bold))
-
-                        if model.recentTopUps.isEmpty {
-                            Text("No top-up history yet.")
-                                .foregroundStyle(.secondary)
-                        } else {
-                            ForEach(model.recentTopUps) { topUp in
-                                HStack {
-                                    VStack(alignment: .leading, spacing: 6) {
-                                        Text("+\(PortalFormatters.currency(topUp.amount, code: model.currencyCode, fallbackSymbol: model.currencySymbol))")
-                                            .fontWeight(.semibold)
-                                        PortalBadge(
-                                            title: topUp.source == .auto ? "Auto" : "Manual",
-                                            tint: topUp.source == .auto ? .green : .blue
-                                        )
-                                        if let note = topUp.note, !note.isEmpty {
-                                            Text(note)
-                                                .font(.footnote)
-                                                .foregroundStyle(.secondary)
-                                        }
-                                    }
-                                    Spacer()
-                                    Text(PortalFormatters.topUpTime(topUp.timestamp))
-                                        .font(.footnote)
-                                        .foregroundStyle(.secondary)
-                                }
-                                if topUp.id != model.recentTopUps.last?.id {
-                                    Divider()
-                                }
-                            }
-                        }
-                    }
-                }
-
-                PortalCard {
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("Credit cards")
-                            .font(.title3.weight(.bold))
-
-                        TextField("Nickname", text: $model.newCardNickname)
+                    if let errorMessage = model.errorMessage {
+                        Text(errorMessage)
+                            .font(.footnote.weight(.semibold))
                             .padding()
-                            .background(Color(.secondarySystemBackground))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                            .foregroundStyle(.red)
+                    }
+
+                    PortalCard {
+                        VStack(alignment: .leading, spacing: 16) {
+                            HStack(alignment: .center) {
+                                VStack(alignment: .leading, spacing: 6) {
+                                    Text("Wallet balance")
+                                        .font(.headline)
+                                        .foregroundStyle(ChargingTheme.dimText)
+                                    Text(PortalFormatters.currency(model.walletBalance, code: model.currencyCode, fallbackSymbol: model.currencySymbol))
+                                        .font(.system(size: 32, weight: .bold, design: .rounded))
+                                        .foregroundStyle(ChargingTheme.neonCyan)
+                                    Text("Available for charging sessions")
+                                        .foregroundStyle(ChargingTheme.dimText)
+                                }
+
+                                Spacer()
+
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                                        .fill(ChargingTheme.neonBlue.opacity(0.12))
+                                        .frame(width: 72, height: 72)
+                                    Image(systemName: "wallet.pass.fill")
+                                        .font(.system(size: 28))
+                                        .foregroundStyle(ChargingTheme.neonBlue)
+                                }
+                            }
+
+                            VStack(alignment: .leading, spacing: 8) {
+                                HStack {
+                                    Text("Budget coverage")
+                                        .foregroundStyle(ChargingTheme.dimText)
+                                    Spacer()
+                                    Text("\(Int(model.walletUsagePercent))%")
+                                        .fontWeight(.semibold)
+                                        .foregroundStyle(ChargingTheme.neonCyan)
+                                }
+                                ProgressView(value: model.walletUsagePercent, total: 100)
+                                    .tint(ChargingTheme.neonCyan)
+                                Text("Against monthly target of \(PortalFormatters.currency(model.walletBudget, code: model.currencyCode, fallbackSymbol: model.currencySymbol))")
+                                    .font(.footnote)
+                                    .foregroundStyle(ChargingTheme.dimText)
+                            }
+
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 12) {
+                                    ForEach(model.quickAmounts, id: \.self) { amount in
+                                        Button("+\(Int(amount))") {
+                                            model.selectQuickAmount(amount)
+                                        }
+                                        .buttonStyle(.bordered)
+                                    }
+                                }
+                            }
+
+                            HStack(spacing: 12) {
+                                TextField("Amount", text: $model.amountInput)
+                                    .keyboardType(.decimalPad)
+                                    .padding()
+                                    .background(Color.white.opacity(0.5))
+                                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+
+                                Button("Add balance") {
+                                    Haptics.impact(.medium)
+                                    Task { await model.addBalance() }
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .tint(ChargingTheme.neonCyan)
+                                .disabled(model.isLoading)
+                            }
+
+                            if model.cards.isEmpty {
+                                Text("Add a credit card to enable wallet top-ups and auto top-up.")
+                                    .font(.footnote)
+                                    .foregroundStyle(ChargingTheme.dimText)
+                            }
+                        }
+                    }
+
+                    PortalCard {
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("Auto top-up")
+                                .font(.title3.weight(.bold))
+                                .foregroundStyle(ChargingTheme.brightText)
+
+                            Toggle("Enable auto top-up", isOn: $model.autoTopUpEnabled)
+                                .tint(ChargingTheme.neonCyan)
+                                .disabled(model.cards.isEmpty)
+
+                            HStack {
+                                TextField("Threshold", text: $model.autoTopUpThreshold)
+                                    .keyboardType(.numberPad)
+                                TextField("Amount", text: $model.autoTopUpAmount)
+                                    .keyboardType(.numberPad)
+                            }
+                            .padding()
+                            .background(Color.white.opacity(0.5))
                             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
 
-                        Picker("Brand", selection: $model.newCardBrand) {
-                            Text("Visa").tag("Visa")
-                            Text("Mastercard").tag("Mastercard")
-                            Text("Amex").tag("Amex")
-                        }
-                        .pickerStyle(.segmented)
+                            Picker("Funding card", selection: $model.autoTopUpCardID) {
+                                if model.cards.isEmpty {
+                                    Text("No cards available").tag("")
+                                }
+                                ForEach(model.cards) { card in
+                                    Text("\(card.brand) \u{2022}\u{2022}\u{2022}\u{2022} \(card.last4)").tag(card.id)
+                                }
+                            }
+                            .pickerStyle(.menu)
 
-                        HStack {
-                            TextField("Card number", text: $model.newCardNumber)
-                                .keyboardType(.numberPad)
-                            TextField("MM/YY", text: $model.newCardExpiry)
-                                .keyboardType(.numbersAndPunctuation)
+                            Button("Save auto top-up") {
+                                Task { await model.saveAutoTopUp() }
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(ChargingTheme.neonCyan)
+                            .disabled(model.isLoading || model.cards.isEmpty)
                         }
-                        .padding()
-                        .background(Color(.secondarySystemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    }
 
-                        Button("Add card") {
-                            Haptics.impact(.medium)
-                            Task { await model.addCard() }
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .disabled(model.isLoading)
+                    PortalCard {
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("Recent top-ups")
+                                .font(.title3.weight(.bold))
+                                .foregroundStyle(ChargingTheme.brightText)
 
-                        if model.cards.isEmpty {
-                            Text("No cards added yet.")
-                                .foregroundStyle(.secondary)
-                        } else {
-                            ForEach(model.cards) { card in
-                                HStack {
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        Text(card.nickname)
-                                            .fontWeight(.semibold)
-                                        Text("\(card.brand) •••• \(card.last4) · Expires \(card.expiry)")
-                                            .foregroundStyle(.secondary)
+                            if model.recentTopUps.isEmpty {
+                                Text("No top-up history yet.")
+                                    .foregroundStyle(ChargingTheme.dimText)
+                            } else {
+                                ForEach(model.recentTopUps) { topUp in
+                                    HStack {
+                                        VStack(alignment: .leading, spacing: 6) {
+                                            Text("+\(PortalFormatters.currency(topUp.amount, code: model.currencyCode, fallbackSymbol: model.currencySymbol))")
+                                                .fontWeight(.semibold)
+                                                .foregroundStyle(ChargingTheme.neonGreen)
+                                            PortalBadge(
+                                                title: topUp.source == .auto ? "Auto" : "Manual",
+                                                tint: topUp.source == .auto ? .green : ChargingTheme.neonCyan
+                                            )
+                                            if let note = topUp.note, !note.isEmpty {
+                                                Text(note)
+                                                    .font(.footnote)
+                                                    .foregroundStyle(ChargingTheme.dimText)
+                                            }
+                                        }
+                                        Spacer()
+                                        Text(PortalFormatters.topUpTime(topUp.timestamp))
+                                            .font(.footnote)
+                                            .foregroundStyle(ChargingTheme.dimText)
                                     }
-                                    Spacer()
-                                    Button(role: .destructive) {
-                                        pendingDeleteCard = card
-                                    } label: {
-                                        Image(systemName: "trash")
+                                    if topUp.id != model.recentTopUps.last?.id {
+                                        Divider().overlay(ChargingTheme.dimText.opacity(0.15))
                                     }
                                 }
-                                if card.id != model.cards.last?.id {
-                                    Divider()
+                            }
+                        }
+                    }
+
+                    PortalCard {
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("Credit cards")
+                                .font(.title3.weight(.bold))
+                                .foregroundStyle(ChargingTheme.brightText)
+
+                            TextField("Nickname", text: $model.newCardNickname)
+                                .padding()
+                                .background(Color.white.opacity(0.5))
+                                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+
+                            Picker("Brand", selection: $model.newCardBrand) {
+                                Text("Visa").tag("Visa")
+                                Text("Mastercard").tag("Mastercard")
+                                Text("Amex").tag("Amex")
+                            }
+                            .pickerStyle(.segmented)
+
+                            HStack {
+                                TextField("Card number", text: $model.newCardNumber)
+                                    .keyboardType(.numberPad)
+                                TextField("MM/YY", text: $model.newCardExpiry)
+                                    .keyboardType(.numbersAndPunctuation)
+                            }
+                            .padding()
+                            .background(Color.white.opacity(0.5))
+                            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+
+                            Button("Add card") {
+                                Haptics.impact(.medium)
+                                Task { await model.addCard() }
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(ChargingTheme.neonCyan)
+                            .disabled(model.isLoading)
+
+                            if model.cards.isEmpty {
+                                Text("No cards added yet.")
+                                    .foregroundStyle(ChargingTheme.dimText)
+                            } else {
+                                ForEach(model.cards) { card in
+                                    HStack {
+                                        VStack(alignment: .leading, spacing: 4) {
+                                            Text(card.nickname)
+                                                .fontWeight(.semibold)
+                                                .foregroundStyle(ChargingTheme.brightText)
+                                            Text("\(card.brand) \u{2022}\u{2022}\u{2022}\u{2022} \(card.last4) \u{00B7} Expires \(card.expiry)")
+                                                .foregroundStyle(ChargingTheme.dimText)
+                                        }
+                                        Spacer()
+                                        Button(role: .destructive) {
+                                            pendingDeleteCard = card
+                                        } label: {
+                                            Image(systemName: "trash")
+                                        }
+                                    }
+                                    if card.id != model.cards.last?.id {
+                                        Divider().overlay(ChargingTheme.dimText.opacity(0.15))
+                                    }
                                 }
                             }
                         }
                     }
                 }
+                .padding(20)
             }
-            .padding(20)
         }
-        .background(Color(red: 0.96, green: 0.97, blue: 0.99))
         .navigationTitle("Payments")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -539,7 +555,7 @@ struct PaymentsView: View {
             }
         } message: {
             if let pendingDeleteCard {
-                Text("Are you sure you want to delete \(pendingDeleteCard.brand) •••• \(pendingDeleteCard.last4)?")
+                Text("Are you sure you want to delete \(pendingDeleteCard.brand) \u{2022}\u{2022}\u{2022}\u{2022} \(pendingDeleteCard.last4)?")
             }
         }
     }
